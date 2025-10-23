@@ -1,0 +1,30 @@
+{
+  "name": "ods6-site",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ods6",
+    "saneamento",
+    "denuncias",
+    "ongs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Site de denúncias sobre saneamento básico - ODS 6",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "express-validator": "^7.3.0",
+    "i": "^0.3.7",
+    "multer": "^2.0.2"
+  }
+}

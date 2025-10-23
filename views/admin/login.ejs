@@ -1,0 +1,37 @@
+<%- include("../partials/header") %>
+
+<section class="auth-section">
+    <section class="container">
+        <nav class="auth-container">
+            <article class="auth-card">
+                <header class="auth-header">
+                    <h1>Login de Administrador</h1>
+                    <p>Acesse o painel administrativo</p>
+                </header>
+                
+                <form class="auth-form" method="POST" action="/admin/dashboard">
+                    <nav class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required value="admin@example.com">
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" required value="password">
+                    </nav>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Entrar como Administrador
+                    </button>
+                </form>
+                
+                <footer class="auth-footer">
+                    <p>Não é administrador? <a href="/auth/login">Voltar ao Login de Usuário</a></p>
+                </footer>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<%- include("../partials/footer") %>

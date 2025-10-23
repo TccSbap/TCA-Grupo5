@@ -1,0 +1,31 @@
+<%- include("./partials/header") %>
+<link rel="stylesheet" href="/stylesheets/doacoes.css">
+
+<section class="doacoes-page">
+    <section class="container">
+        <header class="page-header">
+            <h1>Faça sua Doação</h1>
+            <p>Escolha uma ONG parceira para apoiar e faça a diferença!</p>
+        </header>
+
+        <nav class="ongs-list-grid">
+            <% if (ongs && ongs.length > 0) { %>
+                <% ongs.forEach(function(ong) { %>
+                    <article class="ong-card">
+                        <nav class="ong-card-body">
+                            <h3><%= ong.name %></h3>
+                            <p>Foco: <%= ong.focus %></p>
+                            <p><%= ong.description %></p>
+                            <a href="/doacoes/<%= ong.id %>/doar" class="btn btn-primary">Doar para <%= ong.name %></a>
+                        </nav>
+                    </article>
+                <% }); %>
+            <% } else { %>
+                <p>Nenhuma ONG disponível para doação no momento.</p>
+            <% } %>
+        </nav>
+    </section>
+</section>
+
+<%- include("./partials/footer") %>
+

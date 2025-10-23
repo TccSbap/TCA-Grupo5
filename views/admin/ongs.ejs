@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+
+<section class="admin-container">
+    <aside class="admin-sidebar">
+        <nav class="admin-nav">
+            <nav class="admin-nav-header">
+                <h2>Painel Admin</h2>
+                <p><%= user.ongName %></p>
+            </nav>
+            
+            <ul class="admin-nav-links">
+                <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/denuncias">Denúncias</a></li>
+                <li><a href="/admin/ongs" class="active">ONGs</a></li>
+                <li><a href="/dashboard">Meu Perfil</a></li>
+                <li><a href="/auth/logout">Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <main class="admin-content">
+        <nav class="admin-header">
+            <h1>Gerenciar ONGs</h1>
+            <p>Visualize informações sobre as ONGs parceiras</p>
+        </nav>
+        
+        <section class="admin-ongs-grid">
+            <% ongs.forEach(ong => { %>
+            <article class="ong-admin-card">
+                <nav class="ong-card-header">
+                    <h3><%= ong.name %></h3>
+                </nav>
+                
+                <section class="ong-card-content">
+                    <p><strong>Descrição:</strong></p>
+                    <p><%= ong.description %></p>
+                    
+                    <p><strong>Contato:</strong></p>
+                    <address><a href="mailto:<%= ong.contact %>"><%= ong.contact %></a></address>
+                    
+                    <% if (ong.phone) { %>
+                    <p><strong>Telefone:</strong></p>
+                    <p><a href="tel:<%= ong.phone %>"><%= ong.phone %></a></p>
+                    <% } %>
+                    
+                    <% if (ong.address) { %>
+                    <p><strong>Endereço:</strong></p>
+                    <address><%= ong.address %></address>
+                    <% } %>
+                    
+                    <p><strong>Parceira desde:</strong></p>
+                    <p><time datetime="<%= ong.createdAt %>"><%= new Date(ong.createdAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %></time></p>
+                </section>
+                
+                <footer class="ong-card-footer">
+                    <a href="/ongs/<%= ong.id %>" class="btn btn-primary">Ver Detalhes</a>
+                </footer>
+            </article>
+            <% }) %>
+        </section>
+    </main>
+</section>
+
+<%- include('../partials/footer') %>

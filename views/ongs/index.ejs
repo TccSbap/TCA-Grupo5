@@ -1,0 +1,111 @@
+<%- include('../partials/header') %>
+
+<section class="ongs-section">
+    <section class="container">
+        <header class="section-header">
+            <h1>ONGs Parceiras</h1>
+            <p>Conheça as organizações que trabalham conosco para resolver problemas de saneamento básico</p>
+        </header>
+        
+        <% if (ongs.length > 0) { %>
+        <nav class="ongs-grid">
+            <% ongs.forEach(ong => { %>
+            <article class="ong-card">
+                <header class="ong-header">
+                    <nav class="ong-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </nav>
+                    <h3><%= ong.name %></h3>
+                </header>
+                
+                <section class="ong-content">
+                    <p class="ong-description">
+                        <%= ong.description %>
+                    </p>
+                    
+                    <address class="ong-info ong-contact-info">
+                        <nav class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <span><%= ong.contact %></span>
+                        </nav>
+                        
+                        <% if (ong.phone) { %>
+                        <nav class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <span><%= ong.phone %></span>
+                        </nav>
+                        <% } %>
+                        
+                        <% if (ong.address) { %>
+                        <nav class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span><%= ong.address %></span>
+                        </nav>
+                        <% } %>
+                        
+                        <nav class="info-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Parceira desde <%= new Date(ong.createdAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %></span>
+                        </nav>
+                    </address>
+                </section>
+                
+                <footer class="ong-actions">
+                    <a href="/ongs/<%= ong.id %>" class="btn btn-outline">
+                        Ver Detalhes
+                    </a>
+                    <a href="mailto:<%= ong.contact %>" class="btn btn-primary">
+                        <i class="fas fa-envelope"></i>
+                        Contatar
+                    </a>
+                </footer>
+            </article>
+            <% }) %>
+        </nav>
+        <% } else { %>
+        <section class="empty-state">
+            <nav class="empty-icon">
+                <i class="fas fa-hands-helping"></i>
+            </nav>
+            <h3>Nenhuma ONG cadastrada</h3>
+            <p>Ainda não há ONGs parceiras cadastradas na plataforma.</p>
+            <% if (!isLoggedIn) { %>
+            <a href="/auth/cadastro" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Cadastrar sua ONG
+            </a>
+            <% } %>
+        </section>
+        <% } %>
+        
+        <section class="cta-section">
+            <nav class="cta-content">
+                <h2 class="h2-oferta-ong">Sua ONG quer fazer parte?</h2>
+                <p class="p-oferta-ong">
+                    Junte-se a nós na missão de garantir água limpa e saneamento básico para todos. 
+                    Cadastre sua organização e comece a responder denúncias hoje mesmo.
+                </p>
+                <% if (!isLoggedIn) { %>
+                <a href="/auth/cadastro" class="btn btn-primary btn-large">
+                    <i class="fas fa-handshake"></i>
+                    Cadastrar ONG
+                </a>
+                <% } else if (!isAdmin) { %>
+                <nav class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Para cadastrar uma ONG, você precisa criar uma conta como administrador.</p>
+                    <a href="/auth/cadastro" class="btn btn-outline">Criar Conta de ONG</a>
+                </nav>
+                <% } else { %>
+                <nav class="info-box success">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Sua ONG já está cadastrada! Acesse o painel administrativo para gerenciar denúncias.</p>
+                    <a href="/ongs/admin" class="btn btn-primary">Painel da ONG</a>
+                </nav>
+                <% } %>
+            </nav>
+        </section>
+    </section>
+</section>
+
+<%- include('../partials/footer') %>

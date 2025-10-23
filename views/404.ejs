@@ -1,0 +1,147 @@
+<%- include('partials/header') %>
+
+<section class="error-section">
+    <nav class="container">
+        <nav class="error-content">
+            <header class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </header>
+            
+            <h1>404 - Página Não Encontrada</h1>
+            
+            <p>
+                Ops! A página que você está procurando não existe ou foi movida. 
+                Verifique se o endereço está correto ou navegue para uma das páginas abaixo.
+            </p>
+            
+            <nav class="error-actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Voltar ao Início
+                </a>
+                <a href="/denuncias" class="btn btn-outline">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Ver Denúncias
+                </a>
+                <a href="/ongs" class="btn btn-outline">
+                    <i class="fas fa-hands-helping"></i>
+                    Conhecer ONGs
+                </a>
+            </nav>
+            
+            <section class="helpful-links">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="/">Página Inicial</a></li>
+                    <li><a href="/denuncias">Denúncias</a></li>
+                    <li><a href="/ongs">ONGs Parceiras</a></li>
+                    <li><a href="/sobre">Sobre o Projeto</a></li>
+                    <li><a href="/contato">Contato</a></li>
+                    <% if (!isLoggedIn) { %>
+                    <li><a href="/auth/login">Login</a></li>
+                    <li><a href="/auth/cadastro">Cadastro</a></li>
+                    <% } else { %>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <% } %>
+                </ul>
+            </section>
+        </nav>
+    </nav>
+</section>
+
+<style>
+.error-section {
+    padding: var(--spacing-20) 0;
+    background: var(--gray-50);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.error-icon {
+    font-size: 6rem;
+    color: var(--warning);
+    margin-bottom: var(--spacing-6);
+}
+
+.error-content h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-6);
+}
+
+.error-content p {
+    font-size: var(--font-size-lg);
+    color: var(--gray-600);
+    margin-bottom: var(--spacing-8);
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: var(--spacing-4);
+    justify-content: center;
+    margin-bottom: var(--spacing-12);
+    flex-wrap: wrap;
+}
+
+.helpful-links {
+    background: var(--white);
+    padding: var(--spacing-8);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.helpful-links h3 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-6);
+}
+
+.helpful-links ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-3);
+}
+
+.helpful-links li a {
+    display: block;
+    padding: var(--spacing-3);
+    color: var(--primary-blue);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: all 0.2s;
+}
+
+.helpful-links li a:hover {
+    background: var(--gray-100);
+    color: var(--primary-blue-dark);
+}
+
+@media (max-width: 768px) {
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-actions .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .helpful-links ul {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<%- include('partials/footer') %>

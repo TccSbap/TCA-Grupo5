@@ -1,0 +1,350 @@
+<%- include('partials/header') %>
+
+<section class="contact-section">
+    <section class="container">
+        <header class="section-header">
+            <h1>Entre em Contato</h1>
+            <p>Tem dúvidas ou sugestões? Estamos aqui para ajudar!</p>
+        </header>
+        
+        <nav class="contact-content">
+            <aside class="contact-info">
+                <h2>Informações de Contato</h2>
+                
+                <section class="contact-item">
+                    <nav class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </nav>
+                    <nav class="contact-details">
+                        <h4>Email</h4>
+                        <p>contato@ods6.org</p>
+                        <small>Respondemos em até 24 horas</small>
+                    </nav>
+                </section>
+                
+                <section class="contact-item">
+                    <nav class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </nav>
+                    <nav class="contact-details">
+                        <h4>Telefone</h4>
+                        <p>(11) 9999-9999</p>
+                        <small>Segunda a sexta, 9h às 18h</small>
+                    </nav>
+                </section>
+                
+                <section class="contact-item">
+                    <nav class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </nav>
+                    <nav class="contact-details">
+                        <h4>Endereço</h4>
+                        <p>São Paulo, SP - Brasil</p>
+                        <small>Atendimento presencial com agendamento</small>
+                    </nav>
+                </section>
+                
+                <section class="social-contact">
+                    <h4>Redes Sociais</h4>
+                    <nav class="social-links">
+                        <a href="#" title="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" title="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </nav>
+                </section>
+            </aside>
+            
+            <section class="contact-form-container">
+                <h2>Envie uma Mensagem</h2>
+                
+                <form class="contact-form" action="#" method="POST">
+                    <nav class="form-row">
+                        <nav class="form-group">
+                            <label for="name">Nome Completo *</label>
+                            <input type="text" id="name" name="name" required>
+                        </nav>
+                        
+                        <nav class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </nav>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="subject">Assunto *</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Selecione um assunto</option>
+                            <option value="duvida">Dúvida sobre a plataforma</option>
+                            <option value="sugestao">Sugestão de melhoria</option>
+                            <option value="problema">Problema técnico</option>
+                            <option value="parceria">Proposta de parceria</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="message">Mensagem *</label>
+                        <textarea id="message" name="message" rows="6" required 
+                                  placeholder="Descreva sua dúvida, sugestão ou problema..."></textarea>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="newsletter" value="1">
+                            <span class="checkmark"></span>
+                            Quero receber atualizações sobre o projeto por email
+                        </label>
+                    </nav>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Mensagem
+                    </button>
+                </form>
+            </section>
+        </nav>
+        
+        <section class="faq-section">
+            <h2>Perguntas Frequentes</h2>
+            
+            <nav class="faq-grid">
+                <details class="faq-item">
+                    <summary>Como faço para registrar uma denúncia?</summary>
+                    <p>
+                        Primeiro, você precisa criar uma conta na plataforma. Depois, acesse a seção 
+                        "Denúncias" e clique em "Nova Denúncia". Preencha todos os campos obrigatórios 
+                        com o máximo de detalhes possível.
+                    </p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Quanto tempo leva para uma ONG responder?</summary>
+                    <p>
+                        As ONGs parceiras têm até 7 dias para responder às denúncias. Muitas respondem 
+                        em menos tempo, dependendo da complexidade do problema relatado.
+                    </p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Minha denúncia é anônima?</summary>
+                    <p>
+                        Suas informações pessoais são protegidas e não são exibidas publicamente. 
+                        Apenas seu nome é visível nas denúncias, mas dados como email e telefone 
+                        permanecem privados.
+                    </p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Como posso cadastrar minha ONG?</summary>
+                    <p>
+                        No momento do cadastro, selecione a opção "ONG (Administrador)" e preencha 
+                        todas as informações da sua organização. Após a aprovação, você poderá 
+                        responder às denúncias.
+                    </p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>A plataforma é gratuita?</summary>
+                    <p>
+                        Sim! Nossa plataforma é completamente gratuita tanto para cidadãos que fazem 
+                        denúncias quanto para ONGs que respondem a elas.
+                    </p>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>Posso acompanhar o progresso da minha denúncia?</summary>
+                    <p>
+                        Sim! Você pode acompanhar todas as suas denúncias através do seu dashboard 
+                        pessoal. Lá você verá o status atual e todas as respostas das ONGs.
+                    </p>
+                </details>
+            </nav>
+        </section>
+    </section>
+</section>
+
+<style>
+.contact-section {
+    padding: var(--spacing-16) 0;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--spacing-12);
+    margin-bottom: var(--spacing-16);
+}
+
+.contact-info h2,
+.contact-form-container h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-8);
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+    padding: var(--spacing-4);
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.contact-icon {
+    background: var(--primary-blue);
+    color: var(--white);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+.contact-details h4 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-1);
+}
+
+.contact-details p {
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-1);
+}
+
+.contact-details small {
+    color: var(--gray-500);
+    font-size: var(--font-size-sm);
+}
+
+.social-contact {
+    margin-top: var(--spacing-8);
+}
+
+.social-contact h4 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-4);
+}
+
+.social-contact .social-links {
+    display: flex;
+    gap: var(--spacing-3);
+}
+
+.social-contact .social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background: var(--primary-blue);
+    color: var(--white);
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.social-contact .social-links a:hover {
+    background: var(--primary-blue-dark);
+    transform: translateY(-2px);
+}
+
+.contact-form-container {
+    background: var(--white);
+    padding: var(--spacing-8);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--gray-700);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.faq-section {
+    margin-top: var(--spacing-16);
+}
+
+.faq-section h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: var(--gray-800);
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-6);
+}
+
+.faq-item {
+    background: var(--white);
+    padding: var(--spacing-6);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.faq-item h4 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-3);
+}
+
+.faq-item p {
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-8);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,273 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<section class="hero">
+    <nav class="hero-background">
+        <nav class="hero-overlay"></nav>
+    </nav>
+    <section class="container">
+        <section class="hero-content">
+            <h1 class="hero-title">
+             Água Consciente para Todos
+            </h1>
+            <p class="hero-subtitle">
+                Juntos podemos garantir o acesso universal à água potável e saneamento básico. 
+                Faça sua denúncia e contribua para um futuro mais sustentável.
+            </p>
+            <nav class="hero-actions">
+                <a href="/denuncias/nova" class="btn btn-primary btn-large">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Fazer Denúncia
+                </a>
+                <a href="/ongs" class="btn btn-outline btn-large">
+                    <i class="fas fa-hands-helping"></i>
+                    Conhecer ONGs
+                </a>
+            </nav>
+        </section>
+    </section>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <section class="container">
+        <nav class="stats-grid">
+            <article class="stat-item">
+                <nav class="stat-icon2">
+                    <i class="fas fa-tint"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number">2.2 Bi</h3>
+                    <p class="stat-label">Pessoas sem acesso à água potável</p>
+                </nav>
+            </article>
+            
+            <article class="stat-item">
+                <nav class="stat-icon1">
+                    <i class="fas fa-toilet"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number">4.2 Bi</h3>
+                    <p class="stat-label">Pessoas sem saneamento básico</p>
+                </nav>
+            </article>
+            
+            <article class="stat-item">
+                <nav class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number"><%= totalDenuncias || 0 %></h3>
+                    <p class="stat-label">Denúncias registradas</p>
+                </nav>
+            </article>
+            
+            <article class="stat-item">
+                <nav class="stat-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number"><%= totalOngs || 0 %></h3>
+                    <p class="stat-label">ONGs parceiras</p>
+                </nav>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<!-- About Água Consciente -->
+<section class="about-ods">
+    <section class="container">
+        <header class="section-header">
+            <h2>Água Consciente</h2>
+            <p>Assegurar a disponibilidade e gestão sustentável da água e saneamento para todos</p>
+        </header>
+        
+        <nav class="ods-content">
+            <nav class="ods-text">
+                <!-- Valores da Empresa -->
+                <article class="ods-card">
+                    <header class="ods-card-header">
+                        <nav class="ods-card-icon">
+                            <i class="fas fa-star"></i>
+                        </nav>
+                        <h3>Valores da Empresa</h3>
+                    </header>
+                    <section class="ods-card-body">
+                        <ul class="ods-list values-list">
+                            <li><i class="fas fa-check-circle"></i> Transparência</li>
+                            <li><i class="fas fa-check-circle"></i> Colaboração</li>
+                            <li><i class="fas fa-check-circle"></i> Impacto Social</li>
+                            <li><i class="fas fa-check-circle"></i> Sustentabilidade</li>
+                        </ul>
+                    </section>
+                </article>
+
+                <!-- Por que é importante -->
+                <article class="ods-card">
+                    <header class="ods-card-header">
+                        <nav class="ods-card-icon importance-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </nav>
+                        <h3>Por que é importante?</h3>
+                    </header>
+                    <section class="ods-card-body">
+                        <p>
+                            O acesso à água potável e ao saneamento básico é um direito humano fundamental. 
+                            Milhões de pessoas ainda vivem sem esses serviços essenciais, o que afeta 
+                            diretamente a saúde, educação e desenvolvimento econômico.
+                        </p>
+                    </section>
+                </article>
+                
+                <!-- Como você pode ajudar -->
+                <article class="ods-card">
+                    <header class="ods-card-header">
+                        <nav class="ods-card-icon help-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </nav>
+                        <h3>Como você pode ajudar?</h3>
+                    </header>
+                    <section class="ods-card-body">
+                        <ul class="ods-list how-to-help-list">
+                            <li><i class="fas fa-check-circle"></i> Denuncie problemas de saneamento em sua região</li>
+                            <li><i class="fas fa-check-circle"></i> Apoie ONGs que trabalham com água e saneamento</li>
+                            <li><i class="fas fa-check-circle"></i> Conscientize outros sobre a importância do tema</li>
+                            <li><i class="fas fa-check-circle"></i> Pratique o uso consciente da água</li>
+                        </ul>
+                    </section>
+                </article>
+            </nav>
+            
+        </nav>
+    </section>
+</section>
+
+<!-- Recent Denuncias -->
+<!-- Galeria de Fotos -->
+<section class="photo-gallery">
+    <section class="container">
+        <header class="section-header">
+        Água Consciente em Foco</h2>
+            <p>Imagens que ilustram a importância do acesso universal à água limpa e saneamento básico</p>
+        </header>
+        
+        <nav class="gallery-grid">
+            <figure class="gallery-item">
+                <img src="/images/agua-potavel.jpg" alt="Água Potável Limpa">
+                <figcaption class="gallery-overlay">
+                    <h4>Água Potável</h4>
+                    <p>Acesso à água limpa é um direito fundamental</p>
+                </figcaption>
+            </figure>
+            <figure class="gallery-item">
+                <img src="/images/saneamento.webp" alt="Sistema de Saneamento">
+                <figcaption class="gallery-overlay">
+                    <h4>Saneamento Básico</h4>
+                    <p>Tratamento adequado de esgoto protege a saúde</p>
+                </figcaption>
+            </figure>
+        </nav>
+    </section>
+</section>
+
+<!-- Notícias sobre Saneamento -->
+<section class="news-section">
+    <section class="container">
+        <header class="section-header">
+            <h2>Notícias sobre Saneamento Básico</h2>
+            <p>Fique por dentro das últimas novidades sobre água e saneamento no Brasil</p>
+        </header>
+        
+        <nav class="news-grid">
+            <article class="news-card">
+                <nav class="news-icon">
+                    <i class="fas fa-newspaper"></i>
+                </nav>
+                <nav class="news-content">
+                    <span class="news-date">13 de outubro de 2024</span>
+                    <h3>Falta de saneamento leva mais de 100 mil crianças à internação em 2024</h3>
+                    <p>Mais de 100 mil crianças de até 9 anos foram internadas no Sistema Único de Saúde (SUS) em 2024 por doenças associadas à falta de saneamento básico.</p>
+                    <a href="https://brasil61.com/n/falta-de-saneamento-leva-mais-de-100-mil-criancas-a-internacao-em-2024-bras2514910" target="_blank" class="news-link">
+                        Ler mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </nav>
+            </article>
+            
+            <article class="news-card">
+                <nav class="news-icon">
+                    <i class="fas fa-chart-line"></i>
+                </nav>
+                <nav class="news-content">
+                    <span class="news-date">8 de outubro de 2024</span>
+                    <h3>Perdas de água crescem nas 100 maiores cidades do país</h3>
+                    <p>Nas 100 maiores cidades brasileiras, as perdas de água pioraram 10,39%, segundo o Ranking do Saneamento 2025 do Instituto Trata Brasil.</p>
+                    <a href="https://tratabrasil.org.br/categoria/saneamento-basico/" target="_blank" class="news-link">
+                        Ler mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </nav>
+            </article>
+            
+            <article class="news-card">
+                <nav class="news-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </nav>
+                <nav class="news-content">
+                    <span class="news-date">18 de setembro de 2024</span>
+                    <h3>Saneamento para todos geraria economia de R$ 25 bilhões</h3>
+                    <p>Universalizar o acesso ao saneamento básico no Brasil geraria uma economia de R$ 25 bilhões em gastos de saúde, estima o Instituto Trata Brasil.</p>
+                    <a href="https://www.uol.com.br/ecoa/ultimas-noticias/2025/09/18/saneamento-para-todos-geraria-economia-de-r25-bi-com-saude.htm" target="_blank" class="news-link">
+                        Ler mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </nav>
+            </article>
+            
+            <article class="news-card">
+                <nav class="news-icon">
+                    <i class="fas fa-leaf"></i>
+                </nav>
+                <nav class="news-content">
+                    <span class="news-date">22 de setembro de 2024</span>
+                    <h3>Falta de saneamento é também um problema climático</h3>
+                    <p>Por dia, o Brasil despeja na natureza o equivalente a 5.200 piscinas olímpicas de esgoto bruto, impactando diretamente o meio ambiente.</p>
+                    <a href="https://g1.globo.com/meio-ambiente/cop-30/noticia/2025/09/22/por-que-a-falta-de-saneamento-basico-e-tambem-um-problema-climatico.ghtml" target="_blank" class="news-link">
+                        Ler mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </nav>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<% if (denuncias && denuncias.length > 0) { %>
+<section class="recent-denuncias">
+    <section class="container">
+        <header class="section-header">
+            <h2>Denúncias Recentes</h2>
+            <p>Veja as últimas denúncias registradas na plataforma</p>
+        </header>
+        
+        <nav class="denuncias-grid">
+            <% denuncias.forEach(denuncia => { %>
+            <article class="denuncia-card">
+                <header class="denuncia-header">
+                    <h3><%= denuncia.title %></h3>
+                    <span class="status status-<%= denuncia.status %>">
+                        <%= denuncia.status.charAt(0).toUpperCase() + denuncia.status.slice(1) %>
+                    </span>
+                </header>
+                <p class="denuncia-description">
+                    <%= denuncia.description.substring(0, 100) %>...
+                </p>
+                <p class="denuncia-meta">
+                    <i class="fas fa-map-marker-alt"></i> <%= denuncia.location %>
+                </p>
+                <a href="/denuncias/<%= denuncia._id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+            </article>
+            <% }) %>
+        </nav>
+    </section>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

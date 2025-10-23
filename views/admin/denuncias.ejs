@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+
+<section class="admin-container">
+    <aside class="admin-sidebar">
+        <nav class="admin-nav">
+            <nav class="admin-nav-header">
+                <h2>Painel Admin</h2>
+                <p><%= user.ongName %></p>
+            </nav>
+            
+            <ul class="admin-nav-links">
+                <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/denuncias" class="active">Denúncias</a></li>
+                <li><a href="/admin/ongs">ONGs</a></li>
+                <li><a href="/dashboard">Meu Perfil</a></li>
+                <li><a href="/auth/logout">Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <main class="admin-content">
+        <header class="admin-header">
+            <h1>Gerenciar Denúncias</h1>
+            <p>Visualize e responda as denúncias registradas</p>
+        </header>
+        
+        <section class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
+                        <th>Localização</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% denuncias.forEach(denuncia => { %>
+                    <tr>
+                        <td data-label="ID"><%= denuncia.id %></td>
+                        <td data-label="Título"><%= denuncia.title %></td>
+                        <td data-label="Categoria">
+                            <span class="category-badge category-<%= denuncia.category || 'geral' %>">
+                                <%= (denuncia.category || 'geral').charAt(0).toUpperCase() + (denuncia.category || 'geral').slice(1) %>
+                            </span>
+                        </td>
+                        <td data-label="Status">
+                            <span class="status status-<%= denuncia.status %>">
+                                <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
+                            </span>
+                        </td>
+                        <td data-label="Localização"><%= denuncia.location %></td>
+                        <td data-label="Data"><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></td>
+                        <td data-label="Ações">
+                            <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</section>
+
+<%- include('../partials/footer') %>

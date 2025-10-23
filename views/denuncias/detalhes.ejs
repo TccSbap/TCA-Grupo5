@@ -1,0 +1,195 @@
+<%- include('../partials/header') %>
+
+<section class="denuncia-details">
+    <section class="container">
+        <header class="details-header">
+            <nav class="breadcrumb">
+                <a href="/denuncias">Denúncias</a>
+                <span>/</span>
+                <span>Detalhes</span>
+            </nav>
+            
+            <header class="details-title">
+                <h1><%= denuncia.title %></h1>
+                <span class="status status-<%= denuncia.status %>">
+                    <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
+                </span>
+            </header>
+        </header>
+        
+        <% if (success) { %>
+        <nav class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <%= success %>
+        </nav>
+        <% } %>
+        
+        <% if (error) { %>
+        <nav class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <%= error %>
+        </nav>
+        <% } %>
+        
+        <nav class="details-content">
+            <article class="main-content">
+                <section class="denuncia-info">
+                    <h2>Informações da Denúncia</h2>
+                    
+                    <nav class="info-grid">
+                        <nav class="info-item">
+                            <label>Categoria:</label>
+                            <span class="category-badge category-<%= denuncia.category || 'geral' %>">
+                                <%= (denuncia.category || 'geral').charAt(0).toUpperCase() + (denuncia.category || 'geral').slice(1) %>
+                            </span>
+                        </nav>
+                        
+                        <nav class="info-item">
+                            <label>Localização:</label>
+                            <span>
+                                <i class="fas fa-map-marker-alt"></i>
+                                <%= denuncia.location %>
+                            </span>
+                        </nav>
+                        
+                        <nav class="info-item">
+                            <label>Denunciante:</label>
+                            <span>
+                                <i class="fas fa-user"></i>
+                                <%= denuncia.userName %>
+                            </span>
+                        </nav>
+                        
+                        <nav class="info-item">
+                            <label>Data:</label>
+                            <span>
+                                <i class="fas fa-calendar"></i>
+                                <%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </span>
+                        </nav>
+                    </nav>
+                    
+                    <section class="description">
+                        <h3>Descrição</h3>
+                        <p><%= denuncia.description %></p>
+                    </section>
+                </section>
+                
+                <!-- Respostas das ONGs -->
+                <section class="responses-section">
+                    <h2>Respostas das ONGs</h2>
+                    
+                    <% if (denuncia.responses.length > 0) { %>
+                        <nav class="responses-list">
+                            <% denuncia.responses.forEach(response => { %>
+                            <article class="response-item">
+                                <header class="response-header">
+                                    <nav class="ong-info">
+                                        <i class="fas fa-hands-helping"></i>
+                                        <strong><%= response.ongName %></strong>
+                                    </nav>
+                                    <time class="response-date">
+                                        <%= new Date(response.createdAt).toLocaleDateString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        }) %>
+                                    </time>
+                                </header>
+                                <nav class="response-content">
+                                    <p><%= response.text %></p>
+                                </nav>
+                            </article>
+                            <% }) %>
+                        </nav>
+                    <% } else { %>
+                        <nav class="no-responses">
+                            <nav class="no-responses-icon">
+                                <i class="fas fa-comments"></i>
+                            </nav>
+                            <h3>Ainda não há respostas</h3>
+                            <p>Esta denúncia ainda não foi respondida por nenhuma ONG.</p>
+                        </nav>
+                    <% } %>
+                </section>
+                
+                <!-- Formulário de resposta para ONGs -->
+                <% if (isAdmin) { %>
+                <section class="response-form-section" id="responder">
+                    <h2>Responder como ONG</h2>
+                    
+                    <form class="response-form" method="POST" action="/denuncias/<%= denuncia.id %>/responder">
+                        <nav class="form-group">
+                            <label for="response">Sua Resposta</label>
+                            <textarea id="response" name="response" rows="4" required 
+                                      placeholder="Descreva as ações que sua ONG irá tomar ou já tomou para resolver este problema..."></textarea>
+                        </nav>
+                        
+                        <nav class="form-group">
+                            <label for="newStatus">Atualizar Status</label>
+                            <select id="newStatus" name="newStatus">
+                                <option value="">Manter status atual</option>
+                                <option value="em_andamento">Em Andamento</option>
+                                <option value="resolvida">Resolvida</option>
+                            </select>
+                        </nav>
+                        
+                        <nav class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar Resposta
+                            </button>
+                        </nav>
+                    </form>
+                </section>
+                <% } %>
+            </article>
+            
+            <aside class="sidebar">
+                <section class="actions-card">
+                    <h3>Ações</h3>
+                    <nav class="action-buttons">
+                        <a href="/denuncias" class="btn btn-outline btn-full">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar às Denúncias
+                        </a>
+                        
+                        <% if (isLoggedIn && user.id === denuncia.userId) { %>
+                        <a href="/dashboard" class="btn btn-secondary btn-full">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Meu Dashboard
+                        </a>
+                        <% } %>
+                        
+                        <% if (isAdmin) { %>
+                        <a href="#responder" class="btn btn-primary btn-full">
+                            <i class="fas fa-reply"></i>
+                            Responder
+                        </a>
+                        <% } %>
+                    </nav>
+                </section>
+                
+                <section class="info-card">
+                    <h3>Sobre as Denúncias</h3>
+                    <ul>
+                        <li><i class="fas fa-info-circle"></i> Denúncias são públicas e anônimas</li>
+                        <li><i class="fas fa-shield-alt"></i> Dados pessoais são protegidos</li>
+                        <li><i class="fas fa-clock"></i> ONGs têm 7 dias para responder</li>
+                        <li><i class="fas fa-check"></i> Acompanhe o progresso aqui</li>
+                    </ul>
+                </section>
+            </aside>
+        </nav>
+    </section>
+</section>
+
+<%- include('../partials/footer') %>

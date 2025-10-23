@@ -1,0 +1,135 @@
+<%- include("../partials/header") %>
+
+<section class="auth-section">
+    <section class="container">
+        <nav class="auth-container">
+            <article class="auth-card">
+                <header class="auth-header">
+                    <h1>Criar Conta</h1>
+                    <p>Cadastre-se para fazer denúncias ou registrar sua ONG</p>
+                </header>
+                
+                <% if (error) { %>
+                <nav class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <%= error %>
+                </nav>
+                <% } %>
+                
+                <form class="auth-form" method="POST" action="/auth/cadastro" id="cadastroForm" novalidate>
+                    <nav class="form-group">
+                        <label for="userType">Tipo de Usuário</label>
+                        <select id="userType" name="userType" onchange="toggleOngFields()">
+                            <option value="user">Usuário Normal</option>
+                            <option value="admin">ONG (Administrador)</option>
+                        </select>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="name">Nome Completo</label>
+                        <input type="text" id="name" name="name">
+                        <nav class="error-message" id="name-error"></nav>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                        <nav class="error-message" id="email-error"></nav>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password">
+                        <nav class="error-message" id="password-error"></nav>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="confirmPassword">Confirmar Senha</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword">
+                        <nav class="error-message" id="confirmPassword-error"></nav>
+                    </nav>
+                    
+                    <!-- Campos específicos para ONGs -->
+                    <section id="ongFields" style="display: none;">
+                        <h3>Informações da ONG</h3>
+                        
+                        <nav class="form-group">
+                            <label for="ongName">Nome da ONG</label>
+                            <input type="text" id="ongName" name="ongName">
+                            <nav class="error-message" id="ongName-error"></nav>
+                        </nav>
+                        
+                        <nav class="form-group">
+                            <label for="ongDescription">Descrição da ONG</label>
+                            <textarea id="ongDescription" name="ongDescription" rows="3"></textarea>
+                            <nav class="error-message" id="ongDescription-error"></nav>
+                        </nav>
+                        
+                        <nav class="form-group">
+                            <label for="ongContact">Email de Contato</label>
+                            <input type="email" id="ongContact" name="ongContact">
+                            <nav class="error-message" id="ongContact-error"></nav>
+                        </nav>
+                        
+                        <nav class="form-group">
+                            <label for="ongPhone">Telefone</label>
+                            <input type="tel" id="ongPhone" name="ongPhone">
+                            <nav class="error-message" id="ongPhone-error"></nav>
+                        </nav>
+                        
+                        <nav class="form-group">
+                            <label for="ongAddress">Endereço</label>
+                            <input type="text" id="ongAddress" name="ongAddress">
+                            <nav class="error-message" id="ongAddress-error"></nav>
+                        </nav>
+                    </section>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i>
+                        Criar Conta
+                    </button>
+                </form>
+                
+                <footer class="auth-footer">
+                    <p>Já tem uma conta? <a href="/auth/login">Entre aqui</a></p>
+                </footer>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<script src="/js/validation.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const cadastroForm = document.getElementById("cadastroForm");
+
+        cadastroForm.addEventListener("submit", function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+            // Limpar mensagens de erro anteriores
+            document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+
+            if (validateCadastroForm()) {
+                cadastroForm.submit(); // Envia o formulário se todas as validações passarem
+            }
+        });
+
+        // Função para alternar campos da ONG
+        window.toggleOngFields = function() {
+            const userType = document.getElementById("userType").value;
+            const ongFields = document.getElementById("ongFields");
+            const ongInputs = ongFields.querySelectorAll("input, textarea");
+
+            if (userType === "admin") {
+                ongFields.style.display = "block";
+                ongInputs.forEach(input => input.setAttribute("required", "required"));
+            } else {
+                ongFields.style.display = "none";
+                ongInputs.forEach(input => input.removeAttribute("required"));
+            }
+        };
+        // Chamar na carga inicial para definir o estado correto
+        toggleOngFields();
+    });
+</script>
+
+<%- include("../partials/footer") %>

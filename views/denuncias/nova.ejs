@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+
+<section class="form-section">
+    <section class="container">
+        <article class="form-container">
+            <header class="form-header">
+                <h1>Nova Denúncia</h1>
+                <p>Relate problemas de saneamento básico em sua região</p>
+            </header>
+            
+            <% if (typeof error !== 'undefined' && error) { %>
+            <nav class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <%= error %>
+            </nav>
+            <% } %>
+            
+            <% if (typeof success !== 'undefined' && success) { %>
+            <nav class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <%= success %>
+            </nav>
+            <% } %>
+            
+            <form class="denuncia-form" method="POST" action="/denuncias/nova">
+                <nav class="form-group">
+                    <label for="title">Título da Denúncia *</label>
+                    <input type="text" id="title" name="title" required 
+                           placeholder="Ex: Esgoto a céu aberto na Rua das Flores">
+                </nav>
+                
+                <nav class="form-group">
+                    <label for="category">Categoria</label>
+                    <select id="category" name="category">
+                        <option value="esgoto">Esgoto</option>
+                        <option value="agua">Água</option>
+                        <option value="lixo">Lixo e Resíduos</option>
+                        <option value="drenagem">Drenagem</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </nav>
+                
+                <nav class="form-group">
+                    <label for="location">Localização *</label>
+                    <input type="text" id="location" name="location" required 
+                           placeholder="Ex: Rua das Flores, 123 - Centro - São Paulo/SP">
+                    <small>Seja o mais específico possível para facilitar a localização</small>
+                </nav>
+                
+                <nav class="form-group">
+                    <label for="description">Descrição Detalhada *</label>
+                    <textarea id="description" name="description" rows="6" required 
+                              placeholder="Descreva detalhadamente o problema: quando começou, qual a gravidade, quantas pessoas são afetadas, etc."></textarea>
+                    <small>Forneça o máximo de detalhes possível para ajudar na resolução</small>
+                </nav>
+                
+                <footer class="form-actions">
+                    <a href="/denuncias" class="btn btn-outline">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Denúncia
+                    </button>
+                </footer>
+            </form>
+            
+            <aside class="form-info">
+                <h3>Informações Importantes</h3>
+                <ul>
+                    <li><i class="fas fa-shield-alt"></i> Suas informações pessoais são protegidas</li>
+                    <li><i class="fas fa-eye"></i> Sua denúncia será visível para ONGs parceiras</li>
+                    <li><i class="fas fa-bell"></i> Você será notificado sobre atualizações</li>
+                    <li><i class="fas fa-clock"></i> ONGs têm até 7 dias para responder</li>
+                </ul>
+            </aside>
+        </article>
+    </section>
+</section>
+
+<%- include('../partials/footer') %>
