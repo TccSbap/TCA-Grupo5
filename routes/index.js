@@ -267,7 +267,7 @@ router.get("/noticias", (req, res) => {
             title: 'Brasil não tem progresso satisfatório em metas de água e saneamento do ODS 6',
             date: '14 de Outubro de 2025',
             description: 'Conclusão é da nona edição do Relatório Luz da Sociedade Civil sobre a Agenda 2030, que aponta retrocesso em metas como a redução da poluição da água.',
-            image: '/images/agua-potavel.jpg',
+            image: '/images/agua-potavel.webp',
             url: 'https://www.aguaesaneamento.org.br/noticias/brasil-nao-tem-progresso-satisfatorio-em-metas-de-agua-e-saneamento-do-ods-6/'
         },
         {
@@ -283,7 +283,7 @@ router.get("/noticias", (req, res) => {
             title: 'Falta de saneamento básico causa internação de mais de 300 mil cidadãos em 2024, diz estudo',
             date: '19 de Março de 2025',
             description: 'A melhora do saneamento no Brasil se arrasta. Em 16 anos, o abastecimento de água tratada cresceu apenas 4,6 pontos percentuais.',
-            image: '/images/agua-potavel.jpg',
+            image: '/images/agua-potavel.webp',
             url: 'https://g1.globo.com/jornal-nacional/noticia/2025/03/19/falta-de-saneamento-basico-causa-internacao-de-mais-de-300-mil-cidadaos-em-2024-diz-estudo.ghtml'
         },
         {
