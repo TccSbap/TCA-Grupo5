@@ -3,6 +3,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const { ensureDataLoaded, resetData } = require('./data/database');
 
 
 const app = express();
@@ -34,10 +35,28 @@ app.use((req, res, next) => {
     next();
 });
 
+if (process.env.NODE_ENV === 'test') {
+    app.post('/__test/session', (req, res) => {
+        req.session.user = req.body.user || null;
+        res.status(204).end();
+    });
+
+    app.post('/__test/session/clear', (req, res) => {
+        req.session.destroy(() => {
+            res.status(204).end();
+        });
+    });
+
+    app.post('/__test/reset-data', (req, res) => {
+        resetData();
+        res.status(204).end();
+    });
+}
+
 
 const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
-const denunciasRoutes = require('./routes/denuncias');
+const denunciasRoutes = require('./routes/denuncias.js');
 const ongsRoutes = require('./routes/ongs');
 const adminRoutes = require('./routes/admin');
 
@@ -54,10 +73,16 @@ app.use((req, res) => {
 });
 
 if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Servidor rodando na porta ${PORT}`);
-        console.log(`Acesse: http://localhost:${PORT}`);
-    });
+    ensureDataLoaded()
+        .catch((error) => {
+            console.error('Falha ao preparar a camada de dados:', error);
+        })
+        .finally(() => {
+            app.listen(PORT, () => {
+                console.log(`Servidor rodando na porta ${PORT}`);
+                console.log(`Acesse: http://localhost:${PORT}`);
+            });
+        });
 }
 
 module.exports = app;

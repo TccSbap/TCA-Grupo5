@@ -20,7 +20,7 @@ const requireAdmin = (req, res, next) => {
 // Middleware para redirecionar usuários logados
 const redirectIfLoggedIn = (req, res, next) => {
     if (req.session.user) {
-        return res.redirect('/dashboard');
+        return res.redirect(req.session.user.type === 'admin' ? '/admin/dashboard_admin' : '/dashboard');
     }
     next();
 };

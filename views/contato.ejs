@@ -6,6 +6,17 @@
             <h1>Entre em Contato</h1>
             <p>Tem dúvidas ou sugestões? Estamos aqui para ajudar!</p>
         </header>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <section class="alert alert-success" role="status">
+                <p><%= success %></p>
+            </section>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <section class="alert alert-error" role="alert">
+                <p><%= error %></p>
+            </section>
+        <% } %>
         
         <nav class="contact-content">
             <aside class="contact-info">
@@ -66,7 +77,7 @@
             <section class="contact-form-container">
                 <h2>Envie uma Mensagem</h2>
                 
-                <form class="contact-form" action="#" method="POST">
+                <form class="contact-form" action="/contato" method="POST">
                     <nav class="form-row">
                         <nav class="form-group">
                             <label for="name">Nome Completo *</label>

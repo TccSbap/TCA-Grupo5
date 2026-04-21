@@ -1,33 +1,85 @@
-const express = require("express");
-const router = express.Router();
+const express = require('express');
+const defaultData = require('../data/database');
 
-// Rota para a página de login do administrador
-router.get("/login", (req, res) => {
-    res.render("admin/login", { title: "Login de Administrador" });
-});
+const createAdminRouter = (data = defaultData) => {
+    const router = express.Router();
 
-// Rota para processar o login do administrador (ilustrativo)
-router.post("/dashboard", (req, res) => {
-    // Lógica de autenticação ilustrativa
-    const { email, password } = req.body;
-    if (email === "admin@example.com" && password === "password") {
-        // Simula um login bem-sucedido
-        req.session.user = { id: 1, email: "admin@example.com", type: "admin" };
-        res.redirect("/admin/dashboard_admin"); // Redireciona para o dashboard ilustrativo
-    } else {
-        // Simula falha no login
-        res.render("admin/login", { title: "Login de Administrador", error: "Credenciais inválidas" });
-    }
-});
+    // Rota para a página de login do administrador
+    router.get('/login', (req, res) => {
+        res.render('admin/login', { title: 'Login de Administrador', error: req.query.error });
+    });
 
-// Rota para o dashboard do administrador (ilustrativo)
-router.get("/dashboard_admin", (req, res) => {
-    // Verifica se o usuário está logado como administrador (ilustrativo)
-    if (req.session.user && req.session.user.type === "admin") {
-        res.render("admin/dashboard_admin", { title: "Dashboard do Administrador" });
-    } else {
-        res.redirect("/admin/login");
-    }
-});
+    // Rota para processar o login do administrador
+    router.post('/dashboard', (req, res) => {
+        const { email, password } = req.body;
+
+        const user = data.authenticateUser(email, password);
+        if (!user || user.type !== 'admin') {
+            return res.render('admin/login', {
+                title: 'Login de Administrador',
+                error: 'Credenciais inválidas'
+            });
+        }
+
+        req.session.user = user;
+        res.redirect('/admin/dashboard_admin');
+    });
+
+    const renderAdminDashboard = (req, res) => {
+        if (!req.session.user) {
+            return res.redirect('/admin/login');
+        }
+
+        if (req.session.user.type !== 'admin') {
+            return res.redirect('/dashboard');
+        }
+
+        const user = req.session.user;
+        const allDenuncias = data.getDenuncias();
+        const allOngs = data.getOngs();
+
+        return res.render('admin/dashboard', {
+            title: 'Painel Administrativo',
+            user,
+            totalDenuncias: allDenuncias.length,
+            totalOngs: allOngs.length,
+            denunciasResolvidas: allDenuncias.filter((denuncia) => denuncia.status === 'resolvida').length,
+            denunciasEmAndamento: allDenuncias.filter((denuncia) => denuncia.status === 'em_andamento').length,
+            denunciasPendentes: allDenuncias.filter((denuncia) => denuncia.status === 'pendente').length
+        });
+    };
+
+    router.get('/', renderAdminDashboard);
+    router.get('/dashboard_admin', renderAdminDashboard);
+
+    router.get('/denuncias', (req, res) => {
+        if (!req.session.user || req.session.user.type !== 'admin') {
+            return res.redirect('/dashboard');
+        }
+
+        res.render('admin/denuncias', {
+            title: 'Gerenciar Denúncias',
+            user: req.session.user,
+            denuncias: data.getDenuncias()
+        });
+    });
+
+    router.get('/ongs', (req, res) => {
+        if (!req.session.user || req.session.user.type !== 'admin') {
+            return res.redirect('/dashboard');
+        }
+
+        res.render('admin/ongs', {
+            title: 'Gerenciar ONGs',
+            user: req.session.user,
+            ongs: data.getOngs()
+        });
+    });
+
+    return router;
+};
+
+const router = createAdminRouter();
 
 module.exports = router;
+module.exports.createAdminRouter = createAdminRouter;

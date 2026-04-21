@@ -8,6 +8,12 @@
             <p>Sua contribuição é muito importante para <%= ong.name %>!</p>
         </header>
 
+        <% if (typeof error !== 'undefined' && error) { %>
+            <section class="alert alert-error" role="alert">
+                <p><%= error %></p>
+            </section>
+        <% } %>
+
         <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate>
             <input type="hidden" name="ongId" value="<%= ong.id %>">
 

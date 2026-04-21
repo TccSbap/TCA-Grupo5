@@ -27,6 +27,23 @@ Principais pontos do codigo:
 - `routes/admin.js`: fluxos administrativos ilustrativos
 - `routes/index.js`: pagina inicial, planos, doacoes, noticias e paginas institucionais
 
+### Andamento atual da implantação
+
+Status consolidado da execução do plano até aqui:
+
+- infra de testes configurada com `Jest` para unitários e integração
+- `Playwright` configurado para testes e2e
+- roteamento principal coberto com testes para `auth`, `admin`, `index`, `ongs` e `denuncias`
+- camada de dados coberta com testes de leitura, escrita, atualização, persistência e reset
+- helpers de sessão e utilitários de teste já adicionados ao projeto
+- suíte principal atualmente passando com a base de testes instalada
+
+Próximos focos de evolução:
+
+- ampliar a cobertura dos trechos ainda residuais em `data/database.js`
+- reforçar mais cenários e2e no navegador
+- manter o plano sincronizado com cada nova etapa concluída
+
 ### Observacoes importantes
 
 - nao existe infraestrutura de testes configurada no `package.json`
@@ -75,6 +92,14 @@ Recomendacao de stack para testes:
 - `playwright` para testes e2e no navegador
 - `node-mocks-http` ou `jest-mock-req-res` para simular `req` e `res`
 - `cross-env` se for necessario padronizar variaveis de ambiente nos scripts
+
+### Convenções de escrita dos testes
+
+- todos os títulos de `describe` e `test` devem estar em português
+- os títulos precisam descrever claramente o comportamento validado
+- prefira frases objetivas como "deve redirecionar", "deve renderizar" e "deve rejeitar"
+- evite nomes em inglês para facilitar a leitura e o entendimento da validação
+- mantenha o mesmo padrão de linguagem em testes unitários, de integração e e2e
 
 ### Scripts recomendados
 

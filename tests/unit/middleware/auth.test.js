@@ -9,8 +9,8 @@ const {
   createMockNext
 } = require('../../helpers/httpMocks');
 
-describe('middleware/auth', () => {
-  test('requireAuth redirects anonymous users to login', () => {
+describe('middleware de autenticação', () => {
+  test('requireAuth redireciona usuários anônimos para o login', () => {
     const req = createMockReq({ session: {} });
     const res = createMockRes();
     const next = createMockNext();
@@ -21,7 +21,7 @@ describe('middleware/auth', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  test('requireAuth allows authenticated users', () => {
+  test('requireAuth permite usuários autenticados', () => {
     const req = createMockReq({ session: { user: { id: 1 } } });
     const res = createMockRes();
     const next = createMockNext();
@@ -32,7 +32,7 @@ describe('middleware/auth', () => {
     expect(res.redirect).not.toHaveBeenCalled();
   });
 
-  test('requireAdmin rejects non-admin users', () => {
+  test('requireAdmin rejeita usuários que não são admin', () => {
     const req = createMockReq({ session: { user: { id: 11, type: 'user' } } });
     const res = createMockRes();
     const next = createMockNext();
@@ -47,7 +47,7 @@ describe('middleware/auth', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  test('requireAdmin allows admins to continue', () => {
+  test('requireAdmin permite o acesso de administradores', () => {
     const req = createMockReq({ session: { user: { id: 1, type: 'admin' } } });
     const res = createMockRes();
     const next = createMockNext();
@@ -58,18 +58,18 @@ describe('middleware/auth', () => {
     expect(res.status).not.toHaveBeenCalled();
   });
 
-  test('redirectIfLoggedIn sends logged users to the dashboard', () => {
-    const req = createMockReq({ session: { user: { id: 1 } } });
+  test('redirectIfLoggedIn envia usuários logados para o dashboard', () => {
+    const req = createMockReq({ session: { user: { id: 1, type: 'admin' } } });
     const res = createMockRes();
     const next = createMockNext();
 
     redirectIfLoggedIn(req, res, next);
 
-    expect(res.redirect).toHaveBeenCalledWith('/dashboard');
+    expect(res.redirect).toHaveBeenCalledWith('/admin/dashboard_admin');
     expect(next).not.toHaveBeenCalled();
   });
 
-  test('redirectIfLoggedIn lets anonymous users continue', () => {
+  test('redirectIfLoggedIn permite que usuários anônimos continuem', () => {
     const req = createMockReq({ session: {} });
     const res = createMockRes();
     const next = createMockNext();

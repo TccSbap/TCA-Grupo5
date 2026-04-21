@@ -1,13 +1,13 @@
 const database = require('../../../data/database');
 
-describe('data/database', () => {
-  test('starts with the expected seed data', () => {
+describe('camada de dados em memória', () => {
+  test('inicia com os dados padrão esperados', () => {
     expect(database.getUsers()).toHaveLength(11);
     expect(database.getOngs()).toHaveLength(10);
     expect(database.getDenuncias()).toHaveLength(16);
   });
 
-  test('getUserByEmail returns the matching user', () => {
+  test('getUserByEmail retorna o usuário correspondente', () => {
     const user = database.getUserByEmail('joao@email.com');
 
     expect(user).toMatchObject({
@@ -18,7 +18,7 @@ describe('data/database', () => {
     });
   });
 
-  test('createUser creates the next incremental id', () => {
+  test('createUser cria o próximo id incremental', () => {
     const created = database.createUser({
       name: 'Maria Oliveira',
       email: 'maria@exemplo.com',
@@ -30,7 +30,7 @@ describe('data/database', () => {
     expect(database.getUsers()).toHaveLength(12);
   });
 
-  test('createDenuncia forces pendente status and empty responses', () => {
+  test('createDenuncia força status pendente e respostas vazias', () => {
     const created = database.createDenuncia({
       title: 'Novo problema de saneamento',
       description: 'Descricao longa suficiente para passar no teste.',
@@ -47,7 +47,7 @@ describe('data/database', () => {
     });
   });
 
-  test('getDenunciaById finds the record using a string id', () => {
+  test('getDenunciaById encontra o registro usando id em texto', () => {
     const denuncia = database.getDenunciaById('1');
 
     expect(denuncia).toMatchObject({
@@ -56,7 +56,7 @@ describe('data/database', () => {
     });
   });
 
-  test('updateDenuncia merges fields and keeps the existing data', () => {
+  test('updateDenuncia mescla campos e mantém os dados existentes', () => {
     const updated = database.updateDenuncia(1, {
       status: 'resolvida',
       title: 'Esgoto resolvido na Rua das Flores'
@@ -70,7 +70,15 @@ describe('data/database', () => {
     expect(updated.responses).toEqual([]);
   });
 
-  test('createOng creates a new incremental id', () => {
+  test('updateDenuncia retorna null quando o registro não existe', () => {
+    const updated = database.updateDenuncia(99999, {
+      status: 'resolvida'
+    });
+
+    expect(updated).toBeNull();
+  });
+
+  test('createOng cria um novo id incremental', () => {
     const created = database.createOng({
       name: 'Nova ONG',
       description: 'Descricao da ONG',
@@ -84,7 +92,7 @@ describe('data/database', () => {
     expect(database.getOngs()).toHaveLength(11);
   });
 
-  test('resetData restores the original seed state', () => {
+  test('resetData restaura o estado original dos dados', () => {
     database.createUser({
       name: 'Temp User',
       email: 'temp@exemplo.com',
