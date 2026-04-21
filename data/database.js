@@ -4,16 +4,17 @@ const bcrypt = require('bcryptjs');
 let users = [];
 let denuncias = [];
 let ongs = [];
+const defaultPasswordHash = bcrypt.hashSync('123456', 10);
 
 // Inicializar dados padrão
-const initializeData = async () => {
+const initializeData = () => {
     // Usuários padrão (10 admins de ONGs + 1 usuário comum)
     users = [
         {
             id: 1,
             name: 'Admin ONG Água Limpa',
             email: 'admin@agualimpa.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'ONG Água Limpa',
             createdAt: new Date().toISOString()
@@ -22,7 +23,7 @@ const initializeData = async () => {
             id: 2,
             name: 'Admin Saneamento para Todos',
             email: 'admin@saneamento.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Saneamento para Todos',
             createdAt: new Date().toISOString()
@@ -31,7 +32,7 @@ const initializeData = async () => {
             id: 3,
             name: 'Admin Rios Vivos',
             email: 'admin@riosvivos.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Rios Vivos',
             createdAt: new Date().toISOString()
@@ -40,7 +41,7 @@ const initializeData = async () => {
             id: 4,
             name: 'Admin Água para a Vida',
             email: 'admin@aguavida.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Água para a Vida',
             createdAt: new Date().toISOString()
@@ -49,7 +50,7 @@ const initializeData = async () => {
             id: 5,
             name: 'Admin Cidadania e Saneamento',
             email: 'admin@cidadaniasaneamento.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Cidadania e Saneamento',
             createdAt: new Date().toISOString()
@@ -58,7 +59,7 @@ const initializeData = async () => {
             id: 6,
             name: 'Admin Planeta Água',
             email: 'admin@planetaagua.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Planeta Água',
             createdAt: new Date().toISOString()
@@ -67,7 +68,7 @@ const initializeData = async () => {
             id: 7,
             name: 'Admin Esgoto Zero',
             email: 'admin@esgotozero.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Esgoto Zero',
             createdAt: new Date().toISOString()
@@ -76,7 +77,7 @@ const initializeData = async () => {
             id: 8,
             name: 'Admin Saúde Hídrica',
             email: 'admin@saudehidrica.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Saúde Hídrica',
             createdAt: new Date().toISOString()
@@ -85,7 +86,7 @@ const initializeData = async () => {
             id: 9,
             name: 'Admin Água é Direito',
             email: 'admin@aguadireito.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Água é Direito',
             createdAt: new Date().toISOString()
@@ -94,7 +95,7 @@ const initializeData = async () => {
             id: 10,
             name: 'Admin Comunidade Sustentável',
             email: 'admin@comunidadesustentavel.org',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'admin',
             ongName: 'Comunidade Sustentável',
             createdAt: new Date().toISOString()
@@ -103,7 +104,7 @@ const initializeData = async () => {
             id: 11,
             name: 'João Silva',
             email: 'joao@email.com',
-            password: await bcrypt.hash('123456', 10),
+            password: defaultPasswordHash,
             type: 'user',
             createdAt: new Date().toISOString()
         }
@@ -529,6 +530,7 @@ const createOng = (ongData) => {
 
 // Inicializar dados ao carregar o módulo
 initializeData();
+const resetData = () => initializeData();
 
 module.exports = {
     getUsers,
@@ -542,5 +544,6 @@ module.exports = {
     updateDenuncia,
     getOngs,
     saveOngs,
-    createOng
+    createOng,
+    resetData
 };

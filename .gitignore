@@ -1,2 +1,7 @@
-/ node_modules
-packege-lock.json
+/ node_modules/
+coverage/
+test-results/
+dist/
+
+
+

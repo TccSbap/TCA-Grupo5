@@ -38,7 +38,7 @@ Principais pontos do codigo:
 
 A melhor abordagem e implantar os testes em camadas.
 
-### Camada 1: testes unitarios puros
+### Camada 1: testes unitarios puros com Jest
 
 Testar funcoes isoladas e regras simples, sem subir servidor completo.
 
@@ -48,7 +48,7 @@ Alvos:
 - middlewares de `middleware/auth.js`
 - validacoes e regras de negocio simples extraidas de rotas
 
-### Camada 2: testes de rotas com mocks
+### Camada 2: testes de rotas com mocks usando Jest
 
 Testar handlers com `req`, `res` e `next` simulados.
 
@@ -60,9 +60,11 @@ Alvos:
 - rotas de `admin`
 - rotas de `index`
 
-### Camada 3: testes de integracao leves
+### Camada 3: testes de integracao leves e e2e com Playwright
 
 Depois que a base estiver pronta, adicionar testes com `supertest` para garantir que as rotas respondem corretamente quando a aplicacao sobe em modo de teste.
+
+Os testes e2e ficarao a cargo do `Playwright`, validando os fluxos completos do ponto de vista do usuario no navegador.
 
 ## 4. Ferramentas sugeridas
 
@@ -70,6 +72,7 @@ Recomendacao de stack para testes:
 
 - `jest` para executor e assertions
 - `supertest` para testar rotas HTTP
+- `playwright` para testes e2e no navegador
 - `node-mocks-http` ou `jest-mock-req-res` para simular `req` e `res`
 - `cross-env` se for necessario padronizar variaveis de ambiente nos scripts
 
@@ -79,6 +82,7 @@ Adicionar futuramente em `package.json`:
 
 - `test`: executa toda a suite
 - `test:unit`: executa apenas testes unitarios
+- `test:e2e`: executa os testes ponta a ponta com Playwright
 - `test:watch`: roda testes em modo observacao
 - `test:coverage`: gera relatorio de cobertura
 
@@ -160,7 +164,23 @@ Casos sugeridos:
 - pagina de ONG retorna 404 quando ONG nao existe
 - listagem de planos e noticias renderiza os dados esperados
 
-### Fase 6: cobertura e manutencao
+### Fase 6: testes e2e com Playwright
+
+Objetivo:
+
+- validar os fluxos reais do usuario em navegador
+- confirmar que a aplicacao funciona do inicio ao fim
+
+Casos sugeridos:
+
+- abrir a pagina inicial e navegar para denuncias
+- acessar login e validar redirecionamentos
+- preencher formulario de nova denuncia
+- abrir detalhes de ONG
+- navegar pelos planos e doacoes
+- verificar comportamentos basicos do dashboard
+
+### Fase 7: cobertura e manutencao
 
 Objetivo:
 
@@ -184,8 +204,10 @@ tests/
     middleware/
     routes/
   integration/
+  e2e/
   helpers/
   fixtures/
+playwright/
 ```
 
 ### Sugestao de organizacao
@@ -194,8 +216,15 @@ tests/
 - `tests/unit/middleware`: regras de acesso
 - `tests/unit/routes`: handlers com mocks
 - `tests/integration`: fluxos com `supertest`
+- `tests/e2e`: cenarios completos do navegador com Playwright
 - `tests/helpers`: fabricas de `req`, `res`, `next` e reset de estado
 - `tests/fixtures`: dados reutilizaveis para testes
+
+### Observacao sobre Playwright
+
+- o Playwright deve ficar focado em caminhos criticos de usuario
+- ele nao substitui os testes unitarios com Jest
+- ele complementa a cobertura validando a experiencia real no navegador
 
 ## 7. Pontos que exigem refatoracao leve
 
@@ -368,9 +397,10 @@ Mitigacao:
 4. escrever testes dos middlewares
 5. escrever testes das validacoes das rotas
 6. adicionar testes de integracao com `supertest`
-7. medir cobertura
-8. ajustar refatoracoes pequenas onde houver dificuldade
-9. integrar testes no fluxo de entrega do projeto
+7. adicionar testes e2e com Playwright
+8. medir cobertura
+9. ajustar refatoracoes pequenas onde houver dificuldade
+10. integrar testes no fluxo de entrega do projeto
 
 ## 14. Recomendacao final
 

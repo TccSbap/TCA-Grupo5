@@ -8,6 +8,12 @@
                     <h1>Login de Administrador</h1>
                     <p>Acesse o painel administrativo</p>
                 </header>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <section class="error-message" role="alert">
+                        <p><%= error %></p>
+                    </section>
+                <% } %>
                 
                 <form class="auth-form" method="POST" action="/admin/dashboard">
                     <nav class="form-group">

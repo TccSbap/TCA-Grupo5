@@ -53,9 +53,11 @@ app.use((req, res) => {
     res.status(404).render('404', { title: 'Página não encontrada' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-    console.log(`Acesse: http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`);
+        console.log(`Acesse: http://localhost:${PORT}`);
+    });
+}
 
 module.exports = app;
