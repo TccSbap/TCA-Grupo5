@@ -5,26 +5,27 @@ const { requireAdmin } = require('../middleware/auth');
 const createOngsRouter = (data = defaultData) => {
     const router = express.Router();
 
-    router.get('/', (req, res) => {
+    router.get('/', async (req, res) => {
+        const ongs = await data.getOngs();
         res.render('ongs/index', {
             title: 'ONGs Parceiras',
-            ongs: data.getOngs().map((ong) => ({
+            ongs: ongs.map((ong) => ({
                 ...ong,
                 focus: ong.focus || ong.description
             }))
         });
     });
 
-    router.get('/admin/dashboard', requireAdmin, (req, res) => {
+    router.get('/admin/dashboard', requireAdmin, async (req, res) => {
         const user = req.session.user;
-        const ongs = data.getOngs();
+        const ongs = await data.getOngs();
         const userOng = ongs.find((ong) => ong.userId === user.id);
 
         if (!userOng) {
             return res.status(404).render('404', { title: 'ONG não encontrada' });
         }
 
-        const denuncias = data.getDenuncias();
+        const denuncias = await data.getDenuncias();
         const pendingDenuncias = denuncias.filter((denuncia) => denuncia.status === 'pendente');
         const respondedDenuncias = denuncias.filter((denuncia) =>
             denuncia.responses.some((response) => response.ongId === user.id)
@@ -38,9 +39,9 @@ const createOngsRouter = (data = defaultData) => {
         });
     });
 
-    router.get('/admin/stats', requireAdmin, (req, res) => {
+    router.get('/admin/stats', requireAdmin, async (req, res) => {
         const user = req.session.user;
-        const denuncias = data.getDenuncias();
+        const denuncias = await data.getDenuncias();
 
         const totalResponses = denuncias.reduce((count, denuncia) => {
             return count + denuncia.responses.filter((response) => response.ongId === user.id).length;
@@ -63,15 +64,15 @@ const createOngsRouter = (data = defaultData) => {
         });
     });
 
-    router.get('/:id', (req, res) => {
+    router.get('/:id', async (req, res) => {
         const ongId = parseInt(req.params.id, 10);
-        const ong = data.getOngs().find((item) => item.id === ongId);
+        const ong = (await data.getOngs()).find((item) => item.id === ongId);
 
         if (!ong) {
             return res.status(404).render('404', { title: 'ONG não encontrada' });
         }
 
-        const denuncias = data.getDenuncias();
+        const denuncias = await data.getDenuncias();
         const ongResponses = denuncias.filter((denuncia) =>
             denuncia.responses.some((response) => response.ongId === ong.userId)
         );

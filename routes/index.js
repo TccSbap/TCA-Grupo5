@@ -139,10 +139,10 @@ const validateContactMessage = (body) => {
 const createIndexRouter = (data = defaultData) => {
     const router = express.Router();
 
-    router.get('/', (req, res) => {
-        const allDenuncias = data.getDenuncias();
-        const allOngs = data.getOngs();
-        const noticias = typeof data.getNoticias === 'function' ? data.getNoticias() : [];
+    router.get('/', async (req, res) => {
+        const allDenuncias = await data.getDenuncias();
+        const allOngs = await data.getOngs();
+        const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
 
         res.render('index', {
             title: 'Água Consciente',
@@ -154,10 +154,10 @@ const createIndexRouter = (data = defaultData) => {
         });
     });
 
-    router.get('/dashboard', requireAuth, (req, res) => {
+    router.get('/dashboard', requireAuth, async (req, res) => {
         const user = req.session.user;
-        const denuncias = data.getDenuncias();
-        const ongs = data.getOngs();
+        const denuncias = await data.getDenuncias();
+        const ongs = await data.getOngs();
         const userDenuncias = user.type === 'admin' || user.type === 'ong'
             ? denuncias
             : denuncias.filter((denuncia) => denuncia.userId === user.id);
@@ -185,13 +185,13 @@ const createIndexRouter = (data = defaultData) => {
         });
     });
 
-    router.post('/contato', (req, res) => {
+    router.post('/contato', async (req, res) => {
         const error = validateContactMessage(req.body);
         if (error) {
             return res.redirect('/contato?error=' + encodeURIComponent(error));
         }
 
-        data.createMensagemContato({
+        await data.createMensagemContato({
             userId: req.session.user ? req.session.user.id : null,
             name: req.body.name,
             email: req.body.email,
@@ -203,10 +203,10 @@ const createIndexRouter = (data = defaultData) => {
         return res.redirect('/contato?success=' + encodeURIComponent('Mensagem enviada com sucesso. Em breve entraremos em contato.'));
     });
 
-    router.get('/doacoes/:ongId/doar', (req, res) => {
+    router.get('/doacoes/:ongId/doar', async (req, res) => {
         const ong = typeof data.getOngById === 'function'
-            ? data.getOngById(req.params.ongId)
-            : data.getOngs().find((item) => item.id == req.params.ongId);
+            ? await data.getOngById(req.params.ongId)
+            : (await data.getOngs()).find((item) => item.id == req.params.ongId);
 
         if (!ong) {
             return res.redirect('/doacoes');
@@ -220,10 +220,10 @@ const createIndexRouter = (data = defaultData) => {
         });
     });
 
-    router.post('/doar', (req, res) => {
+    router.post('/doar', async (req, res) => {
         const ong = typeof data.getOngById === 'function'
-            ? data.getOngById(req.body.ongId)
-            : data.getOngs().find((item) => item.id == req.body.ongId);
+            ? await data.getOngById(req.body.ongId)
+            : (await data.getOngs()).find((item) => item.id == req.body.ongId);
 
         if (!ong) {
             return res.redirect('/doacoes');
@@ -238,7 +238,7 @@ const createIndexRouter = (data = defaultData) => {
             });
         }
 
-        data.createDoacao({
+        await data.createDoacao({
             ongId: ong.id,
             userId: req.session.user ? req.session.user.id : null,
             donorName: req.body.nomeCompleto,
@@ -260,8 +260,8 @@ const createIndexRouter = (data = defaultData) => {
         return res.redirect('/doacoes?success=' + encodeURIComponent('Doação registrada com sucesso.'));
     });
 
-    router.get('/doacoes', (req, res) => {
-        const ongs = data.getOngs().map(formatOngForDonation);
+    router.get('/doacoes', async (req, res) => {
+        const ongs = (await data.getOngs()).map(formatOngForDonation);
         res.render('doacoes', {
             title: 'Faça sua Doação',
             ongs,
@@ -269,10 +269,10 @@ const createIndexRouter = (data = defaultData) => {
         });
     });
 
-    router.get('/planos/:planoId/assinar', (req, res) => {
+    router.get('/planos/:planoId/assinar', async (req, res) => {
         const plano = typeof data.getPlanoById === 'function'
-            ? data.getPlanoById(req.params.planoId)
-            : data.getPlanos().find((item) => item.id == req.params.planoId);
+            ? await data.getPlanoById(req.params.planoId)
+            : (await data.getPlanos()).find((item) => item.id == req.params.planoId);
 
         if (!plano) {
             return res.redirect('/planos');
@@ -286,10 +286,10 @@ const createIndexRouter = (data = defaultData) => {
         });
     });
 
-    router.post('/assinar-plano', (req, res) => {
+    router.post('/assinar-plano', async (req, res) => {
         const plano = typeof data.getPlanoById === 'function'
-            ? data.getPlanoById(req.body.planoId)
-            : data.getPlanos().find((item) => item.id == req.body.planoId);
+            ? await data.getPlanoById(req.body.planoId)
+            : (await data.getPlanos()).find((item) => item.id == req.body.planoId);
 
         if (!plano) {
             return res.redirect('/planos');
@@ -304,7 +304,7 @@ const createIndexRouter = (data = defaultData) => {
             });
         }
 
-        data.createAssinaturaPlano({
+        await data.createAssinaturaPlano({
             planId: plano.id,
             userId: req.session.user ? req.session.user.id : null,
             planName: req.body.planoNome || plano.title,
@@ -326,18 +326,18 @@ const createIndexRouter = (data = defaultData) => {
         return res.redirect('/planos?success=' + encodeURIComponent('Assinatura registrada com sucesso.'));
     });
 
-    router.get('/planos', (req, res) => {
+    router.get('/planos', async (req, res) => {
         res.render('planos', {
             title: 'Nossos Planos',
-            planos: data.getPlanos(),
+            planos: await data.getPlanos(),
             success: req.query.success
         });
     });
 
-    router.get('/noticias', (req, res) => {
+    router.get('/noticias', async (req, res) => {
         res.render('noticias', {
             title: 'Notícias',
-            noticias: typeof data.getNoticias === 'function' ? data.getNoticias() : []
+            noticias: typeof data.getNoticias === 'function' ? await data.getNoticias() : []
         });
     });
 

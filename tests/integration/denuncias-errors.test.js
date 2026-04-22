@@ -97,7 +97,7 @@ describe('tratamento de erros das denúncias', () => {
   });
 
   test('POST /denuncias/1/status redireciona com erro quando updateDenuncia lança exceção', async () => {
-    const database = require('../../data/database');
+    const database = require('../../data/mockDatabase');
     jest.spyOn(database, 'updateDenuncia').mockImplementation(() => {
       throw new Error('forced failure');
     });
@@ -123,7 +123,7 @@ describe('tratamento de erros das denúncias', () => {
   });
 
   test('POST /denuncias/1/responder redireciona com erro quando updateDenuncia lança exceção', async () => {
-    const database = require('../../data/database');
+    const database = require('../../data/mockDatabase');
     jest.spyOn(database, 'updateDenuncia').mockImplementation(() => {
       throw new Error('forced failure');
     });

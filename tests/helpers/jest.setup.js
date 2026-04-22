@@ -1,4 +1,4 @@
-const { resetData } = require('../../data/database');
+const { resetData } = require('../../data/mockDatabase');
 
 beforeEach(() => {
   resetData();

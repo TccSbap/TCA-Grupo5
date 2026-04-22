@@ -1,4 +1,4 @@
-const database = require('../../../data/database');
+const database = require('../../../data/mockDatabase');
 
 describe('camada de dados em memória', () => {
   test('inicia com os dados padrão esperados', () => {

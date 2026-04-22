@@ -10,10 +10,10 @@ const createAdminRouter = (data = defaultData) => {
         res.render('admin/login', { title: 'Login de Administrador', error: req.query.error });
     });
 
-    router.post('/dashboard', (req, res) => {
+    router.post('/dashboard', async (req, res) => {
         const { email, password } = req.body;
 
-        const user = data.authenticateUser(email, password);
+        const user = await data.authenticateUser(email, password);
         if (!isOngRole(user)) {
             return res.render('admin/login', {
                 title: 'Login de Administrador',
@@ -25,7 +25,7 @@ const createAdminRouter = (data = defaultData) => {
         res.redirect('/admin/dashboard_admin');
     });
 
-    const renderAdminDashboard = (req, res) => {
+    const renderAdminDashboard = async (req, res) => {
         if (!req.session.user) {
             return res.redirect('/admin/login');
         }
@@ -35,10 +35,10 @@ const createAdminRouter = (data = defaultData) => {
         }
 
         const user = req.session.user;
-        const userOng = typeof data.getOngByUserId === 'function' ? data.getOngByUserId(user.id) : null;
+        const userOng = typeof data.getOngByUserId === 'function' ? await data.getOngByUserId(user.id) : null;
         const ongId = userOng ? userOng.id : null;
-        const allDenuncias = ongId ? data.getDenuncias(ongId) : data.getDenuncias();
-        const allOngs = ongId ? data.getOngs(ongId) : data.getOngs();
+        const allDenuncias = ongId ? await data.getDenuncias(ongId) : await data.getDenuncias();
+        const allOngs = ongId ? await data.getOngs(ongId) : await data.getOngs();
 
         return res.render('admin/dashboard', {
             title: 'Painel Administrativo',
@@ -54,7 +54,7 @@ const createAdminRouter = (data = defaultData) => {
     router.get('/', renderAdminDashboard);
     router.get('/dashboard_admin', renderAdminDashboard);
 
-    router.get('/denuncias', (req, res) => {
+    router.get('/denuncias', async (req, res) => {
         if (!isOngRole(req.session.user)) {
             return res.redirect('/dashboard');
         }
@@ -62,11 +62,11 @@ const createAdminRouter = (data = defaultData) => {
         res.render('admin/denuncias', {
             title: 'Gerenciar Denúncias',
             user: req.session.user,
-            denuncias: data.getDenuncias()
+            denuncias: await data.getDenuncias()
         });
     });
 
-    router.get('/ongs', (req, res) => {
+    router.get('/ongs', async (req, res) => {
         if (!isOngRole(req.session.user)) {
             return res.redirect('/dashboard');
         }
@@ -74,7 +74,7 @@ const createAdminRouter = (data = defaultData) => {
         res.render('admin/ongs', {
             title: 'Gerenciar ONGs',
             user: req.session.user,
-            ongs: data.getOngs()
+            ongs: await data.getOngs()
         });
     });
 

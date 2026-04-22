@@ -5,8 +5,8 @@ const defaultData = require('../data/database');
 const createDenunciasRouter = (data = defaultData) => {
     const router = express.Router();
 
-    router.get('/', (req, res) => {
-        const denuncias = data.getDenuncias();
+    router.get('/', async (req, res) => {
+        const denuncias = await data.getDenuncias();
         const status = req.query.status;
 
         let filteredDenuncias = denuncias;
@@ -29,7 +29,7 @@ const createDenunciasRouter = (data = defaultData) => {
         });
     });
 
-    router.post('/nova', requireAuth, (req, res) => {
+    router.post('/nova', requireAuth, async (req, res) => {
         const { title, description, location, category } = req.body;
 
         try {
@@ -50,7 +50,7 @@ const createDenunciasRouter = (data = defaultData) => {
             }
 
             const user = req.session.user;
-            data.createDenuncia({
+            await data.createDenuncia({
                 title,
                 description,
                 location,
@@ -66,9 +66,9 @@ const createDenunciasRouter = (data = defaultData) => {
         }
     });
 
-    router.get('/:id', (req, res) => {
+    router.get('/:id', async (req, res) => {
         const denunciaId = req.params.id;
-        const denuncia = data.getDenunciaById(denunciaId);
+        const denuncia = await data.getDenunciaById(denunciaId);
 
         if (!denuncia) {
             return res.status(404).render('404', { title: 'Denúncia não encontrada' });
@@ -82,13 +82,13 @@ const createDenunciasRouter = (data = defaultData) => {
         });
     });
 
-    router.post('/:id/responder', requireAdmin, (req, res) => {
+    router.post('/:id/responder', requireAdmin, async (req, res) => {
         const denunciaId = req.params.id;
         const { response, newStatus } = req.body;
         const user = req.session.user;
 
         try {
-            const denuncia = data.getDenunciaById(denunciaId);
+            const denuncia = await data.getDenunciaById(denunciaId);
 
             if (!denuncia) {
                 return res.status(404).json({ error: 'Denúncia não encontrada' });
@@ -102,13 +102,16 @@ const createDenunciasRouter = (data = defaultData) => {
                 createdAt: new Date().toISOString()
             };
 
-            denuncia.responses.push(newResponse);
+            const updatedDenuncia = {
+                ...denuncia,
+                responses: [...denuncia.responses, newResponse]
+            };
 
             if (newStatus) {
-                denuncia.status = newStatus;
+                updatedDenuncia.status = newStatus;
             }
 
-            data.updateDenuncia(denunciaId, denuncia);
+            await data.updateDenuncia(denunciaId, updatedDenuncia);
 
             res.redirect(`/denuncias/${denunciaId}?success=Resposta adicionada com sucesso!`);
         } catch (error) {
@@ -117,18 +120,18 @@ const createDenunciasRouter = (data = defaultData) => {
         }
     });
 
-    router.post('/:id/status', requireAdmin, (req, res) => {
+    router.post('/:id/status', requireAdmin, async (req, res) => {
         const denunciaId = req.params.id;
         const { status } = req.body;
 
         try {
-            const denuncia = data.getDenunciaById(denunciaId);
+            const denuncia = await data.getDenunciaById(denunciaId);
 
             if (!denuncia) {
                 return res.status(404).json({ error: 'Denúncia não encontrada' });
             }
 
-            data.updateDenuncia(denunciaId, { status });
+            await data.updateDenuncia(denunciaId, { status });
 
             res.redirect(`/denuncias/${denunciaId}?success=Status atualizado com sucesso!`);
         } catch (error) {

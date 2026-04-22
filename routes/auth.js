@@ -16,8 +16,8 @@ const createAuthRouter = (data = defaultData) => {
     });
 
     router.post('/login', [
-        body('email', 'E-mail inválido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
-        body('password', 'Senha é obrigatória').notEmpty()
+        body('email', 'E-mail invÃ¡lido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
+        body('password', 'Senha Ã© obrigatÃ³ria').notEmpty()
     ], async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -26,10 +26,10 @@ const createAuthRouter = (data = defaultData) => {
         }
 
         const { email, password } = req.body;
-        const authenticatedUser = data.authenticateUser(email, password);
+        const authenticatedUser = await data.authenticateUser(email, password);
 
         if (!authenticatedUser) {
-            return res.redirect('/auth/login?error=' + encodeURIComponent('E-mail ou senha inválidos'));
+            return res.redirect('/auth/login?error=' + encodeURIComponent('E-mail ou senha invÃ¡lidos'));
         }
 
         req.session.user = authenticatedUser;
@@ -44,14 +44,14 @@ const createAuthRouter = (data = defaultData) => {
     });
 
     router.post('/cadastro', [
-        body('name', 'Nome Completo deve ter no mínimo 10 caracteres').isLength({ min: 10 }),
-        body('email', 'E-mail inválido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
-        body('password', 'A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número.')
+        body('name', 'Nome Completo deve ter no mÃ­nimo 10 caracteres').isLength({ min: 10 }),
+        body('email', 'E-mail invÃ¡lido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
+        body('password', 'A senha deve ter no mÃ­nimo 8 caracteres, uma letra maiÃºscula, uma minÃºscula e um nÃºmero.')
             .isLength({ min: 8 })
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/),
         body('confirmPassword').custom((value, { req }) => {
             if (value !== req.body.password) {
-                throw new Error('As senhas não coincidem');
+                throw new Error('As senhas nÃ£o coincidem');
             }
             return true;
         })
@@ -63,7 +63,7 @@ const createAuthRouter = (data = defaultData) => {
         }
 
         const { userType, ongName, ongDescription, ongContact } = req.body;
-        const existingUser = data.getUserByEmail(req.body.email);
+        const existingUser = await data.getUserByEmail(req.body.email);
 
         if (existingUser) {
             return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Já existe uma conta cadastrada com este e-mail'));
@@ -94,54 +94,21 @@ const createAuthRouter = (data = defaultData) => {
         const normalizedUserType = isOngSignup ? 'ong' : 'user';
 
         try {
-            const shouldUseMockPersistence = process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID;
+            const newUser = await data.createUser({
+                name: req.body.name,
+                email: req.body.email,
+                password: passwordHash,
+                type: normalizedUserType,
+                ongName: isOngSignup ? ongName : null
+            });
 
-            if (!shouldUseMockPersistence) {
-                if (typeof data.createUserAndPersist !== 'function') {
-                    throw new Error('Não foi possível acessar a camada de persistência.');
-                }
-
-                const newUser = await data.createUserAndPersist({
-                    name: req.body.name,
-                    email: req.body.email,
-                    password: passwordHash,
-                    type: normalizedUserType,
-                    ongName: isOngSignup ? ongName : null
+            if (isOngSignup && typeof data.createOng === 'function') {
+                await data.createOng({
+                    name: ongName,
+                    description: ongDescription,
+                    contact: ongContact,
+                    userId: newUser.id
                 });
-
-                if (isOngSignup) {
-                    if (typeof data.createOngAndPersist !== 'function') {
-                        throw new Error('Não foi possível persistir os dados da ONG.');
-                    }
-
-                    await data.createOngAndPersist({
-                        name: ongName,
-                        description: ongDescription,
-                        contact: ongContact,
-                        userId: newUser.id
-                    });
-                }
-            } else {
-                if (typeof data.createUser !== 'function') {
-                    throw new Error('Não foi possível acessar a camada de persistência.');
-                }
-
-                const newUser = data.createUser({
-                    name: req.body.name,
-                    email: req.body.email,
-                    password: passwordHash,
-                    type: normalizedUserType,
-                    ongName: isOngSignup ? ongName : null
-                });
-
-                if (isOngSignup && typeof data.createOng === 'function') {
-                    data.createOng({
-                        name: ongName,
-                        description: ongDescription,
-                        contact: ongContact,
-                        userId: newUser.id
-                    });
-                }
             }
 
             return res.redirect('/auth/login?success=' + encodeURIComponent('Cadastro realizado com sucesso. Faça login para continuar.'));
