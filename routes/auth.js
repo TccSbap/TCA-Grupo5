@@ -7,7 +7,6 @@ const { redirectIfLoggedIn } = require('../middleware/auth');
 const createAuthRouter = (data = defaultData) => {
     const router = express.Router();
 
-    // Página de login
     router.get('/login', redirectIfLoggedIn, (req, res) => {
         res.render('auth/login', {
             title: 'Login',
@@ -16,7 +15,6 @@ const createAuthRouter = (data = defaultData) => {
         });
     });
 
-    // Processar login
     router.post('/login', [
         body('email', 'E-mail inválido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
         body('password', 'Senha é obrigatória').notEmpty()
@@ -35,10 +33,9 @@ const createAuthRouter = (data = defaultData) => {
         }
 
         req.session.user = authenticatedUser;
-        return res.redirect(authenticatedUser.type === 'admin' ? '/admin/dashboard_admin' : '/dashboard');
+        return res.redirect(authenticatedUser.type !== 'user' ? '/admin/dashboard_admin' : '/dashboard');
     });
 
-    // Página de cadastro
     router.get('/cadastro', redirectIfLoggedIn, (req, res) => {
         res.render('auth/cadastro', {
             title: 'Cadastro',
@@ -46,7 +43,6 @@ const createAuthRouter = (data = defaultData) => {
         });
     });
 
-    // Processar cadastro
     router.post('/cadastro', [
         body('name', 'Nome Completo deve ter no mínimo 10 caracteres').isLength({ min: 10 }),
         body('email', 'E-mail inválido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
@@ -73,7 +69,9 @@ const createAuthRouter = (data = defaultData) => {
             return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Já existe uma conta cadastrada com este e-mail'));
         }
 
-        if (userType === 'admin') {
+        const isOngSignup = userType === 'admin' || userType === 'ong';
+
+        if (isOngSignup) {
             if (!ongName || !ongDescription || !ongContact) {
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Preencha todos os campos da ONG'));
             }
@@ -93,29 +91,66 @@ const createAuthRouter = (data = defaultData) => {
         }
 
         const passwordHash = bcrypt.hashSync(req.body.password, 10);
-        const normalizedUserType = userType === 'admin' ? 'admin' : 'user';
+        const normalizedUserType = isOngSignup ? 'ong' : 'user';
 
-        const newUser = data.createUser({
-            name: req.body.name,
-            email: req.body.email,
-            password: passwordHash,
-            type: normalizedUserType,
-            ongName: normalizedUserType === 'admin' ? ongName : null
-        });
+        try {
+            const shouldUseMockPersistence = process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID;
 
-        if (normalizedUserType === 'admin') {
-            data.createOng({
-                name: ongName,
-                description: ongDescription,
-                contact: ongContact,
-                userId: newUser.id
-            });
+            if (!shouldUseMockPersistence) {
+                if (typeof data.createUserAndPersist !== 'function') {
+                    throw new Error('Não foi possível acessar a camada de persistência.');
+                }
+
+                const newUser = await data.createUserAndPersist({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: passwordHash,
+                    type: normalizedUserType,
+                    ongName: isOngSignup ? ongName : null
+                });
+
+                if (isOngSignup) {
+                    if (typeof data.createOngAndPersist !== 'function') {
+                        throw new Error('Não foi possível persistir os dados da ONG.');
+                    }
+
+                    await data.createOngAndPersist({
+                        name: ongName,
+                        description: ongDescription,
+                        contact: ongContact,
+                        userId: newUser.id
+                    });
+                }
+            } else {
+                if (typeof data.createUser !== 'function') {
+                    throw new Error('Não foi possível acessar a camada de persistência.');
+                }
+
+                const newUser = data.createUser({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: passwordHash,
+                    type: normalizedUserType,
+                    ongName: isOngSignup ? ongName : null
+                });
+
+                if (isOngSignup && typeof data.createOng === 'function') {
+                    data.createOng({
+                        name: ongName,
+                        description: ongDescription,
+                        contact: ongContact,
+                        userId: newUser.id
+                    });
+                }
+            }
+
+            return res.redirect('/auth/login?success=' + encodeURIComponent('Cadastro realizado com sucesso. Faça login para continuar.'));
+        } catch (error) {
+            console.error('Erro ao salvar cadastro:', error);
+            return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Não foi possível salvar o cadastro no banco de dados. Verifique a conexão e tente novamente.'));
         }
-
-        return res.redirect('/auth/login?success=' + encodeURIComponent('Cadastro realizado com sucesso. Faça login para continuar.'));
     });
 
-    // Logout
     router.get('/logout', (req, res) => {
         req.session.destroy((err) => {
             if (err) {

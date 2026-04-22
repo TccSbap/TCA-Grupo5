@@ -65,6 +65,8 @@ function validateNomeCompletoPagamento(nome) {
 
 function validateCadastroForm()  {
     let isValid = true;
+    const userTypeInput = document.getElementById("userType");
+    const isOngCadastro = userTypeInput && userTypeInput.value === "admin";
 
 
     const nameInput = document.getElementById("name");
@@ -105,50 +107,64 @@ function validateCadastroForm()  {
     } else {
         confirmPasswordInput.style.borderColor = "";
     }
-        
-    const OngNameInput = document.getElementById("ongName");
-    if (OngNameInput && OngNameInput.value.trim() === "") {
-        document.getElementById("ongName-error").textContent = "O nome da ONG é obrigatório.";
-        OngNameInput.style.borderColor = "red";
-        isValid = false;
-    } else if (OngNameInput) {
-        OngNameInput.style.borderColor = "";
-    }
 
-    const ongDescriptionInput = document.getElementById("ongDescription");
-    if (ongDescriptionInput && ongDescriptionInput.value.trim() === "") {
-        document.getElementById("ongDescription-error").textContent = "A descrição da ONG é obrigatória.";
-        ongDescriptionInput.style.borderColor = "red";
-        isValid = false;
-    } else if (ongDescriptionInput) {
-        ongDescriptionInput.style.borderColor = "";
-    }
+    const ongFieldIds = ["ongName", "ongDescription", "ongContact", "ongPhone", "ongAddress"];
+    if (isOngCadastro) {
+        const OngNameInput = document.getElementById("ongName");
+        if (OngNameInput && OngNameInput.value.trim() === "") {
+            document.getElementById("ongName-error").textContent = "O nome da ONG é obrigatório.";
+            OngNameInput.style.borderColor = "red";
+            isValid = false;
+        } else if (OngNameInput) {
+            OngNameInput.style.borderColor = "";
+        }
 
-    const ongContactInput = document.getElementById("ongContact");
-    if (!validateEmail(ongContactInput.value)) {
-        document.getElementById("ongContact-error").textContent = "O e-mail da ONG deve conter @ e .com.";
-        ongContactInput.style.borderColor = "red";
-        isValid = false;
-    } else if (ongContactInput.value.trim() !== "") {
-        ongContactInput.style.borderColor = "";
-    }
+        const ongDescriptionInput = document.getElementById("ongDescription");
+        if (ongDescriptionInput && ongDescriptionInput.value.trim() === "") {
+            document.getElementById("ongDescription-error").textContent = "A descrição da ONG é obrigatória.";
+            ongDescriptionInput.style.borderColor = "red";
+            isValid = false;
+        } else if (ongDescriptionInput) {
+            ongDescriptionInput.style.borderColor = "";
+        }
 
-    const ongPhoneInput = document.getElementById("ongPhone");
-    if (!validateTelefone(ongPhoneInput.value)) {
-        document.getElementById("ongPhone-error").textContent = "O telefone da ONG é inválido. Deve ter 11 dígitos numéricos.";
-        ongPhoneInput.style.borderColor = "red";
-        isValid = false;
+        const ongContactInput = document.getElementById("ongContact");
+        if (!validateEmail(ongContactInput.value)) {
+            document.getElementById("ongContact-error").textContent = "O e-mail da ONG deve conter @ e .com.";
+            ongContactInput.style.borderColor = "red";
+            isValid = false;
+        } else if (ongContactInput.value.trim() !== "") {
+            ongContactInput.style.borderColor = "";
+        }
+
+        const ongPhoneInput = document.getElementById("ongPhone");
+        if (ongPhoneInput && ongPhoneInput.value.trim() !== "" && !validateTelefone(ongPhoneInput.value)) {
+            document.getElementById("ongPhone-error").textContent = "O telefone da ONG é inválido. Deve ter 11 dígitos numéricos.";
+            ongPhoneInput.style.borderColor = "red";
+            isValid = false;
+        } else {
+            if (ongPhoneInput) {
+                ongPhoneInput.style.borderColor = "";
+            }
+        }
+
+        const ongAddressInput = document.getElementById("ongAddress");
+        if (ongAddressInput) {
+            ongAddressInput.style.borderColor = "";
+        }
     } else {
-        ongPhoneInput.style.borderColor = "";
-    }
+        ongFieldIds.forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            const error = document.getElementById(`${fieldId}-error`);
 
-    const ongAddressInput = document.getElementById("ongAddress");
-    if (ongAddressInput && ongAddressInput.value.trim() === "") {
-        document.getElementById("ongAddress-error").textContent = "O endereço da ONG é obrigatório.";
-        ongAddressInput.style.borderColor = "red";
-        isValid = false;
-    } else if (ongAddressInput) {
-        ongAddressInput.style.borderColor = "";
+            if (field) {
+                field.style.borderColor = "";
+            }
+
+            if (error) {
+                error.textContent = "";
+            }
+        });
     }
     return isValid;
 }
@@ -261,3 +277,6 @@ function validatePlanoForm() {
 
     return isValid;
 }
+
+
+

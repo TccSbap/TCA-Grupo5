@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const { pool, isConfigured, canUseDatabase } = require('../config/database');
 
-// Dados estáticos em memória (não persistem após reiniciar o servidor)
+const isTestEnvironment = Boolean(process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test');
+
+// Cache em memória usado para leitura rápida e para o modo de teste
 let users = [];
 let denuncias = [];
 let ongs = [];
@@ -21,6 +23,9 @@ const persistAsync = (operation, label) => {
         .then(() => canUseDatabase())
         .then((dbAvailable) => {
             if (!dbAvailable) {
+                if (!isTestEnvironment) {
+                    throw new Error(`Banco de dados indisponível para persistir ${label}`);
+                }
                 return null;
             }
             return operation();
@@ -957,7 +962,6 @@ const ensureDataLoaded = async () => {
     }
 
     if (!isConfigured) {
-        initializeData();
         ensureDataLoaded.ready = false;
         return ensureDataLoaded.ready;
     }
@@ -968,12 +972,10 @@ const ensureDataLoaded = async () => {
                 await loadFromDatabase();
                 return true;
             } catch (error) {
-                initializeData();
                 return false;
             }
         }
 
-        initializeData();
         return false;
     })();
 
@@ -1018,19 +1020,74 @@ const authenticateUser = (email, password) => {
     return buildSessionUser(user);
 };
 
+const buildUserRecord = (userData) => ({
+    id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+    ...userData,
+    createdAt: new Date().toISOString()
+});
+
+const persistUserToDatabase = async (user) => {
+    if (!(await canUseDatabase())) {
+        throw new Error('Banco de dados indisponível para persistir usuário');
+    }
+
+    await pool.execute(
+        `INSERT INTO users (id, name, email, password_hash, type, ong_name, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            email = VALUES(email),
+            password_hash = VALUES(password_hash),
+            type = VALUES(type),
+            ong_name = VALUES(ong_name),
+            created_at = VALUES(created_at)`,
+        [
+            user.id,
+            user.name,
+            user.email,
+            user.password || user.password_hash || defaultPasswordHash,
+            user.type,
+            user.ongName || user.ong_name || null,
+            toSqlDateTime(user.createdAt)
+        ]
+    );
+};
+
 const createUser = (userData) => {
-    const newUser = {
-        id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-        ...userData,
-        createdAt: new Date().toISOString()
-    };
+    const newUser = buildUserRecord(userData);
     users.push(newUser);
     persistUser(newUser);
     return newUser;
 };
 
+const createUserAndPersist = async (userData) => {
+    const newUser = buildUserRecord(userData);
+    await persistUserToDatabase(newUser);
+    users.push(newUser);
+    return newUser;
+};
+
 // Funções para denúncias
-const getDenuncias = () => denuncias;
+const normalizeFilterId = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return null;
+    }
+
+    const parsed = parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+};
+
+const getDenuncias = (ongId = null) => {
+    const normalizedOngId = normalizeFilterId(ongId);
+
+    if (normalizedOngId === null) {
+        return denuncias;
+    }
+
+    return denuncias.filter((denuncia) =>
+        denuncia.responses.some((response) => response.ongId === normalizedOngId)
+    );
+};
 const saveDenuncias = (newDenuncias) => {
     denuncias = newDenuncias;
     syncDatabaseFromCache();
@@ -1064,7 +1121,15 @@ const updateDenuncia = (id, updateData) => {
 };
 
 // Funções para ONGs
-const getOngs = () => ongs;
+const getOngs = (ongId = null) => {
+    const normalizedOngId = normalizeFilterId(ongId);
+
+    if (normalizedOngId === null) {
+        return ongs;
+    }
+
+    return ongs.filter((ong) => ong.id === normalizedOngId);
+};
 const saveOngs = (newOngs) => {
     ongs = newOngs;
     syncDatabaseFromCache();
@@ -1078,30 +1143,53 @@ const getOngByUserId = (userId) => {
     return ongs.find(ong => ong.userId === parseInt(userId));
 };
 
+const buildOngRecord = (ongData) => ({
+    id: ongs.length > 0 ? Math.max(...ongs.map(o => o.id)) + 1 : 1,
+    ...ongData,
+    focus: ongData.focus || ongData.description || ongData.name,
+    createdAt: new Date().toISOString()
+});
+
+const persistOngToDatabase = async (ong) => {
+    if (!(await canUseDatabase())) {
+        throw new Error('Banco de dados indisponível para persistir ONG');
+    }
+
+    await pool.execute(
+        `INSERT INTO ongs (id, name, description, contact_email, phone, address, user_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            description = VALUES(description),
+            contact_email = VALUES(contact_email),
+            phone = VALUES(phone),
+            address = VALUES(address),
+            user_id = VALUES(user_id),
+            created_at = VALUES(created_at)`,
+        [
+            ong.id,
+            ong.name,
+            ong.description,
+            ong.contact || ong.contact_email,
+            ong.phone || null,
+            ong.address || null,
+            ong.userId || ong.user_id || null,
+            toSqlDateTime(ong.createdAt)
+        ]
+    );
+};
+
 const createOng = (ongData) => {
-    const newOng = {
-        id: ongs.length > 0 ? Math.max(...ongs.map(o => o.id)) + 1 : 1,
-        ...ongData,
-        focus: ongData.focus || ongData.description || ongData.name,
-        createdAt: new Date().toISOString()
-    };
+    const newOng = buildOngRecord(ongData);
     ongs.push(newOng);
-    persistAsync(async () => {
-        await pool.execute(
-            `INSERT INTO ongs (id, name, description, contact_email, phone, address, user_id, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-                newOng.id,
-                newOng.name,
-                newOng.description,
-                newOng.contact || newOng.contact_email,
-                newOng.phone || null,
-                newOng.address || null,
-                newOng.userId || newOng.user_id || null,
-                toSqlDateTime(newOng.createdAt)
-            ]
-        );
-    }, 'ONG');
+    persistAsync(() => persistOngToDatabase(newOng), 'ONG');
+    return newOng;
+};
+
+const createOngAndPersist = async (ongData) => {
+    const newOng = buildOngRecord(ongData);
+    await persistOngToDatabase(newOng);
+    ongs.push(newOng);
     return newOng;
 };
 
@@ -1527,8 +1615,13 @@ const syncDatabaseFromCache = () => {
 
 // Inicializar dados ao carregar o módulo
 const bootstrapData = () => {
-    if (!isConfigured || process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+    if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
         initializeData();
+        ensureDataLoaded.ready = Promise.resolve(false);
+        return ensureDataLoaded.ready;
+    }
+
+    if (!isConfigured) {
         ensureDataLoaded.ready = Promise.resolve(false);
         return ensureDataLoaded.ready;
     }
@@ -1540,7 +1633,9 @@ const bootstrapData = () => {
 bootstrapData();
 
 const resetData = () => {
-    initializeData();
+    if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+        initializeData();
+    }
     ensureDataLoaded.ready = Promise.resolve(false);
     syncDatabaseFromCache();
 };
@@ -1577,6 +1672,7 @@ module.exports = {
     authenticateUser,
     buildSessionUser,
     createUser,
+    createUserAndPersist,
     getDenuncias,
     saveDenuncias,
     createDenuncia,
@@ -1587,6 +1683,7 @@ module.exports = {
     getOngById,
     getOngByUserId,
     createOng,
+    createOngAndPersist,
     getPlanos,
     getPlanoById,
     getNoticias,
@@ -1598,5 +1695,6 @@ module.exports = {
     getMensagensContato,
     createMensagemContato,
     resetData,
+    canUseDatabase,
     __private__
 };

@@ -31,7 +31,7 @@ app.use(session({
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     res.locals.isLoggedIn = !!req.session.user;
-    res.locals.isAdmin = req.session.user && req.session.user.type === 'admin';
+    res.locals.isAdmin = req.session.user && (req.session.user.type === 'admin' || req.session.user.type === 'ong');
     next();
 });
 

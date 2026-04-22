@@ -22,13 +22,13 @@ const isConfigured = Boolean(
 let cachedConnectionCheck = null;
 
 const canUseDatabase = async () => {
-    if (cachedConnectionCheck !== null) {
-        return cachedConnectionCheck;
+    if (cachedConnectionCheck === true) {
+        return true;
     }
 
     if (!isConfigured || isTestEnvironment) {
         cachedConnectionCheck = false;
-        return cachedConnectionCheck;
+        return false;
     }
 
     try {

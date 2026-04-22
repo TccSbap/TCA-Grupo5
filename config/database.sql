@@ -26,7 +26,7 @@ CREATE TABLE users (
   name VARCHAR(150) NOT NULL,
   email VARCHAR(255) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  type ENUM('user', 'admin') NOT NULL,
+  type ENUM('user', 'admin', 'ong') NOT NULL,
   ong_name VARCHAR(150) NULL,
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (id),
@@ -34,10 +34,13 @@ CREATE TABLE users (
   KEY idx_users_type (type),
   CONSTRAINT chk_users_ong_name
     CHECK (
-      (type = 'admin' AND ong_name IS NOT NULL)
+      (type = 'ong' AND ong_name IS NOT NULL)
       OR
       (type = 'user' AND ong_name IS NULL)
+      OR
+      (type = 'admin' AND ong_name IS NULL)
     )
+    
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ongs (
@@ -199,16 +202,16 @@ CREATE TABLE contact_messages (
 START TRANSACTION;
 
 INSERT INTO users (id, name, email, password_hash, type, ong_name) VALUES
-  (1, 'Admin ONG Água Limpa', 'admin@agualimpa.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'ONG Água Limpa'),
-  (2, 'Admin Saneamento para Todos', 'admin@saneamento.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Saneamento para Todos'),
-  (3, 'Admin Rios Vivos', 'admin@riosvivos.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Rios Vivos'),
-  (4, 'Admin Água para a Vida', 'admin@aguavida.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Água para a Vida'),
-  (5, 'Admin Cidadania e Saneamento', 'admin@cidadaniasaneamento.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Cidadania e Saneamento'),
-  (6, 'Admin Planeta Água', 'admin@planetaagua.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Planeta Água'),
-  (7, 'Admin Esgoto Zero', 'admin@esgotozero.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Esgoto Zero'),
-  (8, 'Admin Saúde Hídrica', 'admin@saudehidrica.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Saúde Hídrica'),
-  (9, 'Admin Água é Direito', 'admin@aguadireito.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Água é Direito'),
-  (10, 'Admin Comunidade Sustentável', 'admin@comunidadesustentavel.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'admin', 'Comunidade Sustentável'),
+  (1, 'Admin ONG Água Limpa', 'admin@agualimpa.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'ONG Água Limpa'),
+  (2, 'Admin Saneamento para Todos', 'admin@saneamento.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Saneamento para Todos'),
+  (3, 'Admin Rios Vivos', 'admin@riosvivos.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Rios Vivos'),
+  (4, 'Admin Água para a Vida', 'admin@aguavida.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Água para a Vida'),
+  (5, 'Admin Cidadania e Saneamento', 'admin@cidadaniasaneamento.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Cidadania e Saneamento'),
+  (6, 'Admin Planeta Água', 'admin@planetaagua.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Planeta Água'),
+  (7, 'Admin Esgoto Zero', 'admin@esgotozero.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Esgoto Zero'),
+  (8, 'Admin Saúde Hídrica', 'admin@saudehidrica.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Saúde Hídrica'),
+  (9, 'Admin Água é Direito', 'admin@aguadireito.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Água é Direito'),
+  (10, 'Admin Comunidade Sustentável', 'admin@comunidadesustentavel.org', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'ong', 'Comunidade Sustentável'),
   (11, 'João Silva', 'joao@email.com', '$2b$10$WhDPh76vwRfUxdgTmUs5QeWxHX/G/8wUCsaYKQF7DEuF/a54.z8/6', 'user', NULL);
 
 INSERT INTO ongs (id, name, description, contact_email, phone, address, user_id) VALUES

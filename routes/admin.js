@@ -1,20 +1,20 @@
 const express = require('express');
 const defaultData = require('../data/database');
 
+const isOngRole = (user) => Boolean(user && (user.type === 'admin' || user.type === 'ong'));
+
 const createAdminRouter = (data = defaultData) => {
     const router = express.Router();
 
-    // Rota para a página de login do administrador
     router.get('/login', (req, res) => {
         res.render('admin/login', { title: 'Login de Administrador', error: req.query.error });
     });
 
-    // Rota para processar o login do administrador
     router.post('/dashboard', (req, res) => {
         const { email, password } = req.body;
 
         const user = data.authenticateUser(email, password);
-        if (!user || user.type !== 'admin') {
+        if (!isOngRole(user)) {
             return res.render('admin/login', {
                 title: 'Login de Administrador',
                 error: 'Credenciais inválidas'
@@ -30,13 +30,15 @@ const createAdminRouter = (data = defaultData) => {
             return res.redirect('/admin/login');
         }
 
-        if (req.session.user.type !== 'admin') {
+        if (!isOngRole(req.session.user)) {
             return res.redirect('/dashboard');
         }
 
         const user = req.session.user;
-        const allDenuncias = data.getDenuncias();
-        const allOngs = data.getOngs();
+        const userOng = typeof data.getOngByUserId === 'function' ? data.getOngByUserId(user.id) : null;
+        const ongId = userOng ? userOng.id : null;
+        const allDenuncias = ongId ? data.getDenuncias(ongId) : data.getDenuncias();
+        const allOngs = ongId ? data.getOngs(ongId) : data.getOngs();
 
         return res.render('admin/dashboard', {
             title: 'Painel Administrativo',
@@ -53,7 +55,7 @@ const createAdminRouter = (data = defaultData) => {
     router.get('/dashboard_admin', renderAdminDashboard);
 
     router.get('/denuncias', (req, res) => {
-        if (!req.session.user || req.session.user.type !== 'admin') {
+        if (!isOngRole(req.session.user)) {
             return res.redirect('/dashboard');
         }
 
@@ -65,7 +67,7 @@ const createAdminRouter = (data = defaultData) => {
     });
 
     router.get('/ongs', (req, res) => {
-        if (!req.session.user || req.session.user.type !== 'admin') {
+        if (!isOngRole(req.session.user)) {
             return res.redirect('/dashboard');
         }
 

@@ -58,8 +58,30 @@ describe('middleware de autenticação', () => {
     expect(res.status).not.toHaveBeenCalled();
   });
 
+  test('requireAdmin permite o acesso de usuarios do tipo ong', () => {
+    const req = createMockReq({ session: { user: { id: 1, type: 'ong' } } });
+    const res = createMockRes();
+    const next = createMockNext();
+
+    requireAdmin(req, res, next);
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(res.status).not.toHaveBeenCalled();
+  });
+
   test('redirectIfLoggedIn envia usuários logados para o dashboard', () => {
     const req = createMockReq({ session: { user: { id: 1, type: 'admin' } } });
+    const res = createMockRes();
+    const next = createMockNext();
+
+    redirectIfLoggedIn(req, res, next);
+
+    expect(res.redirect).toHaveBeenCalledWith('/admin/dashboard_admin');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  test('redirectIfLoggedIn envia usuarios do tipo ong para o dashboard administrativo', () => {
+    const req = createMockReq({ session: { user: { id: 1, type: 'ong' } } });
     const res = createMockRes();
     const next = createMockNext();
 

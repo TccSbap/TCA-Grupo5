@@ -91,6 +91,84 @@ describe('dependency injection for routes', () => {
     expect(response.headers.location).toBe('/admin/dashboard_admin');
   });
 
+  test('admin route accepts ONG users in login', async () => {
+    const data = {
+      authenticateUser: jest.fn().mockReturnValue({
+        id: 21,
+        type: 'ong',
+        ongName: 'ONG Teste'
+      }),
+      getDenuncias: jest.fn().mockReturnValue([]),
+      getOngs: jest.fn().mockReturnValue([]),
+      getOngByUserId: jest.fn()
+    };
+
+    const app = buildApp(createAdminRouter(data));
+
+    const response = await request(app)
+      .post('/dashboard')
+      .type('form')
+      .send({
+        email: 'ong@teste.com',
+        password: '123456'
+      });
+
+    expect(data.authenticateUser).toHaveBeenCalledWith('ong@teste.com', '123456');
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/admin/dashboard_admin');
+  });
+
+  test('admin route allows ONG users and filters dashboard data by ONG id', async () => {
+    const data = {
+      authenticateUser: jest.fn().mockReturnValue({
+        id: 21,
+        type: 'ong',
+        ongName: 'ONG Teste'
+      }),
+      getOngByUserId: jest.fn().mockReturnValue({
+        id: 31,
+        userId: 21,
+        name: 'ONG Teste',
+        description: 'Descricao de teste.'
+      }),
+      getDenuncias: jest.fn().mockReturnValue([
+        {
+          id: 1,
+          status: 'pendente',
+          responses: [{ ongId: 31 }]
+        },
+        {
+          id: 2,
+          status: 'resolvida',
+          responses: [{ ongId: 31 }]
+        }
+      ]),
+      getOngs: jest.fn().mockReturnValue([
+        {
+          id: 31,
+          userId: 21,
+          name: 'ONG Teste',
+          description: 'Descricao de teste.'
+        }
+      ])
+    };
+
+    const app = buildApp(
+      createAdminRouter(data),
+      { id: 21, type: 'ong', ongName: 'ONG Teste' }
+    );
+
+    const response = await request(app).get('/dashboard_admin');
+
+    expect(data.getOngByUserId).toHaveBeenCalledWith(21);
+    expect(data.getDenuncias).toHaveBeenCalledWith(31);
+    expect(data.getOngs).toHaveBeenCalledWith(31);
+    expect(response.status).toBe(200);
+    expect(response.body.view).toBe('admin/dashboard');
+    expect(response.body.locals.totalDenuncias).toBe(2);
+    expect(response.body.locals.totalOngs).toBe(1);
+  });
+
   test('denuncias route uses injected method when creating a report', async () => {
     const data = {
       getDenuncias: jest.fn().mockReturnValue([]),

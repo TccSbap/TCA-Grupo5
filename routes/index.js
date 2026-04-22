@@ -158,7 +158,7 @@ const createIndexRouter = (data = defaultData) => {
         const user = req.session.user;
         const denuncias = data.getDenuncias();
         const ongs = data.getOngs();
-        const userDenuncias = user.type === 'admin'
+        const userDenuncias = user.type === 'admin' || user.type === 'ong'
             ? denuncias
             : denuncias.filter((denuncia) => denuncia.userId === user.id);
 

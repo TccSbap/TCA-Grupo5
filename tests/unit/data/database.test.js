@@ -7,6 +7,31 @@ describe('camada de dados em memória', () => {
     expect(database.getDenuncias()).toHaveLength(16);
   });
 
+  test('getDenuncias filtra as denuncias pela ONG informada', () => {
+    const denuncias = database.getDenuncias(2);
+
+    expect(denuncias).toHaveLength(1);
+    expect(denuncias[0]).toMatchObject({
+      id: 2,
+      status: 'em_andamento'
+    });
+    expect(denuncias[0].responses[0]).toMatchObject({
+      ongId: 2,
+      ongName: 'Saneamento para Todos'
+    });
+  });
+
+  test('getOngs filtra a ONG pelo id informado', () => {
+    const ongs = database.getOngs(2);
+
+    expect(ongs).toHaveLength(1);
+    expect(ongs[0]).toMatchObject({
+      id: 2,
+      userId: 2,
+      name: 'Saneamento para Todos'
+    });
+  });
+
   test('getUserByEmail retorna o usuário correspondente', () => {
     const user = database.getUserByEmail('joao@email.com');
 
