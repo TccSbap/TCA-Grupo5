@@ -8,6 +8,12 @@
             <p>Escolha o plano ideal para sua ONG e amplie seu impacto!</p>
         </header>
 
+        <% if (typeof success !== 'undefined' && success) { %>
+            <section class="alert alert-success" role="status">
+                <p><%= success %></p>
+            </section>
+        <% } %>
+
         <nav class="planos-grid">
             <% if (planos && planos.length > 0) { %>
                 <% planos.forEach(function(plano) { %>

@@ -9,6 +9,13 @@
                     <p>Acesse sua conta para fazer denúncias e acompanhar o progresso</p>
                 </header>
                 
+                <% if (typeof success !== 'undefined' && success) { %>
+                <nav class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <%= success %>
+                </nav>
+                <% } %>
+
                 <% if (error) { %>
                 <nav class="alert alert-error">
                     <i class="fas fa-exclamation-circle"></i>

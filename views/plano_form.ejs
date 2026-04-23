@@ -8,6 +8,12 @@
             <p>Preencha os dados para assinar o plano e impulsionar sua ONG!</p>
         </header>
 
+        <% if (typeof error !== 'undefined' && error) { %>
+            <section class="alert alert-error" role="alert">
+                <p><%= error %></p>
+            </section>
+        <% } %>
+
         <form action="/assinar-plano" method="POST" class="styled-form" id="planoForm" novalidate>
             <input type="hidden" name="planoId" value="<%= plano.id %>">
             <input type="hidden" name="planoNome" value="<%= plano.title %>">

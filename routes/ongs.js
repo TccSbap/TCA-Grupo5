@@ -1,91 +1,96 @@
 const express = require('express');
-const router = express.Router();
-const { requireAuth, requireAdmin } = require('../middleware/auth');
-const { getOngs, getDenuncias } = require('../data/database');
+const defaultData = require('../data/database');
+const { requireAdmin } = require('../middleware/auth');
 
-// Listar todas as ONGs
-router.get('/', (req, res) => {
-    const ongs = getOngs();
-    
-    res.render('ongs/index', {
-        title: 'ONGs Parceiras',
-        ongs
+const createOngsRouter = (data = defaultData) => {
+    const router = express.Router();
+
+    router.get('/', async (req, res) => {
+        const ongs = await data.getOngs();
+        res.render('ongs/index', {
+            title: 'ONGs Parceiras',
+            ongs: ongs.map((ong) => ({
+                ...ong,
+                focus: ong.focus || ong.description
+            }))
+        });
     });
-});
 
-// Página de detalhes de uma ONG
-router.get('/:id', (req, res) => {
-    const ongId = parseInt(req.params.id);
-    const ongs = getOngs();
-    const ong = ongs.find(o => o.id === ongId);
-    
-    if (!ong) {
-        return res.status(404).render('404', { title: 'ONG não encontrada' });
-    }
-    
-    // Buscar denúncias respondidas por esta ONG
-    const denuncias = getDenuncias();
-    const ongResponses = denuncias.filter(d => 
-        d.responses.some(r => r.ongId === ong.userId)
-    );
-    
-    res.render('ongs/detalhes', {
-        title: `ONG: ${ong.name}`,
-        ong,
-        responses: ongResponses
-    });
-});
+    router.get('/admin/dashboard', requireAdmin, async (req, res) => {
+        const user = req.session.user;
+        const ongs = await data.getOngs();
+        const userOng = ongs.find((ong) => ong.userId === user.id);
 
-// Área administrativa da ONG (apenas para ONGs)
-router.get('/admin/dashboard', requireAdmin, (req, res) => {
-    const user = req.session.user;
-    const ongs = getOngs();
-    const userOng = ongs.find(o => o.userId === user.id);
-    
-    if (!userOng) {
-        return res.status(404).render('404', { title: 'ONG não encontrada' });
-    }
-    
-    // Buscar denúncias para responder
-    const denuncias = getDenuncias();
-    const pendingDenuncias = denuncias.filter(d => d.status === 'pendente');
-    const respondedDenuncias = denuncias.filter(d => 
-        d.responses.some(r => r.ongId === user.id)
-    );
-    
-    res.render('ongs/admin', {
-        title: 'Administração da ONG',
-        ong: userOng,
-        pendingDenuncias,
-        respondedDenuncias
-    });
-});
-
-// Dashboard de estatísticas para ONGs
-router.get('/admin/stats', requireAdmin, (req, res) => {
-    const user = req.session.user;
-    const denuncias = getDenuncias();
-    
-    // Estatísticas da ONG
-    const totalResponses = denuncias.reduce((count, d) => {
-        return count + d.responses.filter(r => r.ongId === user.id).length;
-    }, 0);
-    
-    const resolvedByOng = denuncias.filter(d => 
-        d.status === 'resolvida' && d.responses.some(r => r.ongId === user.id)
-    ).length;
-    
-    const pendingDenuncias = denuncias.filter(d => d.status === 'pendente').length;
-    
-    res.render('ongs/stats', {
-        title: 'Estatísticas da ONG',
-        stats: {
-            totalResponses,
-            resolvedByOng,
-            pendingDenuncias,
-            totalDenuncias: denuncias.length
+        if (!userOng) {
+            return res.status(404).render('404', { title: 'ONG não encontrada' });
         }
+
+        const denuncias = await data.getDenuncias();
+        const pendingDenuncias = denuncias.filter((denuncia) => denuncia.status === 'pendente');
+        const respondedDenuncias = denuncias.filter((denuncia) =>
+            denuncia.responses.some((response) => response.ongId === user.id)
+        );
+
+        res.render('ongs/admin', {
+            title: 'Administração da ONG',
+            ong: userOng,
+            pendingDenuncias,
+            respondedDenuncias
+        });
     });
-});
+
+    router.get('/admin/stats', requireAdmin, async (req, res) => {
+        const user = req.session.user;
+        const denuncias = await data.getDenuncias();
+
+        const totalResponses = denuncias.reduce((count, denuncia) => {
+            return count + denuncia.responses.filter((response) => response.ongId === user.id).length;
+        }, 0);
+
+        const resolvedByOng = denuncias.filter((denuncia) =>
+            denuncia.status === 'resolvida' && denuncia.responses.some((response) => response.ongId === user.id)
+        ).length;
+
+        const pendingDenuncias = denuncias.filter((denuncia) => denuncia.status === 'pendente').length;
+
+        res.render('ongs/stats', {
+            title: 'Estatísticas da ONG',
+            stats: {
+                totalResponses,
+                resolvedByOng,
+                pendingDenuncias,
+                totalDenuncias: denuncias.length
+            }
+        });
+    });
+
+    router.get('/:id', async (req, res) => {
+        const ongId = parseInt(req.params.id, 10);
+        const ong = (await data.getOngs()).find((item) => item.id === ongId);
+
+        if (!ong) {
+            return res.status(404).render('404', { title: 'ONG não encontrada' });
+        }
+
+        const denuncias = await data.getDenuncias();
+        const ongResponses = denuncias.filter((denuncia) =>
+            denuncia.responses.some((response) => response.ongId === ong.userId)
+        );
+
+        res.render('ongs/detalhes', {
+            title: `ONG: ${ong.name}`,
+            ong: {
+                ...ong,
+                focus: ong.focus || ong.description
+            },
+            responses: ongResponses
+        });
+    });
+
+    return router;
+};
+
+const router = createOngsRouter();
 
 module.exports = router;
+module.exports.createOngsRouter = createOngsRouter;

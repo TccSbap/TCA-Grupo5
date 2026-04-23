@@ -154,7 +154,7 @@
         
         <nav class="gallery-grid">
             <figure class="gallery-item">
-                <img src="/images/agua-potavel.jpg" alt="Água Potável Limpa">
+                <img src="/images/agua-potavel.webp" alt="Água Potável Limpa">
                 <figcaption class="gallery-overlay">
                     <h4>Água Potável</h4>
                     <p>Acesso à água limpa é um direito fundamental</p>
@@ -180,61 +180,21 @@
         </header>
         
         <nav class="news-grid">
+            <% (noticias || []).slice(0, 4).forEach(function(noticia) { %>
             <article class="news-card">
                 <nav class="news-icon">
-                    <i class="fas fa-newspaper"></i>
+                    <i class="<%= noticia.iconClass || 'fas fa-newspaper' %>"></i>
                 </nav>
                 <nav class="news-content">
-                    <span class="news-date">13 de outubro de 2024</span>
-                    <h3>Falta de saneamento leva mais de 100 mil crianças à internação em 2024</h3>
-                    <p>Mais de 100 mil crianças de até 9 anos foram internadas no Sistema Único de Saúde (SUS) em 2024 por doenças associadas à falta de saneamento básico.</p>
-                    <a href="https://brasil61.com/n/falta-de-saneamento-leva-mais-de-100-mil-criancas-a-internacao-em-2024-bras2514910" target="_blank" class="news-link">
+                    <span class="news-date"><%= noticia.date %></span>
+                    <h3><%= noticia.title %></h3>
+                    <p><%= noticia.description %></p>
+                    <a href="<%= noticia.url %>" target="_blank" class="news-link">
                         Ler mais <i class="fas fa-arrow-right"></i>
                     </a>
                 </nav>
             </article>
-            
-            <article class="news-card">
-                <nav class="news-icon">
-                    <i class="fas fa-chart-line"></i>
-                </nav>
-                <nav class="news-content">
-                    <span class="news-date">8 de outubro de 2024</span>
-                    <h3>Perdas de água crescem nas 100 maiores cidades do país</h3>
-                    <p>Nas 100 maiores cidades brasileiras, as perdas de água pioraram 10,39%, segundo o Ranking do Saneamento 2025 do Instituto Trata Brasil.</p>
-                    <a href="https://tratabrasil.org.br/categoria/saneamento-basico/" target="_blank" class="news-link">
-                        Ler mais <i class="fas fa-arrow-right"></i>
-                    </a>
-                </nav>
-            </article>
-            
-            <article class="news-card">
-                <nav class="news-icon">
-                    <i class="fas fa-hand-holding-usd"></i>
-                </nav>
-                <nav class="news-content">
-                    <span class="news-date">18 de setembro de 2024</span>
-                    <h3>Saneamento para todos geraria economia de R$ 25 bilhões</h3>
-                    <p>Universalizar o acesso ao saneamento básico no Brasil geraria uma economia de R$ 25 bilhões em gastos de saúde, estima o Instituto Trata Brasil.</p>
-                    <a href="https://www.uol.com.br/ecoa/ultimas-noticias/2025/09/18/saneamento-para-todos-geraria-economia-de-r25-bi-com-saude.htm" target="_blank" class="news-link">
-                        Ler mais <i class="fas fa-arrow-right"></i>
-                    </a>
-                </nav>
-            </article>
-            
-            <article class="news-card">
-                <nav class="news-icon">
-                    <i class="fas fa-leaf"></i>
-                </nav>
-                <nav class="news-content">
-                    <span class="news-date">22 de setembro de 2024</span>
-                    <h3>Falta de saneamento é também um problema climático</h3>
-                    <p>Por dia, o Brasil despeja na natureza o equivalente a 5.200 piscinas olímpicas de esgoto bruto, impactando diretamente o meio ambiente.</p>
-                    <a href="https://g1.globo.com/meio-ambiente/cop-30/noticia/2025/09/22/por-que-a-falta-de-saneamento-basico-e-tambem-um-problema-climatico.ghtml" target="_blank" class="news-link">
-                        Ler mais <i class="fas fa-arrow-right"></i>
-                    </a>
-                </nav>
-            </article>
+            <% }) %>
         </nav>
     </section>
 </section>
