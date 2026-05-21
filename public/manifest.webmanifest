@@ -1,0 +1,46 @@
+{
+  "name": "ODS 6 - Água Consciente",
+  "short_name": "ODS 6",
+  "description": "Plataforma de denúncias e mobilização para água limpa e saneamento básico.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["social", "productivity", "education"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa/screenshots/home-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Tela inicial no desktop",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/pwa/screenshots/home-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "label": "Tela inicial no celular",
+      "form_factor": "narrow"
+    }
+  ]
+}

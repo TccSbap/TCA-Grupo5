@@ -1,5 +1,10 @@
 const request = require('supertest');
 const app = require('../../app');
+const { resetData } = require('../../data/mockDatabase');
+
+beforeEach(() => {
+  resetData();
+});
 
 const signInAdmin = async (agent) => {
   await agent.post('/admin/dashboard').type('form').send({
@@ -48,5 +53,54 @@ describe('rotas de ONGs', () => {
 
     expect(response.status).toBe(200);
     expect(response.text).toContain('Estatísticas da ONG');
+  });
+
+  test('ONG recém-cadastrada recebe respostas e vê as denúncias corretas no perfil', async () => {
+    const agent = request.agent(app);
+    const email = 'ongnova@teste.com';
+
+    await request(app)
+      .post('/auth/cadastro')
+      .type('form')
+      .send({
+        name: 'Admin ONG Nova',
+        email,
+        password: 'Senha123',
+        confirmPassword: 'Senha123',
+        userType: 'ong',
+        ongName: 'ONG Nova',
+        ongDescription: 'Organização de teste com descrição válida.',
+        ongContact: 'contato@ongnova.com',
+        ongPhone: '11988887777',
+        ongAddress: 'Rua Nova, 100'
+      });
+
+    await agent
+      .post('/auth/login')
+      .type('form')
+      .send({
+        email,
+        password: 'Senha123'
+      });
+
+    const database = require('../../data/mockDatabase');
+    const user = database.getUserByEmail(email);
+    const ong = database.getOngByUserId(user.id);
+
+    const response = await agent
+      .post('/denuncias/1/responder')
+      .type('form')
+      .send({
+        response: 'Estamos acompanhando o caso com prioridade.',
+        newStatus: 'em_andamento'
+      });
+
+    expect(response.status).toBe(302);
+    expect(database.getDenuncias(ong.id)).toHaveLength(1);
+
+    const details = await request(app).get(`/ongs/${ong.id}`);
+
+    expect(details.status).toBe(200);
+    expect(details.text).toContain('Esgoto a céu aberto na Rua das Flores');
   });
 });

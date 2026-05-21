@@ -1,5 +1,10 @@
 const request = require('supertest');
 const app = require('../../app');
+const { resetData } = require('../../data/mockDatabase');
+
+beforeEach(() => {
+  resetData();
+});
 
 describe('rotas de autenticação', () => {
   test('GET /auth/login responde com a página de login', async () => {
@@ -187,6 +192,34 @@ describe('rotas de autenticação', () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toContain('/auth/login?success=');
+  });
+
+  test('POST /auth/cadastro persiste telefone e endereço da ONG', async () => {
+    const response = await request(app)
+      .post('/auth/cadastro')
+      .type('form')
+      .send({
+        name: 'Admin ONG Persistida',
+        email: 'persistida@teste.com',
+        password: 'Senha123',
+        confirmPassword: 'Senha123',
+        userType: 'ong',
+        ongName: 'ONG Persistida',
+        ongDescription: 'Organização de teste com descrição válida.',
+        ongContact: 'contato@persistida.com',
+        ongPhone: '11999990000',
+        ongAddress: 'Rua Central, 123'
+      });
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain('/auth/login?success=');
+
+    const database = require('../../data/mockDatabase');
+    const user = database.getUserByEmail('persistida@teste.com');
+    const ong = database.getOngByUserId(user.id);
+
+    expect(ong.phone).toBe('11999990000');
+    expect(ong.address).toBe('Rua Central, 123');
   });
 
   test('GET /auth/logout redireciona para a página inicial', async () => {

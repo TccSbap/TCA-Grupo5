@@ -291,4 +291,50 @@ describe('dependency injection for routes', () => {
     expect(response.body.view).toBe('ongs/admin');
     expect(response.body.locals.ong.name).toBe('ONG Teste');
   });
+
+  test('ongs route filters dashboard and stats by ONG id, not user id', async () => {
+    const data = {
+      getOngs: jest.fn().mockReturnValue([
+        {
+          id: 31,
+          userId: 21,
+          name: 'ONG Teste',
+          description: 'Descricao de teste.'
+        }
+      ]),
+      getDenuncias: jest.fn().mockReturnValue([
+        {
+          id: 1,
+          status: 'pendente',
+          responses: [{ ongId: 31 }]
+        },
+        {
+          id: 2,
+          status: 'resolvida',
+          responses: [{ ongId: 31 }]
+        },
+        {
+          id: 3,
+          status: 'em_andamento',
+          responses: [{ ongId: 99 }]
+        }
+      ])
+    };
+
+    const app = buildApp(
+      createOngsRouter(data),
+      { id: 21, name: 'Admin Teste', type: 'ong', ongName: 'ONG Teste' }
+    );
+
+    const dashboardResponse = await request(app).get('/admin/dashboard');
+    const statsResponse = await request(app).get('/admin/stats');
+
+    expect(dashboardResponse.status).toBe(200);
+    expect(dashboardResponse.body.view).toBe('ongs/admin');
+    expect(dashboardResponse.body.locals.respondedDenuncias).toHaveLength(2);
+    expect(statsResponse.status).toBe(200);
+    expect(statsResponse.body.view).toBe('ongs/stats');
+    expect(statsResponse.body.locals.stats.totalResponses).toBe(2);
+    expect(statsResponse.body.locals.stats.resolvedByOng).toBe(1);
+  });
 });

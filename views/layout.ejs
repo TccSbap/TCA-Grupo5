@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma de denúncias e mobilização para água limpa e saneamento básico da ODS 6.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="application-name" content="ODS 6">
+    <meta name="apple-mobile-web-app-title" content="ODS 6">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/pwa/icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/pwa/icon-512.png" sizes="512x512" type="image/png">
+    <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" sizes="180x180">
     <title><%= title %> - ODS 6</title>
+    <meta property="og:title" content="<%= typeof ogTitle !== 'undefined' ? ogTitle : title %> - ODS 6">
+    <meta property="og:description" content="<%= typeof ogDescription !== 'undefined' ? ogDescription : 'Plataforma de denúncias e mobilização para água limpa e saneamento básico da ODS 6.' %>">
+    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : '/pwa/icon-512.png' %>">
+    <meta property="og:url" content="<%= typeof ogUrl !== 'undefined' ? ogUrl : 'https://ods6.org/' %>">
+    <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="ODS 6">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

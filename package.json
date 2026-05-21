@@ -10,7 +10,8 @@
     "test:integration": "jest tests/integration --runInBand",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "start:prod": "node -r dotenv/config app.js dotenv_config_path=.env.prod"
   },
   "keywords": [
     "ods6",

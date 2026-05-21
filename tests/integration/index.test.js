@@ -1,5 +1,10 @@
 const request = require('supertest');
 const app = require('../../app');
+const { resetData } = require('../../data/mockDatabase');
+
+beforeEach(() => {
+  resetData();
+});
 
 const signInUser = async (agent) => {
   await agent.post('/auth/login').type('form').send({

@@ -25,7 +25,7 @@ CREATE TABLE users (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(150) NOT NULL,
   email VARCHAR(255) NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
+  password_hash CHAR(60) NOT NULL,
   type ENUM('user', 'admin', 'ong') NOT NULL,
   ong_name VARCHAR(150) NULL,
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
