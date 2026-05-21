@@ -107,6 +107,8 @@ const createAuthRouter = (data = defaultData) => {
                     name: ongName,
                     description: ongDescription,
                     contact: ongContact,
+                    phone: req.body.ongPhone || null,
+                    address: req.body.ongAddress || null,
                     userId: newUser.id
                 });
             }

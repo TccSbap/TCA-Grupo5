@@ -3,6 +3,7 @@ coverage/
 test-results/
 dist/
 .env
+.env.prod
 
 
 

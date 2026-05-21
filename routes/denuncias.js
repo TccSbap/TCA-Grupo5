@@ -5,6 +5,19 @@ const defaultData = require('../data/database');
 const createDenunciasRouter = (data = defaultData) => {
     const router = express.Router();
 
+    const findUserOng = async (userId) => {
+        if (typeof data.getOngByUserId === 'function') {
+            return data.getOngByUserId(userId);
+        }
+
+        if (typeof data.getOngs !== 'function') {
+            return null;
+        }
+
+        const ongs = await data.getOngs();
+        return ongs.find((ong) => ong.userId === userId) || null;
+    };
+
     router.get('/', async (req, res) => {
         const denuncias = await data.getDenuncias();
         const status = req.query.status;
@@ -89,16 +102,21 @@ const createDenunciasRouter = (data = defaultData) => {
 
         try {
             const denuncia = await data.getDenunciaById(denunciaId);
+            const userOng = await findUserOng(user.id);
 
             if (!denuncia) {
                 return res.status(404).json({ error: 'Denúncia não encontrada' });
             }
 
+            if (!userOng) {
+                return res.status(404).render('404', { title: 'ONG não encontrada' });
+            }
+
             const newResponse = {
                 id: denuncia.responses.length + 1,
                 text: response,
-                ongName: user.ongName,
-                ongId: user.id,
+                ongName: userOng.name || user.ongName || user.name,
+                ongId: userOng.id,
                 createdAt: new Date().toISOString()
             };
 

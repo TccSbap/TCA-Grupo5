@@ -41,6 +41,13 @@
                 </nav>
                 
                 <nav class="form-group">
+                    <label for="cep">CEP</label>
+                    <input type="text" id="cep" name="cep" maxlength="9"
+                           placeholder="Ex: 01001-000">
+                    <small>Digite o CEP para preencher o endereço automaticamente</small>
+                </nav>
+
+                <nav class="form-group">
                     <label for="location">Localização *</label>
                     <input type="text" id="location" name="location" required 
                            placeholder="Ex: Rua das Flores, 123 - Centro - São Paulo/SP">
@@ -62,6 +69,25 @@
                     </button>
                 </footer>
             </form>
+
+<script>
+document.getElementById('cep').addEventListener('blur', async function () {
+    const cep = this.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+
+        if (!data.erro) {
+            document.getElementById('location').value =
+                `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+        }
+    } catch (err) {
+        console.error('Erro ao buscar CEP');
+    }
+});
+</script>
             
             <aside class="form-info">
                 <h3>Informações Importantes</h3>

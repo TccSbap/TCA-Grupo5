@@ -75,16 +75,24 @@ const app = createApp();
 const PORT = process.env.PORT || 3000;
 
 if (require.main === module) {
-    ensureDataLoaded()
-        .catch((error) => {
-            console.error('Falha ao preparar a camada de dados:', error);
-        })
-        .finally(() => {
+    (async () => {
+        try {
+            const dataReady = await ensureDataLoaded();
+            if (!dataReady) {
+                console.error('Banco de dados indisponível. Verifique a configuração antes de iniciar o servidor.');
+                process.exitCode = 1;
+                return;
+            }
+
             app.listen(PORT, () => {
                 console.log(`Servidor rodando na porta ${PORT}`);
                 console.log(`Acesse: http://localhost:${PORT}`);
             });
-        });
+        } catch (error) {
+            console.error('Falha ao preparar a camada de dados:', error);
+            process.exitCode = 1;
+        }
+    })();
 }
 
 module.exports = app;

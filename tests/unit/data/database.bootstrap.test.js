@@ -1,5 +1,9 @@
 const database = require('../../../data/mockDatabase');
 
+beforeEach(() => {
+    database.resetData();
+});
+
 describe('bootstrap da camada de dados em teste', () => {
     test('carrega a massa de dados inicial para os principais contextos', () => {
         expect(database.getUsers()).toHaveLength(11);

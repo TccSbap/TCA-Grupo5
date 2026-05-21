@@ -1,8 +1,10 @@
 const request = require('supertest');
 const { createMockReq, createMockRes } = require('../helpers/httpMocks');
+const { resetData } = require('../../data/mockDatabase');
 
 describe('tratamento de erros das denúncias', () => {
   beforeEach(() => {
+    resetData();
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
