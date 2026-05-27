@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
 const useMockDatabase = process.env.USE_MOCK_DB === 'true' || process.env.NODE_ENV === 'test';
@@ -16,6 +17,16 @@ const { createAdminRouter } = require('./routes/admin');
 
 const createApp = (data = defaultData) => {
     const app = express();
+    const watchReloadEnabled = process.env.WATCH_RELOAD === 'true';
+    const watchVersionFile = path.join(__dirname, 'tmp', 'prod-watch-version.txt');
+
+    const readWatchVersion = () => {
+        try {
+            return fs.readFileSync(watchVersionFile, 'utf8').trim() || '0';
+        } catch (error) {
+            return '0';
+        }
+    };
 
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
@@ -37,8 +48,16 @@ const createApp = (data = defaultData) => {
         res.locals.isLoggedIn = !!req.session.user;
         res.locals.isAdmin = req.session.user && (req.session.user.type === 'admin' || req.session.user.type === 'ong');
         res.locals.currentPath = req.path;
+        res.locals.watchReload = watchReloadEnabled;
+        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '1';
         next();
     });
+
+    if (watchReloadEnabled) {
+        app.get('/__watch-version', (req, res) => {
+            res.type('text/plain').send(readWatchVersion());
+        });
+    }
 
     if (process.env.NODE_ENV === 'test') {
         app.post('/__test/session', (req, res) => {
