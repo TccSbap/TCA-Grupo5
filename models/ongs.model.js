@@ -13,9 +13,7 @@ module.exports = ({ pool, canUseDatabase }) => {
 
     const getOngs = async (ongId = null) => {
         await ensureDatabase();
-        const [rows] = await pool.execute(
-            'SELECT * FROM ongs ORDER BY id'
-        );
+        const [rows] = await pool.execute('SELECT * FROM ongs ORDER BY id');
         const ongs = rows.map(normalizeOngRow);
         const normalizedOngId = normalizeFilterId(ongId);
         if (normalizedOngId === null) {
