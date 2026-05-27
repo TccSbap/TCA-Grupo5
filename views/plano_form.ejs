@@ -14,7 +14,7 @@
             </section>
         <% } %>
 
-        <form action="/assinar-plano" method="POST" class="styled-form" id="planoForm" novalidate>
+        <form action="/assinar-plano" method="POST" class="styled-form" id="planoForm" novalidate data-submit-lock-mode="manual">
             <input type="hidden" name="planoId" value="<%= plano.id %>">
             <input type="hidden" name="planoNome" value="<%= plano.title %>">
             <input type="hidden" name="planoPreco" value="<%= plano.price %>">
@@ -169,10 +169,19 @@
 
         planoForm.addEventListener("submit", function(event) {
             event.preventDefault(); // Impede o envio padrão do formulário
+
+            if (window.submitOnce && window.submitOnce.isLocked(planoForm)) {
+                return;
+            }
+
             // Limpar mensagens de erro anteriores
             document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
 
             if (validatePlanoForm()) {
+                if (window.submitOnce) {
+                    window.submitOnce.lock(planoForm);
+                }
+
                 planoForm.submit(); // Envia o formulário se todas as validações passarem
             }
         });

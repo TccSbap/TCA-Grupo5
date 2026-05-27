@@ -14,7 +14,7 @@
             </section>
         <% } %>
 
-        <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate>
+        <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate data-submit-lock-mode="manual">
             <input type="hidden" name="ongId" value="<%= ong.id %>">
 
             <h2>1. Informações do Doador</h2>
@@ -200,10 +200,19 @@
 
         doacaoForm.addEventListener("submit", function(event) {
             event.preventDefault(); // Impede o envio padrão do formulário
+
+            if (window.submitOnce && window.submitOnce.isLocked(doacaoForm)) {
+                return;
+            }
+
             // Limpar mensagens de erro anteriores
             document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
 
             if (validateDoacaoForm()) {
+                if (window.submitOnce) {
+                    window.submitOnce.lock(doacaoForm);
+                }
+
                 doacaoForm.submit(); // Envia o formulário se todas as validações passarem
             }
         });

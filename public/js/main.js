@@ -1,5 +1,65 @@
 // Funcionalidades JavaScript para o site ODS 6
 
+window.submitOnce = window.submitOnce || (() => {
+    const SUBMIT_SELECTOR = 'button[type="submit"], input[type="submit"]';
+
+    const getSubmitControls = (form) => Array.from(form.querySelectorAll(SUBMIT_SELECTOR));
+
+    const lock = (form) => {
+        if (!form || form.dataset.submitLocked === 'true') {
+            return false;
+        }
+
+        form.dataset.submitLocked = 'true';
+        form.classList.add('is-submitting');
+        form.setAttribute('aria-busy', 'true');
+
+        getSubmitControls(form).forEach((control) => {
+            if (typeof control.dataset.submitOnceOriginalDisabled === 'undefined') {
+                control.dataset.submitOnceOriginalDisabled = control.disabled ? 'true' : 'false';
+            }
+
+            control.disabled = true;
+            control.setAttribute('aria-disabled', 'true');
+        });
+
+        return true;
+    };
+
+    const unlock = (form) => {
+        if (!form || form.dataset.submitLocked !== 'true') {
+            return false;
+        }
+
+        delete form.dataset.submitLocked;
+        form.classList.remove('is-submitting');
+        form.removeAttribute('aria-busy');
+
+        getSubmitControls(form).forEach((control) => {
+            const wasDisabled = control.dataset.submitOnceOriginalDisabled === 'true';
+            control.disabled = wasDisabled;
+            control.removeAttribute('aria-disabled');
+            delete control.dataset.submitOnceOriginalDisabled;
+        });
+
+        return true;
+    };
+
+    const isLocked = (form) => Boolean(form && form.dataset.submitLocked === 'true');
+
+    return { lock, unlock, isLocked };
+})();
+
+window.addEventListener('pageshow', function(event) {
+    if (!event.persisted) {
+        return;
+    }
+
+    document.querySelectorAll('form[data-submit-locked="true"]').forEach((form) => {
+        window.submitOnce.unlock(form);
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Menu mobile toggle
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
@@ -79,6 +139,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
+            const submitLockMode = (form.dataset.submitLockMode || 'auto').toLowerCase();
+            const isPostForm = (form.getAttribute('method') || 'get').toUpperCase() === 'POST';
+
+            if (submitLockMode === 'manual' || !isPostForm) {
+                return;
+            }
+
+            if (window.submitOnce.isLocked(form)) {
+                e.preventDefault();
+                return;
+            }
+
             const requiredFields = form.querySelectorAll('[required]');
             let isValid = true;
             
@@ -124,8 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (!isValid) {
+                window.submitOnce.unlock(form);
                 e.preventDefault();
+                return;
             }
+
+            window.submitOnce.lock(form);
         });
     });
     
