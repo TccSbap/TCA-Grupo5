@@ -1324,6 +1324,29 @@ body {
 
 
 /* Ajustes para ONGs */
+.ong-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+}
+
+.ong-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.ong-icon i {
+    line-height: 1;
+}
+
 .ong-contact-info {
     display: flex;
     flex-wrap: wrap;
@@ -1331,9 +1354,35 @@ body {
     justify-content: space-between;
 }
 
-.ong-contact-info .meta-item {
+.ong-contact-info .info-item {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-2);
     flex-basis: calc(50% - var(--spacing-2)); /* Para alinhar dois itens por linha */
     justify-content: flex-start;
+    text-align: left;
+}
+
+.ong-contact-info .info-item-address {
+    flex-basis: 100%;
+}
+
+.ong-contact-info .info-item-phone {
+    flex-basis: 100%;
+}
+
+.ong-contact-info .info-item-calendar {
+    flex-basis: 100%;
+}
+
+.ong-contact-info .info-item i {
+    flex: 0 0 auto;
+}
+
+.ong-contact-info .info-item span {
+    display: inline;
+    flex: 1;
 }
 
 /* Ajuste do Footer */
@@ -2646,6 +2695,11 @@ body {
 .admin-table td:nth-child(4) {
     width: 160px;
     white-space: nowrap;
+    text-align: center;
+}
+
+.admin-table td:nth-child(4) .status {
+    margin-left: 0;
 }
 
 .admin-table tbody tr:hover {

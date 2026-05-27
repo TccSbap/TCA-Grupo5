@@ -30,20 +30,20 @@
                         </nav>
                         
                         <% if (ong.phone) { %>
-                        <nav class="info-item">
+                        <nav class="info-item info-item-phone">
                             <i class="fas fa-phone"></i>
                             <span><%= ong.phone %></span>
                         </nav>
                         <% } %>
                         
                         <% if (ong.address) { %>
-                        <nav class="info-item">
+                        <nav class="info-item info-item-address">
                             <i class="fas fa-map-marker-alt"></i>
                             <span><%= ong.address %></span>
                         </nav>
                         <% } %>
                         
-                        <nav class="info-item">
+                        <nav class="info-item info-item-calendar">
                             <i class="fas fa-calendar"></i>
                             <span>Parceira desde <%= new Date(ong.createdAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %></span>
                         </nav>

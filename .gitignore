@@ -4,6 +4,6 @@ test-results/
 dist/
 .env
 .env.prod
-
+tmp/
 
 
