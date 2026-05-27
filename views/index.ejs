@@ -8,10 +8,10 @@
     <section class="container">
         <section class="hero-content">
             <h1 class="hero-title">
-             Água Consciente para Todos
+                Água Consciente para Todos
             </h1>
             <p class="hero-subtitle">
-                Juntos podemos garantir o acesso universal à água potável e saneamento básico. 
+                Juntos podemos garantir o acesso universal à água potável e saneamento básico.
                 Faça sua denúncia e contribua para um futuro mais sustentável.
             </p>
             <nav class="hero-actions">
@@ -41,7 +41,7 @@
                     <p class="stat-label">Pessoas sem acesso à água potável</p>
                 </nav>
             </article>
-            
+
             <article class="stat-item">
                 <nav class="stat-icon1">
                     <i class="fas fa-toilet"></i>
@@ -51,7 +51,7 @@
                     <p class="stat-label">Pessoas sem saneamento básico</p>
                 </nav>
             </article>
-            
+
             <article class="stat-item">
                 <nav class="stat-icon">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -61,7 +61,7 @@
                     <p class="stat-label">Denúncias registradas</p>
                 </nav>
             </article>
-            
+
             <article class="stat-item">
                 <nav class="stat-icon">
                     <i class="fas fa-hands-helping"></i>
@@ -82,10 +82,9 @@
             <h2>Água Consciente</h2>
             <p>Assegurar a disponibilidade e gestão sustentável da água e saneamento para todos</p>
         </header>
-        
+
         <nav class="ods-content">
             <nav class="ods-text">
-                <!-- Valores da Empresa -->
                 <article class="ods-card">
                     <header class="ods-card-header">
                         <nav class="ods-card-icon">
@@ -103,7 +102,6 @@
                     </section>
                 </article>
 
-                <!-- Por que é importante -->
                 <article class="ods-card">
                     <header class="ods-card-header">
                         <nav class="ods-card-icon importance-icon">
@@ -113,14 +111,13 @@
                     </header>
                     <section class="ods-card-body">
                         <p>
-                            O acesso à água potável e ao saneamento básico é um direito humano fundamental. 
-                            Milhões de pessoas ainda vivem sem esses serviços essenciais, o que afeta 
+                            O acesso à água potável e ao saneamento básico é um direito humano fundamental.
+                            Milhões de pessoas ainda vivem sem esses serviços essenciais, o que afeta
                             diretamente a saúde, educação e desenvolvimento econômico.
                         </p>
                     </section>
                 </article>
-                
-                <!-- Como você pode ajudar -->
+
                 <article class="ods-card">
                     <header class="ods-card-header">
                         <nav class="ods-card-icon help-icon">
@@ -138,20 +135,18 @@
                     </section>
                 </article>
             </nav>
-            
         </nav>
     </section>
 </section>
 
-<!-- Recent Denuncias -->
-<!-- Galeria de Fotos -->
+<!-- Galeria e Notícias -->
 <section class="photo-gallery">
     <section class="container">
         <header class="section-header">
-        Água Consciente em Foco</h2>
+            <h2>Água Consciente em Foco</h2>
             <p>Imagens que ilustram a importância do acesso universal à água limpa e saneamento básico</p>
         </header>
-        
+
         <nav class="gallery-grid">
             <figure class="gallery-item">
                 <img src="/images/agua-potavel.webp" alt="Água Potável Limpa">
@@ -171,14 +166,13 @@
     </section>
 </section>
 
-<!-- Notícias sobre Saneamento -->
 <section class="news-section">
     <section class="container">
         <header class="section-header">
             <h2>Notícias sobre Saneamento Básico</h2>
             <p>Fique por dentro das últimas novidades sobre água e saneamento no Brasil</p>
         </header>
-        
+
         <nav class="news-grid">
             <% (noticias || []).slice(0, 4).forEach(function(noticia) { %>
             <article class="news-card">
@@ -189,7 +183,7 @@
                     <span class="news-date"><%= noticia.date %></span>
                     <h3><%= noticia.title %></h3>
                     <p><%= noticia.description %></p>
-                    <a href="<%= noticia.url %>" target="_blank" class="news-link">
+                    <a href="<%= noticia.url %>" target="_blank" rel="noopener noreferrer" class="news-link">
                         Ler mais <i class="fas fa-arrow-right"></i>
                     </a>
                 </nav>
@@ -206,7 +200,7 @@
             <h2>Denúncias Recentes</h2>
             <p>Veja as últimas denúncias registradas na plataforma</p>
         </header>
-        
+
         <nav class="denuncias-grid">
             <% denuncias.forEach(denuncia => { %>
             <article class="denuncia-card">
@@ -222,7 +216,7 @@
                 <p class="denuncia-meta">
                     <i class="fas fa-map-marker-alt"></i> <%= denuncia.location %>
                 </p>
-                <a href="/denuncias/<%= denuncia._id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+                <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
             </article>
             <% }) %>
         </nav>

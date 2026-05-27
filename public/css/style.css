@@ -131,6 +131,14 @@ body {
     color: var(--primary-blue);
 }
 
+.nav-menu a.active,
+.nav-menu a[aria-current="page"] {
+    color: var(--primary-blue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
+}
+
 .nav-auth {
     display: flex;
     align-items: center;
@@ -139,6 +147,14 @@ body {
 
 .user-menu {
     position: relative;
+}
+
+.user-menu > summary {
+    list-style: none;
+}
+
+.user-menu > summary::-webkit-details-marker {
+    display: none;
 }
 
 .user-name {
@@ -171,7 +187,9 @@ body {
     display: none;
 }
 
-.user-menu:hover .dropdown {
+.user-menu:hover .dropdown,
+.user-menu:focus-within .dropdown,
+.user-menu[open] .dropdown {
     display: block;
 }
 
@@ -597,11 +615,15 @@ body {
 
 /* Status */
 .status {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
     padding: var(--spacing-1) var(--spacing-3);
     border-radius: var(--border-radius);
     font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .status-pendente {
@@ -687,6 +709,43 @@ body {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-blue);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: var(--spacing-12);
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-3);
+    transform: translateY(-50%);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+    color: var(--primary-blue);
+    background: var(--gray-100);
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.25);
+    outline-offset: 2px;
 }
 
 .form-group small {
@@ -1314,8 +1373,28 @@ body {
 /* Responsividade: Menu Hambúrguer */
 .mobile-menu-toggle {
     display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     font-size: var(--font-size-xl);
     cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--gray-700);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.mobile-menu-toggle:hover,
+.mobile-menu-toggle:focus-visible {
+    background: var(--gray-100);
+    color: var(--primary-blue);
+}
+
+.mobile-menu-toggle:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.25);
+    outline-offset: 2px;
 }
 
 @media (max-width: 768px) {
@@ -1329,6 +1408,9 @@ body {
         background: var(--white);
         box-shadow: var(--shadow-md);
         padding: var(--spacing-4) 0;
+        z-index: 1001;
+        max-height: calc(100vh - 72px);
+        overflow-y: auto;
     }
 
     .nav-menu.active {
@@ -1347,15 +1429,42 @@ body {
     }
 
     .nav-auth {
-        display: none;
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        gap: var(--spacing-2);
+        flex-wrap: wrap;
+        padding-top: var(--spacing-3);
     }
 
     .mobile-menu-toggle {
         display: block;
+        margin-left: auto;
     }
 
     .navbar .container {
         flex-wrap: wrap;
+    }
+
+    .nav-auth .btn {
+        min-height: 44px;
+    }
+
+    .user-menu {
+        width: 100%;
+    }
+
+    .user-name {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .dropdown {
+        position: static;
+        width: 100%;
+        margin-top: var(--spacing-2);
+        box-shadow: none;
+        border: 1px solid var(--gray-200);
     }
 
     .ong-contact-info .meta-item {
@@ -2531,6 +2640,12 @@ body {
     padding: var(--spacing-4);
     border-bottom: 1px solid var(--gray-200);
     color: var(--gray-700);
+}
+
+.admin-table th:nth-child(4),
+.admin-table td:nth-child(4) {
+    width: 160px;
+    white-space: nowrap;
 }
 
 .admin-table tbody tr:hover {

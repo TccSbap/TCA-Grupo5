@@ -37,6 +37,16 @@
                     
                     <p><strong>Contato:</strong></p>
                     <address><a href="mailto:<%= ong.contact %>"><%= ong.contact %></a></address>
+
+                    <% if (ong.cnpj) { %>
+                    <p><strong>CNPJ:</strong></p>
+                    <p><%= ong.cnpj %></p>
+                    <% } %>
+
+                    <% if (ong.rg) { %>
+                    <p><strong>RG do Responsável:</strong></p>
+                    <p><%= ong.rg %></p>
+                    <% } %>
                     
                     <% if (ong.phone) { %>
                     <p><strong>Telefone:</strong></p>

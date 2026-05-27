@@ -180,6 +180,20 @@
                         <label>Email de Contato:</label>
                         <span><%= ong.contact %></span>
                     </nav>
+
+                    <% if (ong.cnpj) { %>
+                    <nav class="detail-group">
+                        <label>CNPJ:</label>
+                        <span><%= ong.cnpj %></span>
+                    </nav>
+                    <% } %>
+
+                    <% if (ong.rg) { %>
+                    <nav class="detail-group">
+                        <label>RG do Responsável:</label>
+                        <span><%= ong.rg %></span>
+                    </nav>
+                    <% } %>
                     
                     <% if (ong.phone) { %>
                     <nav class="detail-group">

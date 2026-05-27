@@ -34,13 +34,13 @@
 
             <nav class="form-group">
                 <label for="telefoneComprador">Telefone</label>
-                <input type="tel" id="telefoneComprador" name="telefoneComprador" placeholder="(XX) XXXXX-XXXX">
+                <input type="tel" id="telefoneComprador" name="telefoneComprador" data-mask="telefone" inputmode="numeric" placeholder="(00) 00000-0000">
                 <nav class="error-message" id="telefoneComprador-error"></nav>
             </nav>
 
             <nav class="form-group">
                 <label for="documentoComprador">CPF</label>
-                <input type="text" id="documentoComprador" name="documentoComprador" placeholder="CPF">
+                <input type="text" id="documentoComprador" name="documentoComprador" data-mask="cpf" inputmode="numeric" placeholder="000.000.000-00">
                 <nav class="error-message" id="documentoComprador-error"></nav>
             </nav>
 
@@ -125,7 +125,7 @@
             <h2>4. Confirmação</h2>
             <nav class="form-group">
                 <label>
-                    <input type="checkbox" id="confirmacao" name="confirmacao">
+                    <input type="checkbox" id="confirmacao" name="confirmacao" required>
                     Confirmo que os dados estão corretos e autorizo o processamento da assinatura.
                 </label>
                 <nav class="error-message" id="confirmacao-error"></nav>
@@ -135,8 +135,6 @@
         </form>
     </section>
 </section>
-
-<%- include("./partials/footer") %>
 
 <script src="/js/validation.js"></script>
 <script>
@@ -180,3 +178,5 @@
         });
     });
 </script>
+
+<%- include("./partials/footer") %>

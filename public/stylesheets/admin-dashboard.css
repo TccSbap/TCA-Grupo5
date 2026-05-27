@@ -184,7 +184,8 @@
 }
 
 .status {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     padding: var(--spacing-1) var(--spacing-2);
     border-radius: var(--border-radius);
     font-size: var(--font-size-xs);
@@ -192,6 +193,7 @@
     color: var(--white);
     margin-left: var(--spacing-2);
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .status-pendente {

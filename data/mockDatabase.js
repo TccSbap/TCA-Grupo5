@@ -32,7 +32,11 @@ const normalizeFilterId = (value) => {
 
 const initializeData = () => {
     users = createUsersSeed(defaultPasswordHash);
-    ongs = createOngsSeed();
+    ongs = createOngsSeed().map((ong) => ({
+        cnpj: null,
+        rg: null,
+        ...ong
+    }));
     planos = createPlanosSeed();
     noticias = createNoticiasSeed();
     doacoes = createDoacoesSeed();
@@ -137,6 +141,10 @@ const createOng = (ongData) => {
     const newOng = {
         id: nextId(ongs),
         ...ongData,
+        contact: ongData.contact || ongData.contact_email || null,
+        cnpj: ongData.cnpj || null,
+        rg: ongData.rg || null,
+        userId: ongData.userId || ongData.user_id || null,
         focus: ongData.focus || ongData.description || ongData.name,
         createdAt: ongData.createdAt || new Date().toISOString()
     };

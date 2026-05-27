@@ -52,13 +52,17 @@ describe('dependency injection for routes', () => {
         userType: 'admin',
         ongName: 'ONG Exemplo',
         ongDescription: 'Descricao longa o suficiente para validar.',
-        ongContact: 'contato@ongexemplo.com'
+        ongContact: 'contato@ongexemplo.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9'
       });
 
     expect(data.getUserByEmail).toHaveBeenCalledWith('maria@exemplo.com');
     expect(data.createUser).toHaveBeenCalled();
     expect(data.createOng).toHaveBeenCalledWith(expect.objectContaining({
       name: 'ONG Exemplo',
+      cnpj: '04.252.011/0001-10',
+      rg: '12.345.678-9',
       userId: 99
     }));
     expect(signupResponse.status).toBe(302);

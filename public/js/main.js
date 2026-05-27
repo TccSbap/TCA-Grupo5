@@ -6,8 +6,43 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.querySelector('.nav-menu');
     
     if (mobileMenuToggle && navMenu) {
+        const updateMenuState = (isOpen) => {
+            navMenu.classList.toggle('active', isOpen);
+            mobileMenuToggle.setAttribute('aria-expanded', String(isOpen));
+            mobileMenuToggle.setAttribute(
+                'aria-label',
+                isOpen ? 'Fechar menu principal' : 'Abrir menu principal'
+            );
+        };
+
         mobileMenuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
+            updateMenuState(!navMenu.classList.contains('active'));
+        });
+
+        navMenu.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                updateMenuState(false);
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            const isClickInsideMenu = navMenu.contains(event.target) || mobileMenuToggle.contains(event.target);
+
+            if (navMenu.classList.contains('active') && !isClickInsideMenu) {
+                updateMenuState(false);
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                updateMenuState(false);
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                updateMenuState(false);
+            }
         });
     }
     

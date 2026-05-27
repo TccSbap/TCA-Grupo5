@@ -54,6 +54,8 @@ const normalizeOngRow = (row) => ({
     name: row.name,
     description: row.description,
     contact: row.contact_email,
+    cnpj: row.cnpj || null,
+    rg: row.rg || null,
     phone: row.phone,
     address: row.address,
     userId: row.user_id,

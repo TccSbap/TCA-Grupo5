@@ -19,57 +19,74 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <%
+        const currentRoute = typeof currentPath === 'string' ? currentPath : '/';
+        const isActiveRoute = (route) => {
+            if (route === '/') {
+                return currentRoute === '/';
+            }
+
+            return currentRoute === route || currentRoute.startsWith(route + '/');
+        };
+    %>
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
-            <nav class="container">
+            <section class="container">
                 <nav class="nav-brand">
-                    <a href="/" class="logo">
+                    <a href="/" class="logo" aria-label="Ir para a página inicial">
                         <img src="/images/logo.png" alt="ODS 6 Logo" class="logo-img">
                         <span>Água Consciente</span>
                     </a>
                 </nav>
-                
-                <nav class="nav-menu">
+
+                <nav class="nav-menu" id="primary-navigation" aria-label="Menu principal">
                     <ul class="nav-links">
-                        <li><a href="/noticias">Notícias</a></li>
-                        <li><a href="/ongs">ONGs</a></li>
-                        <li><a href="/denuncias">Denúncias</a></li>
-                        <li><a href="/sobre">Sobre</a></li>
-                        <li><a href="/contato">Contato</a></li>
-                        <li><a href="/doacoes">Doações</a></li>
-                        <li><a href="/planos">Planos</a></li>
+                        <li><a href="/" class="<%= isActiveRoute('/') ? 'active' : '' %>" <%= isActiveRoute('/') ? 'aria-current=\"page\"' : '' %>>Início</a></li>
+                        <li><a href="/noticias" class="<%= isActiveRoute('/noticias') ? 'active' : '' %>" <%= isActiveRoute('/noticias') ? 'aria-current=\"page\"' : '' %>>Notícias</a></li>
+                        <li><a href="/ongs" class="<%= isActiveRoute('/ongs') ? 'active' : '' %>" <%= isActiveRoute('/ongs') ? 'aria-current=\"page\"' : '' %>>ONGs</a></li>
+                        <li><a href="/denuncias" class="<%= isActiveRoute('/denuncias') ? 'active' : '' %>" <%= isActiveRoute('/denuncias') ? 'aria-current=\"page\"' : '' %>>Denúncias</a></li>
+                        <li><a href="/sobre" class="<%= isActiveRoute('/sobre') ? 'active' : '' %>" <%= isActiveRoute('/sobre') ? 'aria-current=\"page\"' : '' %>>Sobre</a></li>
+                        <li><a href="/contato" class="<%= isActiveRoute('/contato') ? 'active' : '' %>" <%= isActiveRoute('/contato') ? 'aria-current=\"page\"' : '' %>>Contato</a></li>
+                        <li><a href="/doacoes" class="<%= isActiveRoute('/doacoes') ? 'active' : '' %>" <%= isActiveRoute('/doacoes') ? 'aria-current=\"page\"' : '' %>>Doações</a></li>
+                        <li><a href="/planos" class="<%= isActiveRoute('/planos') ? 'active' : '' %>" <%= isActiveRoute('/planos') ? 'aria-current=\"page\"' : '' %>>Planos</a></li>
                     </ul>
                 </nav>
-                
+
                 <nav class="nav-auth">
                     <% if (isLoggedIn) { %>
-                        <nav class="user-menu">
-                            <span class="user-name">
-                                <i class="fas fa-user"></i>
-                                <%= user.name %>
+                        <details class="user-menu">
+                            <summary class="user-name">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <span><%= user.name %></span>
                                 <% if (isAdmin) { %>
                                     <span class="admin-badge">ONG</span>
                                 <% } %>
-                            </span>
-                            <nav class="dropdown">
+                            </summary>
+                            <nav class="dropdown" aria-label="Menu do usuário">
                                 <a href="/dashboard">Dashboard</a>
                                 <% if (isAdmin) { %>
-                                <a href="/admin">Painel Admin</a>
+                                    <a href="/admin">Painel Admin</a>
                                 <% } %>
                                 <a href="/auth/logout">Sair</a>
                             </nav>
-                        </nav>
+                        </details>
                     <% } else { %>
                         <a href="/auth/login" class="btn btn-outline">Entrar</a>
                         <a href="/auth/cadastro" class="btn btn-primary">Cadastrar</a>
                     <% } %>
                 </nav>
-                
-                <nav class="mobile-menu-toggle">
-                    <i class="fas fa-bars"></i>
-                </nav>
-            </nav>
+
+                <button
+                    type="button"
+                    class="mobile-menu-toggle"
+                    aria-controls="primary-navigation"
+                    aria-expanded="false"
+                    aria-label="Abrir menu principal"
+                >
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+            </section>
         </nav>
     </header>
 

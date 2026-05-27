@@ -71,6 +71,8 @@ describe('rotas de ONGs', () => {
         ongName: 'ONG Nova',
         ongDescription: 'Organização de teste com descrição válida.',
         ongContact: 'contato@ongnova.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9',
         ongPhone: '11988887777',
         ongAddress: 'Rua Nova, 100'
       });
