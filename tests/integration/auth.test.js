@@ -124,7 +124,9 @@ describe('rotas de autenticação', () => {
         userType: 'admin',
         ongName: 'AB',
         ongDescription: 'Organização de teste validada.',
-        ongContact: 'contato@teste.com'
+        ongContact: 'contato@teste.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9'
       });
 
     expect(response.status).toBe(302);
@@ -145,7 +147,9 @@ describe('rotas de autenticação', () => {
         userType: 'admin',
         ongName: 'ONG Teste',
         ongDescription: 'curta',
-        ongContact: 'contato@teste.com'
+        ongContact: 'contato@teste.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9'
       });
 
     expect(response.status).toBe(302);
@@ -166,12 +170,60 @@ describe('rotas de autenticação', () => {
         userType: 'admin',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
-        ongContact: 'contato@teste'
+        ongContact: 'contato@teste',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9'
       });
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toContain(
       encodeURIComponent('Email de contato da ONG inválido. Deve conter @ e terminar com .com')
+    );
+  });
+
+  test('POST /auth/cadastro rejeita CNPJ inválido da ONG', async () => {
+    const response = await request(app)
+      .post('/auth/cadastro')
+      .type('form')
+      .send({
+        name: 'Admin ONG Teste',
+        email: 'admin4b@teste.com',
+        password: 'Senha123',
+        confirmPassword: 'Senha123',
+        userType: 'admin',
+        ongName: 'ONG Teste',
+        ongDescription: 'Organização de teste validada.',
+        ongContact: 'contato@teste.com',
+        ongCnpj: '11.111.111/1111-11',
+        ongRg: '12.345.678-9'
+      });
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain(
+      encodeURIComponent('CNPJ da ONG inválido.')
+    );
+  });
+
+  test('POST /auth/cadastro rejeita RG inválido da ONG', async () => {
+    const response = await request(app)
+      .post('/auth/cadastro')
+      .type('form')
+      .send({
+        name: 'Admin ONG Teste',
+        email: 'admin4c@teste.com',
+        password: 'Senha123',
+        confirmPassword: 'Senha123',
+        userType: 'admin',
+        ongName: 'ONG Teste',
+        ongDescription: 'Organização de teste validada.',
+        ongContact: 'contato@teste.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '11.111.111-1'
+      });
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain(
+      encodeURIComponent('RG do responsável inválido.')
     );
   });
 
@@ -187,7 +239,9 @@ describe('rotas de autenticação', () => {
         userType: 'admin',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
-        ongContact: 'contato@teste.com'
+        ongContact: 'contato@teste.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9'
       });
 
     expect(response.status).toBe(302);
@@ -207,6 +261,8 @@ describe('rotas de autenticação', () => {
         ongName: 'ONG Persistida',
         ongDescription: 'Organização de teste com descrição válida.',
         ongContact: 'contato@persistida.com',
+        ongCnpj: '04.252.011/0001-10',
+        ongRg: '12.345.678-9',
         ongPhone: '11999990000',
         ongAddress: 'Rua Central, 123'
       });
@@ -220,6 +276,8 @@ describe('rotas de autenticação', () => {
 
     expect(ong.phone).toBe('11999990000');
     expect(ong.address).toBe('Rua Central, 123');
+    expect(ong.cnpj).toBe('04.252.011/0001-10');
+    expect(ong.rg).toBe('12.345.678-9');
   });
 
   test('GET /auth/logout redireciona para a página inicial', async () => {

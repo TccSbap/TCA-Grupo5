@@ -4,6 +4,44 @@ const bcrypt = require('bcryptjs');
 const defaultData = require('../data/database');
 const { redirectIfLoggedIn } = require('../middleware/auth');
 
+const normalizeDigits = (value) => String(value || '').replace(/\D/g, '');
+
+const isValidTelefone = (telefone) => {
+    const digits = normalizeDigits(telefone);
+    return digits.length === 10 || digits.length === 11;
+};
+
+const isValidCnpj = (cnpj) => {
+    const digits = normalizeDigits(cnpj);
+
+    if (digits.length !== 14 || /^(\d)\1{13}$/.test(digits)) {
+        return false;
+    }
+
+    const calculateDigit = (base, weights) => base
+        .split('')
+        .reduce((sum, digit, index) => sum + Number(digit) * weights[index], 0);
+
+    const firstDigitRest = calculateDigit(
+        digits.slice(0, 12),
+        [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    ) % 11;
+    const firstDigit = firstDigitRest < 2 ? 0 : 11 - firstDigitRest;
+
+    const secondDigitRest = calculateDigit(
+        digits.slice(0, 13),
+        [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    ) % 11;
+    const secondDigit = secondDigitRest < 2 ? 0 : 11 - secondDigitRest;
+
+    return firstDigit === Number(digits[12]) && secondDigit === Number(digits[13]);
+};
+
+const isValidRg = (rg) => {
+    const digits = normalizeDigits(rg);
+    return digits.length === 9 && !/^(\d)\1{8}$/.test(digits);
+};
+
 const createAuthRouter = (data = defaultData) => {
     const router = express.Router();
 
@@ -62,7 +100,16 @@ const createAuthRouter = (data = defaultData) => {
             return res.redirect('/auth/cadastro?error=' + encodeURIComponent(firstError));
         }
 
-        const { userType, ongName, ongDescription, ongContact } = req.body;
+        const {
+            userType,
+            ongName,
+            ongDescription,
+            ongContact,
+            ongCnpj,
+            ongRg,
+            ongPhone,
+            ongAddress
+        } = req.body;
         const existingUser = await data.getUserByEmail(req.body.email);
 
         if (existingUser) {
@@ -72,21 +119,41 @@ const createAuthRouter = (data = defaultData) => {
         const isOngSignup = userType === 'admin' || userType === 'ong';
 
         if (isOngSignup) {
-            if (!ongName || !ongDescription || !ongContact) {
+            const trimmedOngName = String(ongName || '').trim();
+            const trimmedOngDescription = String(ongDescription || '').trim();
+            const trimmedOngContact = String(ongContact || '').trim();
+            const trimmedOngCnpj = String(ongCnpj || '').trim();
+            const trimmedOngRg = String(ongRg || '').trim();
+            const trimmedOngPhone = String(ongPhone || '').trim();
+            const trimmedOngAddress = String(ongAddress || '').trim();
+
+            if (!trimmedOngName || !trimmedOngDescription || !trimmedOngContact || !trimmedOngCnpj || !trimmedOngRg) {
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Preencha todos os campos da ONG'));
             }
 
-            if (ongName.trim().length < 3) {
+            if (trimmedOngName.length < 3) {
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Nome da ONG deve ter no mínimo 3 caracteres'));
             }
 
-            if (ongDescription.trim().length < 10) {
+            if (trimmedOngDescription.length < 10) {
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Descrição da ONG deve ter no mínimo 10 caracteres'));
             }
 
             const contactRegex = /@.+\.com$/;
-            if (!contactRegex.test(ongContact)) {
+            if (!contactRegex.test(trimmedOngContact)) {
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Email de contato da ONG inválido. Deve conter @ e terminar com .com'));
+            }
+
+            if (!isValidCnpj(trimmedOngCnpj)) {
+                return res.redirect('/auth/cadastro?error=' + encodeURIComponent('CNPJ da ONG inválido.'));
+            }
+
+            if (!isValidRg(trimmedOngRg)) {
+                return res.redirect('/auth/cadastro?error=' + encodeURIComponent('RG do responsável inválido.'));
+            }
+
+            if (trimmedOngPhone && !isValidTelefone(trimmedOngPhone)) {
+                return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Telefone da ONG inválido. Use 10 ou 11 dígitos numéricos.'));
             }
         }
 
@@ -104,11 +171,13 @@ const createAuthRouter = (data = defaultData) => {
 
             if (isOngSignup && typeof data.createOng === 'function') {
                 await data.createOng({
-                    name: ongName,
-                    description: ongDescription,
-                    contact: ongContact,
-                    phone: req.body.ongPhone || null,
-                    address: req.body.ongAddress || null,
+                    name: String(ongName || '').trim(),
+                    description: String(ongDescription || '').trim(),
+                    contact: String(ongContact || '').trim(),
+                    cnpj: String(ongCnpj || '').trim(),
+                    rg: String(ongRg || '').trim(),
+                    phone: String(ongPhone || '').trim() || null,
+                    address: String(ongAddress || '').trim() || null,
                     userId: newUser.id
                 });
             }

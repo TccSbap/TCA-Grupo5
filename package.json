@@ -11,7 +11,8 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
-    "start:prod": "node -r dotenv/config app.js dotenv_config_path=.env.prod"
+    "start:prod": "set DOTENV_CONFIG_PATH=.env.prod&& set NODE_ENV=production&& set USE_MOCK_DB=false&& node app.js",
+    "start:mock": "node scripts/start-mock.js"
   },
   "keywords": [
     "ods6",

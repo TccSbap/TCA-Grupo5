@@ -112,12 +112,18 @@ describe('camada de dados em memória', () => {
       name: 'Nova ONG',
       description: 'Descricao da ONG',
       contact: 'contato@novaong.org',
+      cnpj: '04.252.011/0001-10',
+      rg: '12.345.678-9',
       phone: '(11) 99999-0000',
       address: 'Sao Paulo, SP',
       userId: 99
     });
 
     expect(created.id).toBe(11);
+    expect(created).toMatchObject({
+      cnpj: '04.252.011/0001-10',
+      rg: '12.345.678-9'
+    });
     expect(database.getOngs()).toHaveLength(11);
   });
 

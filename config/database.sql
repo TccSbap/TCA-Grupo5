@@ -48,6 +48,8 @@ CREATE TABLE ongs (
   name VARCHAR(150) NOT NULL,
   description TEXT NOT NULL,
   contact_email VARCHAR(255) NOT NULL,
+  cnpj VARCHAR(18) NULL,
+  rg VARCHAR(20) NULL,
   phone VARCHAR(30) NULL,
   address VARCHAR(255) NULL,
   user_id INT UNSIGNED NOT NULL,

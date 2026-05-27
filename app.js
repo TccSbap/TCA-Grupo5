@@ -3,8 +3,9 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const { ensureDataLoaded } = require('./data/database');
-const defaultData = process.env.NODE_ENV === 'test'
+require('dotenv').config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
+const useMockDatabase = process.env.USE_MOCK_DB === 'true' || process.env.NODE_ENV === 'test';
+const defaultData = useMockDatabase
     ? require('./data/mockDatabase')
     : require('./data/database');
 const { createIndexRouter } = require('./routes/index');
@@ -35,6 +36,7 @@ const createApp = (data = defaultData) => {
         res.locals.user = req.session.user || null;
         res.locals.isLoggedIn = !!req.session.user;
         res.locals.isAdmin = req.session.user && (req.session.user.type === 'admin' || req.session.user.type === 'ong');
+        res.locals.currentPath = req.path;
         next();
     });
 
@@ -65,7 +67,7 @@ const createApp = (data = defaultData) => {
     app.use('/admin', createAdminRouter(data));
 
     app.use((req, res) => {
-        res.status(404).render('404', { title: 'Página não encontrada' });
+        res.status(404).render('404', { title: 'Pagina nao encontrada' });
     });
 
     return app;
@@ -74,26 +76,31 @@ const createApp = (data = defaultData) => {
 const app = createApp();
 const PORT = process.env.PORT || 3000;
 
-if (require.main === module) {
-    (async () => {
-        try {
-            const dataReady = await ensureDataLoaded();
-            if (!dataReady) {
-                console.error('Banco de dados indisponível. Verifique a configuração antes de iniciar o servidor.');
-                process.exitCode = 1;
-                return;
-            }
-
-            app.listen(PORT, () => {
-                console.log(`Servidor rodando na porta ${PORT}`);
-                console.log(`Acesse: http://localhost:${PORT}`);
-            });
-        } catch (error) {
-            console.error('Falha ao preparar a camada de dados:', error);
+const startServer = async (port = PORT, data = defaultData) => {
+    try {
+        const dataReady = await data.ensureDataLoaded();
+        if (!dataReady) {
+            console.error('Banco de dados indisponivel. Verifique a configuracao antes de iniciar o servidor.');
             process.exitCode = 1;
+            return null;
         }
-    })();
+
+        return app.listen(port, () => {
+            console.log(`Servidor rodando na porta ${port}`);
+            console.log(`Acesse: http://localhost:${port}`);
+            console.log(useMockDatabase ? 'Modo mock ativo: dados em memoria.' : 'Modo MySQL ativo.');
+        });
+    } catch (error) {
+        console.error('Falha ao preparar a camada de dados:', error);
+        process.exitCode = 1;
+        return null;
+    }
+};
+
+if (require.main === module) {
+    startServer();
 }
 
 module.exports = app;
 module.exports.createApp = createApp;
+module.exports.startServer = startServer;

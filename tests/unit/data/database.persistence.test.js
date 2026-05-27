@@ -53,13 +53,56 @@ describe('camada de dados com persistência via SQL', () => {
             name: 'Nova ONG',
             description: 'Descricao da ONG',
             contact: 'contato@novaong.org',
+            cnpj: '04.252.011/0001-10',
+            rg: '12.345.678-9',
             phone: '(11) 99999-0000',
             address: 'Sao Paulo, SP',
             userId: 99
         });
 
+        const ongInsertCall = pool.execute.mock.calls.find((call) => String(call[0]).includes('INSERT INTO ongs'));
+
         expect(pool.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO users'))).toBe(true);
+        expect(ongInsertCall).toBeDefined();
+        expect(String(ongInsertCall[0])).toContain('cnpj');
+        expect(String(ongInsertCall[0])).toContain('rg');
+        expect(ongInsertCall[1]).toEqual(expect.arrayContaining([
+            '04.252.011/0001-10',
+            '12.345.678-9'
+        ]));
+    });
+
+    test('createOng recua para o schema legado quando cnpj e rg ainda nao existem', async () => {
+        const executeImpl = jest.fn((query) => {
+            if (String(query).includes('INSERT INTO ongs') && String(query).includes('cnpj')) {
+                const error = new Error("Unknown column 'cnpj' in 'field list'");
+                error.code = 'ER_BAD_FIELD_ERROR';
+                error.errno = 1054;
+                error.sqlMessage = "Unknown column 'cnpj' in 'field list'";
+                return Promise.reject(error);
+            }
+
+            return Promise.resolve([{ insertId: 77 }, []]);
+        });
+
+        const { database, pool } = loadDatabase({ executeImpl });
+
+        const created = await database.createOng({
+            name: 'Nova ONG',
+            description: 'Descricao da ONG',
+            contact: 'contato@novaong.org',
+            cnpj: '04.252.011/0001-10',
+            rg: '12.345.678-9',
+            phone: '(11) 99999-0000',
+            address: 'Sao Paulo, SP',
+            userId: 99
+        });
+
+        expect(created.id).toBe(77);
+        expect(created.cnpj).toBeNull();
+        expect(created.rg).toBeNull();
         expect(pool.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO ongs'))).toBe(true);
+        expect(pool.execute.mock.calls.some((call) => !String(call[0]).includes('cnpj') && String(call[0]).includes('INSERT INTO ongs'))).toBe(true);
     });
 
     test('getDenuncias carrega denuncias e respostas do banco', async () => {

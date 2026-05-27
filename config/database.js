@@ -1,5 +1,7 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_NAME) {
+    require('dotenv').config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
+}
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
