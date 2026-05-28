@@ -1,4 +1,4 @@
-﻿---
+---
 tags:
   - views
   - ui
@@ -13,7 +13,7 @@ created: 2026-05-13
 
 ## Layout Principal
 
-views/layout.ejs -- Template base que todas as páginas usam.
+app/views/layout.ejs -- Template base que todas as páginas usam.
 
 - Header: Navbar com logo, links e autenticação
 - Body: <%- body %> injetado por cada view
@@ -57,7 +57,7 @@ views/layout.ejs -- Template base que todas as páginas usam.
 ### Denúncias
 - Rotas: /denuncias* -- [[Rotas#Denúncias]]
 - denuncias/index.ejs, denuncias/nova.ejs, denuncias/detalhes.ejs
-- **CEP Automático**: O formulário `nova.ejs` possui um campo de CEP que, ao perder o foco, consulta a [ViaCEP API](https://viacep.com.br/) (gratuita, sem chave) e preenche automaticamente o campo "Localização" com logradouro, bairro, cidade e estado.
+- **CEP Automático**: O formulário `app/views/denuncias/nova.ejs` possui um campo de CEP que, ao perder o foco, consulta a [ViaCEP API](https://viacep.com.br/) (gratuita, sem chave) e preenche automaticamente o campo "Localização" com logradouro, bairro, cidade e estado.
 
 ### ONGs
 - Rotas: /ongs* -- [[Rotas#ONGs]]
@@ -78,18 +78,18 @@ views/layout.ejs -- Template base que todas as páginas usam.
 ### CSS
 | Arquivo | Descrição |
 |---------|-----------|
-| public/css/style.css | Design system completo, responsivo (2631 linhas) |
-| public/stylesheets/admin-dashboard.css | Dashboard admin |
-| public/stylesheets/doacoes.css | Cards de doação |
-| public/stylesheets/planos.css | Cards de planos |
-| public/stylesheets/form.css | Formulários estilizados |
+| app/public/css/style.css | Design system completo, responsivo (2440 linhas) |
+| app/public/stylesheets/admin-dashboard.css | Dashboard admin |
+| app/public/stylesheets/doacoes.css | Cards de doação |
+| app/public/stylesheets/planos.css | Cards de planos |
+| app/public/stylesheets/form.css | Formulários estilizados |
 
 ### JavaScript
 | Arquivo | Descrição |
 |---------|-----------|
-| public/js/main.js | Menu mobile, animações, notificações, service worker |
-| public/js/validation.js | Validadores: email, CPF, telefone, senha |
+| app/public/js/main.js | Menu mobile, animações, notificações, service worker |
+| app/public/js/validation.js | Validadores: email, CPF, telefone, senha |
 
 ### Imagens
-public/images/ -- 14 arquivos (webp, png, jpg)
-public/pwa/ -- Ícones (192px, 512px) e screenshots PWA
+app/public/images/ -- 14 arquivos (webp, png, jpg)
+app/public/pwa/ -- Ícones (192px, 512px) e screenshots PWA

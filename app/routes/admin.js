@@ -1,5 +1,5 @@
 const express = require('express');
-const defaultData = require('../data/database');
+const defaultData = require('../../data/database');
 const { createAdminController } = require('../controllers/adminController');
 
 const createAdminRouter = (data = defaultData) => {
@@ -7,6 +7,7 @@ const createAdminRouter = (data = defaultData) => {
     const controller = createAdminController(data);
 
     router.get('/login', controller.loginPage);
+    router.post('/login', controller.login);
     router.post('/dashboard', controller.login);
     router.get('/', controller.dashboard);
     router.get('/dashboard_admin', controller.dashboard);

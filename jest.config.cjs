@@ -6,8 +6,6 @@ module.exports = {
   collectCoverageFrom: [
     'app.js',
     'data/**/*.js',
-    'middleware/**/*.js',
-    'models/**/*.js',
-    'routes/**/*.js'
+    'app/**/*.js'
   ]
 };

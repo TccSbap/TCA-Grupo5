@@ -40,7 +40,7 @@ test('usuario ONG precisa preencher os campos da ONG', async ({ page }) => {
   await expect(page.locator('#ongName-error')).toContainText('O nome da ONG é obrigatório.');
   await expect(page.locator('#ongDescription-error')).toContainText('A descrição da ONG é obrigatória.');
   await expect(page.locator('#ongContact-error')).toContainText('O e-mail da ONG deve conter @ e .com.');
-  await expect(page.locator('#ongPhone-error')).toContainText('O telefone da ONG é inválido. Deve ter 11 dígitos numéricos.');
-  await expect(page.locator('#ongAddress-error')).toContainText('O endereço da ONG é obrigatório.');
+  await expect(page.locator('#ongCnpj-error')).toContainText('O CNPJ da ONG é inválido.');
+  await expect(page.locator('#ongRg-error')).toContainText('O RG do responsável é inválido.');
   await expect(page).toHaveURL(/\/auth\/cadastro$/);
 });

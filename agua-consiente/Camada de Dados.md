@@ -16,7 +16,7 @@ created: 2026-05-13
 data/database.js e a interface principal (MySQL).
 data/mockDatabase.js e a interface em memoria (dev/teste).
 
-Models (models/):
+Models (app/models/):
 - helpers.js - Utilitarios (normalizadores, SQL)
 - users.model.js
 - ongs.model.js
@@ -41,7 +41,7 @@ Seeds (data/tables/):
 
 ## database.js (MySQL)
 
-Interface principal que importa todos os models MySQL e exporta um objeto com metodos CRUD unificados.
+Interface principal que importa todos os models MySQL em app/models e exporta um objeto com metodos CRUD unificados.
 
 Modo de teste: Quando NODE_ENV === test ou JEST_WORKER_ID esta definido, desativa MySQL.
 
@@ -58,7 +58,7 @@ Substitui o MySQL por arrays em memoria:
 
 ## Models
 
-Cada model contem metodos CRUD com SQL e normalizadores via helpers.js.
+Cada model contem metodos CRUD com SQL e normalizadores via app/models/helpers.js.
 
 Destaque: denuncias.model.js e o mais complexo - carrega denuncias com respostas em uma unica query JOIN e usa transacoes para writes.
 

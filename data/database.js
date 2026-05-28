@@ -1,13 +1,13 @@
 const bcrypt = require('bcryptjs');
 const { canUseDatabase, isConfigured, pool } = require('../config/database');
-const createUsersModel = require('../models/users.model');
-const createDenunciasModel = require('../models/denuncias.model');
-const createOngsModel = require('../models/ongs.model');
-const createPlanosModel = require('../models/planos.model');
-const createNoticiasModel = require('../models/noticias.model');
-const createDoacoesModel = require('../models/doacoes.model');
-const createAssinaturasPlanoModel = require('../models/assinaturasPlano.model');
-const createMensagensContatoModel = require('../models/mensagensContato.model');
+const createUsersModel = require('../app/models/users.model');
+const createDenunciasModel = require('../app/models/denuncias.model');
+const createOngsModel = require('../app/models/ongs.model');
+const createPlanosModel = require('../app/models/planos.model');
+const createNoticiasModel = require('../app/models/noticias.model');
+const createDoacoesModel = require('../app/models/doacoes.model');
+const createAssinaturasPlanoModel = require('../app/models/assinaturasPlano.model');
+const createMensagensContatoModel = require('../app/models/mensagensContato.model');
 
 const defaultPasswordHash = bcrypt.hashSync('123456', 10);
 

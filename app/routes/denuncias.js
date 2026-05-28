@@ -1,5 +1,5 @@
 const express = require('express');
-const defaultData = require('../data/database');
+const defaultData = require('../../data/database');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { createDenunciasController } = require('../controllers/denunciasController');
 

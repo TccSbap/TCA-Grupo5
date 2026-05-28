@@ -1,8 +1,8 @@
-const createPlanosModel = require('../../../models/planos.model');
-const createNoticiasModel = require('../../../models/noticias.model');
-const createDoacoesModel = require('../../../models/doacoes.model');
-const createAssinaturasPlanoModel = require('../../../models/assinaturasPlano.model');
-const createMensagensContatoModel = require('../../../models/mensagensContato.model');
+const createPlanosModel = require('../../../app/models/planos.model');
+const createNoticiasModel = require('../../../app/models/noticias.model');
+const createDoacoesModel = require('../../../app/models/doacoes.model');
+const createAssinaturasPlanoModel = require('../../../app/models/assinaturasPlano.model');
+const createMensagensContatoModel = require('../../../app/models/mensagensContato.model');
 
 const buildModel = (factory, canUseDatabaseValue = true) => {
     const pool = {

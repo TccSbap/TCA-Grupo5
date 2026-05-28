@@ -8,12 +8,16 @@ module.exports = defineConfig({
     baseURL: process.env.BASE_URL || 'http://127.0.0.1:3000',
     trace: 'on-first-retry'
   },
-  webServer: {
-    command: 'npm run start',
-    port: 3000,
-    reuseExistingServer: !process.env.CI,
-    env: {
-      NODE_ENV: 'test'
-    }
-  }
+  ...(process.env.PLAYWRIGHT_EXTERNAL_SERVER === 'true'
+    ? {}
+    : {
+        webServer: {
+          command: 'node app.js',
+          port: 3000,
+          reuseExistingServer: !process.env.CI,
+          env: {
+            NODE_ENV: 'test'
+          }
+        }
+      })
 });

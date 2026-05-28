@@ -22,7 +22,7 @@ describe('tratamento de erros das denúncias', () => {
   });
 
   test('POST /denuncias/nova redireciona com erro quando a validação lança exceção', () => {
-    const router = require('../../routes/denuncias.js');
+    const router = require('../../app/routes/denuncias.js');
     const layer = router.stack.find(
       (entry) => entry.route && entry.route.path === '/nova' && entry.route.methods.post
     );

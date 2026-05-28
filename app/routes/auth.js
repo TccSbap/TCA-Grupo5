@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const defaultData = require('../data/database');
+const defaultData = require('../../data/database');
 const { redirectIfLoggedIn } = require('../middleware/auth');
 const { createAuthController } = require('../controllers/authController');
 

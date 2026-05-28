@@ -1,5 +1,5 @@
 const express = require('express');
-const defaultData = require('../data/database');
+const defaultData = require('../../data/database');
 const { requireAdmin } = require('../middleware/auth');
 const { createOngsController } = require('../controllers/ongsController');
 

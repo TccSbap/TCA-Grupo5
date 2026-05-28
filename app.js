@@ -9,16 +9,18 @@ const useMockDatabase = process.env.USE_MOCK_DB === 'true' || process.env.NODE_E
 const defaultData = useMockDatabase
     ? require('./data/mockDatabase')
     : require('./data/database');
-const { createIndexRouter } = require('./routes/index');
-const { createAuthRouter } = require('./routes/auth');
-const { createDenunciasRouter } = require('./routes/denuncias.js');
-const { createOngsRouter } = require('./routes/ongs');
-const { createAdminRouter } = require('./routes/admin');
+const { createIndexRouter } = require('./app/routes/index');
+const { createAuthRouter } = require('./app/routes/auth');
+const { createDenunciasRouter } = require('./app/routes/denuncias.js');
+const { createOngsRouter } = require('./app/routes/ongs');
+const { createAdminRouter } = require('./app/routes/admin');
+const appPath = path.join(__dirname, 'app');
 
 const createApp = (data = defaultData) => {
     const app = express();
     const watchReloadEnabled = process.env.WATCH_RELOAD === 'true';
     const watchVersionFile = path.join(__dirname, 'tmp', 'prod-watch-version.txt');
+    const sessionSecret = process.env.SESSION_SECRET || 'ods6-secret-key-dev';
 
     const readWatchVersion = () => {
         try {
@@ -29,18 +31,23 @@ const createApp = (data = defaultData) => {
     };
 
     app.set('view engine', 'ejs');
-    app.set('views', path.join(__dirname, 'views'));
+    app.set('views', path.join(appPath, 'views'));
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(cookieParser());
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(appPath, 'public')));
 
     app.use(session({
-        secret: 'ods6-secret-key',
+        secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+        cookie: {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000
+        }
     }));
 
     app.use((req, res, next) => {

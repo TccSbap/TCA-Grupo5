@@ -21,7 +21,7 @@
                         <label for="userType">Tipo de Usuário</label>
                         <select id="userType" name="userType">
                             <option value="user">Usuário Normal</option>
-                            <option value="ong">ONG</option>
+                            <option value="admin">ONG</option>
                         </select>
                     </nav>
                     
@@ -169,7 +169,7 @@
             }
         };
 
-        const isOngCadastro = () => userType && userType.value === "ong";
+        const isOngCadastro = () => userType && (userType.value === "admin" || userType.value === "ong");
 
         const validateField = (fieldId) => {
             const field = document.getElementById(fieldId);
@@ -281,36 +281,6 @@
 
             return isValid;
         };
-
-        const updatePasswordToggle = (button, input) => {
-            const isVisible = input.type === "text";
-            const icon = button.querySelector("i");
-
-            button.setAttribute("aria-label", isVisible ? "Ocultar senha" : "Mostrar senha");
-            button.setAttribute("aria-pressed", String(isVisible));
-
-            if (icon) {
-                icon.classList.toggle("fa-eye", !isVisible);
-                icon.classList.toggle("fa-eye-slash", isVisible);
-            }
-        };
-
-        document.querySelectorAll("[data-password-toggle]").forEach((button) => {
-            const targetId = button.getAttribute("data-password-toggle");
-            const input = document.getElementById(targetId);
-
-            if (!input) {
-                return;
-            }
-
-            updatePasswordToggle(button, input);
-
-            button.addEventListener("click", () => {
-                input.type = input.type === "password" ? "text" : "password";
-                updatePasswordToggle(button, input);
-                input.focus();
-            });
-        });
 
         window.toggleOngFields = function() {
             const showFields = isOngCadastro();

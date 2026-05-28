@@ -2,7 +2,7 @@ const {
   requireAuth,
   requireAdmin,
   redirectIfLoggedIn
-} = require('../../../middleware/auth');
+} = require('../../../app/middleware/auth');
 const {
   createMockReq,
   createMockRes,

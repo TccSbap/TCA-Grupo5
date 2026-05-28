@@ -1,4 +1,4 @@
-const createOngsModel = require('../../../models/ongs.model');
+const createOngsModel = require('../../../app/models/ongs.model');
 
 const buildModel = (canUseDatabaseValue = true) => {
     const pool = {

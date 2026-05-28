@@ -1,5 +1,5 @@
 const express = require('express');
-const defaultData = require('../data/database');
+const defaultData = require('../../data/database');
 const { requireAuth } = require('../middleware/auth');
 const {
     createIndexController

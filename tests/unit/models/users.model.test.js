@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const createUsersModel = require('../../../models/users.model');
+const createUsersModel = require('../../../app/models/users.model');
 
 const buildModel = (canUseDatabaseValue = true) => {
     const pool = {

@@ -19,6 +19,7 @@ DB_PORT=3306
 DB_USER=agua
 DB_PASSWORD=agua123@
 DB_NAME=agua_consiente
+SESSION_SECRET=uma_chave_forte_e_unica
 DB_CONNECTION_LIMIT=10
 `
 

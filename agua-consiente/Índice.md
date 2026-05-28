@@ -8,10 +8,6 @@ created: 2026-05-13
 
 Bem-vindo ao vault de documentação do projeto **ODS 6 - Site de Denúncias sobre Saneamento Básico**.
 
-#documentacao #projeto #ods6
-
----
-
 ## Navegação
 
 | Nota | Descrição |
@@ -27,47 +23,44 @@ Bem-vindo ao vault de documentação do projeto **ODS 6 - Site de Denúncias sob
 | [[PWA]] | Progressive Web App, Service Worker, Manifest |
 | [[Referência Rápida]] | Comandos, atalhos e convenções |
 
----
-
 ## Tags Principais
 
-- `#rota` — Arquivos de rota do Express
-- `#view` — Templates EJS
-- `#dados` — Camada de dados (repositórios, tabelas)
-- `#teste` — Arquivos de teste
-- `#middleware` — Middleware Express
-- `#config` — Configuração do projeto
-- `#pwa` — Progressive Web App
-- `#public` — Assets estáticos (CSS, JS, imagens)
-- `#seed` — Dados de demonstração
-- `#ejs` — Templates EJS
-- `#express` — Framework web
-- `#mysql` — Banco de dados
-
----
+- `#rota` - Arquivos de rota do Express
+- `#view` - Templates EJS
+- `#dados` - Camada de dados (repositórios, tabelas)
+- `#teste` - Arquivos de teste
+- `#middleware` - Middleware Express
+- `#config` - Configuração do projeto
+- `#pwa` - Progressive Web App
+- `#public` - Assets estáticos (CSS, JS, imagens)
+- `#seed` - Dados de demonstração
+- `#ejs` - Templates EJS
+- `#express` - Framework web
+- `#mysql` - Banco de dados
 
 ## Estrutura do Repositório
 
-```
+```text
 /
-├── app.js              # Entry point
-├── routes/             # Rotas Express
-├── views/              # Templates EJS
-├── data/               # Database + Repositórios
-│   ├── repositories/
-│   └── tables/
-├── middleware/          # Auth middleware
-├── config/             # Config DB + SQL schema
-├── public/             # Assets estáticos
-│   ├── css/
-│   ├── js/
-│   ├── images/
-│   ├── pwa/
-│   └── stylesheets/
-├── tests/              # Testes
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
-├── doc/                # Documentação adicional
-└── page_texts/         # Textos de referência
+├── app.js
+├── app/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── public/
+│   ├── routes/
+│   └── views/
+├── config/
+├── data/
+├── doc/
+├── page_texts/
+├── scripts/
+└── tests/
 ```
+
+## Observações
+
+- O MVC principal fica em `app/`.
+- A camada de dados compartilhada fica em `data/`.
+- O banco e as migrations ficam em `config/`.
+- Os testes cobrem `app/`, `data/` e os fluxos de integração/e2e.

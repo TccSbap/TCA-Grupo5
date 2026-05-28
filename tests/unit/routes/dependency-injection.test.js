@@ -1,10 +1,10 @@
 const express = require('express');
 const request = require('supertest');
-const { createAuthRouter } = require('../../../routes/auth');
-const { createAdminRouter } = require('../../../routes/admin');
-const { createDenunciasRouter } = require('../../../routes/denuncias.js');
-const { createIndexRouter } = require('../../../routes/index');
-const { createOngsRouter } = require('../../../routes/ongs');
+const { createAuthRouter } = require('../../../app/routes/auth');
+const { createAdminRouter } = require('../../../app/routes/admin');
+const { createDenunciasRouter } = require('../../../app/routes/denuncias.js');
+const { createIndexRouter } = require('../../../app/routes/index');
+const { createOngsRouter } = require('../../../app/routes/ongs');
 
 const buildApp = (router, user = null) => {
   const app = express();

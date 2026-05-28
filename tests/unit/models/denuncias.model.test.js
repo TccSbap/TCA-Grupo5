@@ -1,4 +1,4 @@
-const createDenunciasModel = require('../../../models/denuncias.model');
+const createDenunciasModel = require('../../../app/models/denuncias.model');
 
 const buildModel = (canUseDatabaseValue = true) => {
     const pool = {

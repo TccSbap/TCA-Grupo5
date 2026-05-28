@@ -50,6 +50,38 @@ window.submitOnce = window.submitOnce || (() => {
     return { lock, unlock, isLocked };
 })();
 
+const updatePasswordToggleState = (button, input) => {
+    const isVisible = input.type === 'text';
+    const icon = button.querySelector('i');
+
+    button.setAttribute('aria-label', isVisible ? 'Ocultar senha' : 'Mostrar senha');
+    button.setAttribute('aria-pressed', String(isVisible));
+
+    if (icon) {
+        icon.classList.toggle('fa-eye', !isVisible);
+        icon.classList.toggle('fa-eye-slash', isVisible);
+    }
+};
+
+const initPasswordToggles = () => {
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+        const targetId = button.getAttribute('data-password-toggle');
+        const input = document.getElementById(targetId);
+
+        if (!input) {
+            return;
+        }
+
+        updatePasswordToggleState(button, input);
+
+        button.addEventListener('click', () => {
+            input.type = input.type === 'password' ? 'text' : 'password';
+            updatePasswordToggleState(button, input);
+            input.focus();
+        });
+    });
+};
+
 window.addEventListener('pageshow', function(event) {
     if (!event.persisted) {
         return;
@@ -105,6 +137,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    initPasswordToggles();
     
     // Smooth scroll para links internos
     const internalLinks = document.querySelectorAll('a[href^="#"]');

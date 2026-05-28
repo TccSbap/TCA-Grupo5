@@ -12,7 +12,7 @@ const {
     normalizeDoacaoRow,
     normalizeAssinaturaPlanoRow,
     normalizeMensagemContatoRow
-} = require('../../../models/helpers');
+} = require('../../../app/models/helpers');
 
 describe('models/helpers', () => {
     test('nextId and normalizeFilterId handle basic inputs', () => {

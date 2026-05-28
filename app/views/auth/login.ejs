@@ -61,36 +61,4 @@
     </section>
 </section>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const button = document.querySelector("[data-password-toggle]");
-        const input = document.getElementById("password");
-
-        if (!button || !input) {
-            return;
-        }
-
-        const updatePasswordToggle = () => {
-            const isVisible = input.type === "text";
-            const icon = button.querySelector("i");
-
-            button.setAttribute("aria-label", isVisible ? "Ocultar senha" : "Mostrar senha");
-            button.setAttribute("aria-pressed", String(isVisible));
-
-            if (icon) {
-                icon.classList.toggle("fa-eye", !isVisible);
-                icon.classList.toggle("fa-eye-slash", isVisible);
-            }
-        };
-
-        updatePasswordToggle();
-
-        button.addEventListener("click", () => {
-            input.type = input.type === "password" ? "text" : "password";
-            updatePasswordToggle();
-            input.focus();
-        });
-    });
-</script>
-
 <%- include('../partials/footer') %>

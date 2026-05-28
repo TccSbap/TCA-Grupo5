@@ -1,4 +1,4 @@
-﻿---
+---
 tags:
   - testes
   - qualidade
@@ -90,4 +90,4 @@ Playwright -- navegador real (chromium).
 - Nome: *.test.js
 - Mock Database em todos os testes
 - Nenhum teste acessa MySQL real
-- Cobertura: app.js, data/, middleware/, routes/
+- Cobertura: app.js, data/, app/middleware/, app/routes/, app/controllers/, app/models/, app/views/

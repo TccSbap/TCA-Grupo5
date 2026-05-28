@@ -8,14 +8,14 @@ const resetApplicationState = async (request) => {
 const loginUser = async (page, email = 'joao@email.com', password = '123456') => {
   await page.goto('/auth/login');
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Senha').fill(password);
+  await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Entrar' }).click();
 };
 
 const loginAdmin = async (page, email = 'admin@agualimpa.org', password = '123456') => {
   await page.goto('/admin/login');
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Senha').fill(password);
+  await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Entrar como Administrador' }).click();
 };
 
@@ -57,6 +57,8 @@ test('usuario cadastra uma ONG e consegue entrar no painel administrativo', asyn
   await page.locator('#ongName').fill('ONG Teste E2E');
   await page.locator('#ongDescription').fill('Descricao suficiente para passar na validacao.');
   await page.locator('#ongContact').fill('contato@ongteste.com');
+  await page.locator('#ongCnpj').fill('04.252.011/0001-10');
+  await page.locator('#ongRg').fill('12.345.678-9');
   await page.locator('#ongPhone').fill('(11) 99999-8888');
   await page.locator('#ongAddress').fill('Rua dos Testes, 123');
   await page.getByRole('button', { name: 'Criar Conta' }).click();

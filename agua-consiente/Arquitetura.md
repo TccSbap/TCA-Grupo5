@@ -65,10 +65,10 @@ Veja [[Camada de Dados]].
 | Camada | Diretório |
 |--------|-----------|
 | Entry Point | [[Configuração#app.js|app.js]] |
-| Rotas | [[Rotas|routes/]] |
-| Views | [[Views|views/]] |
+| Rotas | [[Rotas|app/routes/]] |
+| Views | [[Views|app/views/]] |
 | Data Layer | [[Camada de Dados|data/]] |
-| Middleware | [[Middleware|middleware/]] |
+| Middleware | [[Middleware|app/middleware/]] |
 | Config | [[Configuração|config/]] |
-| Assets | public/ |
+| Assets | app/public/ |
 | Testes | [[Testes|tests/]] |
