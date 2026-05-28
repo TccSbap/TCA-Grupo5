@@ -20,7 +20,7 @@ const appPath = path.join(__dirname, 'app');
 const createApp = (data = defaultData) => {
     const app = express();
     const watchReloadEnabled = process.env.WATCH_RELOAD === 'true';
-    const watchVersionFile = path.join(__dirname, 'tmp', 'prod-watch-version.txt');
+    const watchVersionFile = path.join(__dirname, 'tmp', 'watch-version.txt');
     const sessionSecret = process.env.SESSION_SECRET || 'ods6-secret-key-dev';
 
     const readWatchVersion = () => {
@@ -117,7 +117,9 @@ const startServer = async (port = PORT, data = defaultData) => {
             return null;
         }
 
-        return app.listen(port, () => {
+        const serverApp = createApp(data);
+
+        return serverApp.listen(port, () => {
             console.log(`Servidor rodando na porta ${port}`);
             console.log(`Acesse: http://localhost:${port}`);
             console.log(useMockDatabase ? 'Modo mock ativo: dados em memoria.' : 'Modo MySQL ativo.');

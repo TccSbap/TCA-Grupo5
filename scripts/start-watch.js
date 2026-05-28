@@ -12,8 +12,8 @@ const watchTargets = [
 
 const env = {
     ...process.env,
-    DOTENV_CONFIG_PATH: '.env.prod',
-    NODE_ENV: 'production',
+    DOTENV_CONFIG_PATH: '.env',
+    NODE_ENV: 'development',
     USE_MOCK_DB: 'false',
     WATCH_RELOAD: 'true'
 };

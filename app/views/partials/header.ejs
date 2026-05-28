@@ -60,7 +60,7 @@
                                 <i class="fas fa-user" aria-hidden="true"></i>
                                 <span><%= isOng && user.ongName ? user.ongName : user.name %></span>
                                 <% if (isAdmin) { %>
-                                    <span class="admin-badge">Admin</span>
+                                    <span class="admin-badge">Administrador</span>
                                 <% } else if (isOng) { %>
                                     <span class="admin-badge">ONG</span>
                                 <% } %>
@@ -81,7 +81,7 @@
                     <% } %>
                 </nav>
 
-                <button
+               <button
                     type="button"
                     class="mobile-menu-toggle"
                     aria-controls="primary-navigation"

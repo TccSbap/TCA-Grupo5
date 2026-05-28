@@ -6,6 +6,7 @@
     "start": "node app.js",
     "dev": "node app.js",
     "start:prod:watch": "node scripts/start-prod-watch.js",
+    "start:watch": "node scripts/start-watch.js",
     "test": "jest",
     "test:unit": "jest --runInBand",
     "test:integration": "jest tests/integration --runInBand",
