@@ -41,7 +41,7 @@
                     <li><a href="/auth/login">Login</a></li>
                     <li><a href="/auth/cadastro">Cadastro</a></li>
                     <% } else { %>
-                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="<%= dashboardPath || '/dashboard' %>">Dashboard</a></li>
                     <% } %>
                 </ul>
             </section>

@@ -12,7 +12,7 @@ const loginUser = async (page, email = 'joao@email.com', password = '123456') =>
   await page.getByRole('button', { name: 'Entrar' }).click();
 };
 
-const loginAdmin = async (page, email = 'admin@agualimpa.org', password = '123456') => {
+const loginAdmin = async (page, email = 'admin@ods6.org', password = '123456') => {
   await page.goto('/admin/login');
   await page.getByLabel('Email').fill(email);
   await page.locator('#password').fill(password);
@@ -43,13 +43,13 @@ test('usuario consegue entrar na plataforma e acessar o dashboard', async ({ pag
   await loginUser(page);
 
   await expect(page).toHaveURL(/\/dashboard$/);
-  await expect(page.getByRole('heading', { name: /Painel de Admin/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Meu Dashboard/i })).toBeVisible();
   await expect(page.getByText(/Silva/)).toBeVisible();
 });
 
-test('usuario cadastra uma ONG e consegue entrar no painel administrativo', async ({ page }) => {
+test('usuario cadastra uma ONG e consegue entrar no painel da ONG', async ({ page }) => {
   await page.goto('/auth/cadastro');
-  await page.selectOption('#userType', 'admin');
+  await page.selectOption('#userType', 'ong');
   await page.locator('#name').fill('Nova ONG Teste');
   await page.locator('#email').fill('nova-ong-teste@exemplo.com');
   await page.locator('#password').fill('SenhaForte123');
@@ -66,18 +66,19 @@ test('usuario cadastra uma ONG e consegue entrar no painel administrativo', asyn
   await expect(page).toHaveURL(/\/auth\/login\?success=/);
   await expect(page.getByText(/Cadastro realizado com sucesso/i)).toBeVisible();
 
-  await loginAdmin(page, 'nova-ong-teste@exemplo.com', 'SenhaForte123');
-  await expect(page).toHaveURL(/\/admin\/dashboard_admin$/);
-  await expect(page.getByRole('heading', { name: /Painel Admin/i })).toBeVisible();
+  await loginUser(page, 'nova-ong-teste@exemplo.com', 'SenhaForte123');
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
+  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
 
   await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: /Painel Admin/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
+  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
 
   await page.goto('/admin/denuncias');
-  await expect(page.getByRole('heading', { name: /Gerenciar Den[úu]ncias/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
 
   await page.goto('/admin/ongs');
-  await expect(page.getByRole('heading', { name: /Gerenciar ONGs/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
 });
 
 test('usuario autenticado envia uma denuncia e acompanha os detalhes', async ({ page }) => {
@@ -159,8 +160,8 @@ test('usuario envia mensagem pelo formulario de contato', async ({ page }) => {
   await expect(page.getByText(/Mensagem enviada com sucesso/i)).toBeVisible();
 });
 
-test('administrador responde uma denuncia e acompanha os paines da ONG', async ({ page }) => {
-  await loginAdmin(page);
+test('ONG responde uma denuncia e acompanha o painel da ONG', async ({ page }) => {
+  await loginUser(page, 'admin@agualimpa.org', '123456');
 
   await page.goto('/denuncias/15');
   await expect(page.getByRole('heading', { name: /Lagoa contaminada por esgoto/i })).toBeVisible();
@@ -173,11 +174,28 @@ test('administrador responde uma denuncia e acompanha os paines da ONG', async (
   await expect(page.getByText(/Nossa ONG vai vistoriar o local/i)).toBeVisible();
 
   await page.goto('/ongs/admin/dashboard');
-  await expect(page.getByRole('heading', { name: /Administra/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Den[úu]ncias Pendentes/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Minhas Respostas/i })).toBeVisible();
 
   await page.goto('/ongs/admin/stats');
   await expect(page.getByRole('heading', { name: /Estat/i })).toBeVisible();
   await expect(page.getByText(/Total de Denúncias/i)).toBeVisible();
+});
+
+test('administrador acessa o painel administrativo separado', async ({ page }) => {
+  await loginAdmin(page);
+
+  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page.getByRole('heading', { name: /Painel Administrativo/i })).toBeVisible();
+
+  await page.goto('/dashboard');
+  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page.getByRole('heading', { name: /Painel Administrativo/i })).toBeVisible();
+
+  await page.goto('/admin/denuncias');
+  await expect(page.getByRole('heading', { name: /Gerenciar Den[úu]ncias/i })).toBeVisible();
+
+  await page.goto('/admin/ongs');
+  await expect(page.getByRole('heading', { name: /Gerenciar ONGs/i })).toBeVisible();
 });

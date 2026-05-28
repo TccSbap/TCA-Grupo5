@@ -14,6 +14,7 @@ const { createAuthRouter } = require('./app/routes/auth');
 const { createDenunciasRouter } = require('./app/routes/denuncias.js');
 const { createOngsRouter } = require('./app/routes/ongs');
 const { createAdminRouter } = require('./app/routes/admin');
+const { getDashboardPathForUser } = require('./app/middleware/auth');
 const appPath = path.join(__dirname, 'app');
 
 const createApp = (data = defaultData) => {
@@ -51,9 +52,13 @@ const createApp = (data = defaultData) => {
     }));
 
     app.use((req, res, next) => {
-        res.locals.user = req.session.user || null;
-        res.locals.isLoggedIn = !!req.session.user;
-        res.locals.isAdmin = req.session.user && (req.session.user.type === 'admin' || req.session.user.type === 'ong');
+        const user = req.session.user || null;
+
+        res.locals.user = user;
+        res.locals.isLoggedIn = !!user;
+        res.locals.isAdmin = !!user && user.type === 'admin';
+        res.locals.isOng = !!user && user.type === 'ong';
+        res.locals.dashboardPath = getDashboardPathForUser(user);
         res.locals.currentPath = req.path;
         res.locals.watchReload = watchReloadEnabled;
         res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '1';

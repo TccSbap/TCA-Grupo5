@@ -1,6 +1,6 @@
 const express = require('express');
 const defaultData = require('../../data/database');
-const { requireAuth } = require('../middleware/auth');
+const { requireUser } = require('../middleware/auth');
 const {
     createIndexController
 } = require('../controllers/indexController');
@@ -10,7 +10,7 @@ const createIndexRouter = (data = defaultData) => {
     const controller = createIndexController(data);
 
     router.get('/', controller.home);
-    router.get('/dashboard', requireAuth, controller.dashboard);
+    router.get('/dashboard', requireUser, controller.dashboard);
     router.get('/sobre', controller.sobre);
     router.get('/contato', controller.contato);
     router.post('/contato', controller.submitContato);

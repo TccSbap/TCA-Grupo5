@@ -5,33 +5,48 @@
         <nav class="admin-nav">
             <nav class="admin-nav-header">
                 <h2>Painel Admin</h2>
-                <p><%= user.ongName %></p>
+                <p><%= user.name %></p>
             </nav>
             <ul class="admin-nav-links">
                 <li><a href="/admin" class="active">Dashboard</a></li>
                 <li><a href="/admin/denuncias">Denúncias</a></li>
                 <li><a href="/admin/ongs">ONGs</a></li>
-                <li><a href="/dashboard">Meu Perfil</a></li>
                 <li><a href="/auth/logout">Sair</a></li>
             </ul>
         </nav>
     </aside>
-    
+
     <main class="admin-content">
         <header class="admin-header">
-            <h1>Bem-vindo, <%= user.ongName %></h1>
-            <p>Gerencie denúncias e ONGs parceiras</p>
+            <h1>Painel Administrativo</h1>
+            <p>Bem-vindo, <%= user.name %>. Visão global da plataforma, com foco em moderação, volume e operação.</p>
         </header>
-        
+
         <section class="admin-stats">
             <article class="stat-card">
                 <header class="stat-header">
+                    <i class="fas fa-users"></i>
+                    <h3>Usuários</h3>
+                </header>
+                <nav class="stat-value"><%= totalUsers %></nav>
+            </article>
+
+            <article class="stat-card">
+                <header class="stat-header">
+                    <i class="fas fa-hands-helping"></i>
+                    <h3>ONGs</h3>
+                </header>
+                <nav class="stat-value"><%= totalOngs %></nav>
+            </article>
+
+            <article class="stat-card">
+                <header class="stat-header">
                     <i class="fas fa-exclamation-circle"></i>
-                    <h3>Total de Denúncias</h3>
+                    <h3>Denúncias</h3>
                 </header>
                 <nav class="stat-value"><%= totalDenuncias %></nav>
             </article>
-            
+
             <article class="stat-card">
                 <header class="stat-header">
                     <i class="fas fa-clock"></i>
@@ -39,49 +54,90 @@
                 </header>
                 <nav class="stat-value"><%= denunciasPendentes %></nav>
             </article>
-            
+
             <article class="stat-card">
                 <header class="stat-header">
-                    <i class="fas fa-spinner"></i>
-                    <h3>Em Andamento</h3>
+                    <i class="fas fa-comments"></i>
+                    <h3>Respostas</h3>
                 </header>
-                <nav class="stat-value"><%= denunciasEmAndamento %></nav>
+                <nav class="stat-value"><%= totalResponses %></nav>
             </article>
-            
+
             <article class="stat-card">
                 <header class="stat-header">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>Resolvidas</h3>
+                    <i class="fas fa-envelope"></i>
+                    <h3>Mensagens</h3>
                 </header>
-                <nav class="stat-value"><%= denunciasResolvidas %></nav>
-            </article>
-            
-            <article class="stat-card">
-                <header class="stat-header">
-                    <i class="fas fa-hands-helping"></i>
-                    <h3>ONGs Parceiras</h3>
-                </header>
-                <nav class="stat-value"><%= totalOngs %></nav>
+                <nav class="stat-value"><%= totalMensagensContato %></nav>
             </article>
         </section>
-        
+
         <section class="admin-actions">
             <article class="action-card">
                 <header class="action-header">
                     <i class="fas fa-tasks"></i>
-                    <h3>Gerenciar Denúncias</h3>
+                    <h3>Moderar Denúncias</h3>
                 </header>
-                <p>Visualize, responda e atualize o status das denúncias registradas no sistema.</p>
-                <a href="/admin/denuncias" class="btn btn-primary">Acessar</a>
+                <p>Veja o volume global de denúncias, acompanhe o andamento e acesse detalhes rapidamente.</p>
+                <a href="/admin/denuncias" class="btn btn-primary">Abrir fila</a>
             </article>
-            
+
             <article class="action-card">
                 <header class="action-header">
                     <i class="fas fa-building"></i>
                     <h3>Gerenciar ONGs</h3>
                 </header>
-                <p>Visualize informações sobre as ONGs parceiras e suas atividades.</p>
-                <a href="/admin/ongs" class="btn btn-primary">Acessar</a>
+                <p>Audite as ONGs cadastradas, confira vínculos e valide a operação da rede parceira.</p>
+                <a href="/admin/ongs" class="btn btn-primary">Ver ONGs</a>
+            </article>
+
+            <article class="action-card">
+                <header class="action-header">
+                    <i class="fas fa-inbox"></i>
+                    <h3>Mensagens</h3>
+                </header>
+                <p>Revise os contatos recebidos pela plataforma e trate solicitações administrativas.</p>
+                <a href="/contato" class="btn btn-outline">Abrir contato</a>
+            </article>
+        </section>
+
+        <section class="admin-logs">
+            <article class="admin-log-card">
+                <header class="action-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Denúncias recentes</h3>
+                </header>
+                <% if (recentDenuncias && recentDenuncias.length > 0) { %>
+                <ul class="admin-list">
+                    <% recentDenuncias.forEach((denuncia) => { %>
+                    <li>
+                        <strong><%= denuncia.title %></strong>
+                        <span><%= denuncia.status.replace('_', ' ') %></span>
+                    </li>
+                    <% }) %>
+                </ul>
+                <% } else { %>
+                <p>Nenhuma denúncia registrada ainda.</p>
+                <% } %>
+            </article>
+
+            <article class="admin-log-card">
+                <header class="action-header">
+                    <i class="fas fa-hands-helping"></i>
+                    <h3>ONGs recentes</h3>
+                </header>
+                <% if (recentOngs && recentOngs.length > 0) { %>
+                <ul class="admin-list">
+                    <% recentOngs.forEach((ong) => { %>
+                    <li>
+                        <strong><%= ong.name %></strong>
+                        <span><%= ong.contact %></span>
+                    </li>
+                    <% }) %>
+                </ul>
+                <% } else { %>
+                <p>Nenhuma ONG cadastrada ainda.</p>
+                <% } %>
             </article>
         </section>
     </main>

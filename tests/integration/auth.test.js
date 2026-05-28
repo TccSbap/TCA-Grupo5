@@ -105,7 +105,7 @@ describe('rotas de autenticação', () => {
         email: 'admin1@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin'
+        userType: 'ong'
       });
 
     expect(response.status).toBe(302);
@@ -121,7 +121,7 @@ describe('rotas de autenticação', () => {
         email: 'admin2@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'AB',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -144,7 +144,7 @@ describe('rotas de autenticação', () => {
         email: 'admin3@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'curta',
         ongContact: 'contato@teste.com',
@@ -167,7 +167,7 @@ describe('rotas de autenticação', () => {
         email: 'admin4@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste',
@@ -190,7 +190,7 @@ describe('rotas de autenticação', () => {
         email: 'admin4b@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -213,7 +213,7 @@ describe('rotas de autenticação', () => {
         email: 'admin4c@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -236,7 +236,7 @@ describe('rotas de autenticação', () => {
         email: 'admin5@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',

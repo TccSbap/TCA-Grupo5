@@ -16,9 +16,9 @@ const signInUser = async (agent) => {
     });
 };
 
-const signInAdmin = async (agent) => {
+const signInOng = async (agent) => {
   await agent
-    .post('/admin/dashboard')
+    .post('/auth/login')
     .type('form')
     .send({
       email: 'admin@agualimpa.org',
@@ -170,19 +170,19 @@ describe('rotas de denúncias', () => {
     expect(response.text).toContain('Denúncia não encontrada');
   });
 
-  test('POST /denuncias/:id/status bloqueia usuários anônimos', async () => {
+  test('POST /denuncias/:id/status redireciona usuários anônimos para o login', async () => {
     const response = await request(app)
       .post('/denuncias/1/status')
       .type('form')
       .send({ status: 'resolvida' });
 
-    expect(response.status).toBe(403);
-    expect(response.text).toContain('Acesso Negado');
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/auth/login');
   });
 
-  test('sessão admin consegue atualizar o status de uma denúncia', async () => {
+  test('sessão ONG consegue atualizar o status de uma denúncia', async () => {
     const agent = request.agent(app);
-    await signInAdmin(agent);
+    await signInOng(agent);
 
     const response = await agent
       .post('/denuncias/1/status')
@@ -193,9 +193,9 @@ describe('rotas de denúncias', () => {
     expect(response.headers.location).toContain('/denuncias/1?success=Status%20atualizado%20com%20sucesso!');
   });
 
-  test('sessão admin consegue adicionar uma resposta à denúncia', async () => {
+  test('sessão ONG consegue adicionar uma resposta à denúncia', async () => {
     const agent = request.agent(app);
-    await signInAdmin(agent);
+    await signInOng(agent);
 
     const response = await agent
       .post('/denuncias/1/responder')

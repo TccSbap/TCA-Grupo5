@@ -153,15 +153,29 @@ const createIndexController = (data) => ({
         const user = req.session.user;
         const denuncias = await data.getDenuncias();
         const ongs = await data.getOngs();
-        const userDenuncias = user.type === 'admin' || user.type === 'ong'
-            ? denuncias
-            : denuncias.filter((denuncia) => denuncia.userId === user.id);
+        const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
+        const assinaturasPlano = typeof data.getAssinaturasPlano === 'function' ? await data.getAssinaturasPlano() : [];
 
-        res.render('admin/dashboard_admin', {
-            title: 'Dashboard',
+        const userDenuncias = denuncias
+            .filter((denuncia) => denuncia.userId === user.id)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const userDoacoes = doacoes
+            .filter((doacao) => doacao.userId === user.id)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const userAssinaturas = assinaturasPlano
+            .filter((assinatura) => assinatura.userId === user.id)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        res.render('dashboard', {
+            title: 'Meu Dashboard',
             user,
-            denuncias: userDenuncias,
-            totalDenuncias: denuncias.length,
+            ongs,
+            denuncias: userDenuncias.slice(0, 5),
+            doacoes: userDoacoes.slice(0, 5),
+            assinaturasPlano: userAssinaturas.slice(0, 5),
+            totalDenuncias: userDenuncias.length,
+            totalDoacoes: userDoacoes.length,
+            totalAssinaturas: userAssinaturas.length,
             totalOngs: ongs.length
         });
     },

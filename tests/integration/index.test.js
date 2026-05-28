@@ -15,6 +15,13 @@ const signInUser = async (agent) => {
 
 const signInAdmin = async (agent) => {
   await agent.post('/admin/dashboard').type('form').send({
+    email: 'admin@ods6.org',
+    password: '123456'
+  });
+};
+
+const signInOng = async (agent) => {
+  await agent.post('/auth/login').type('form').send({
     email: 'admin@agualimpa.org',
     password: '123456'
   });
@@ -143,7 +150,7 @@ describe('rotas principais', () => {
     const adminOngs = await agent.get('/admin/ongs');
 
     expect(dashboard.status).toBe(200);
-    expect(dashboard.text).toContain('Painel de Administração');
+    expect(dashboard.text).toContain('Meu Dashboard');
     expect(admin.status).toBe(302);
     expect(admin.headers.location).toBe('/dashboard');
     expect(adminDenuncias.status).toBe(302);
@@ -152,16 +159,32 @@ describe('rotas principais', () => {
     expect(adminOngs.headers.location).toBe('/dashboard');
   });
 
-  test('sessão admin consegue acessar o dashboard principal e as páginas de gerenciamento', async () => {
+  test('sessão ONG acessa o painel da ONG e é redirecionada do dashboard do usuário', async () => {
+    const agent = request.agent(app);
+    await signInOng(agent);
+
+    const dashboard = await agent.get('/dashboard');
+    const ongDashboard = await agent.get('/ongs/admin/dashboard');
+
+    expect(dashboard.status).toBe(302);
+    expect(dashboard.headers.location).toBe('/ongs/admin/dashboard');
+    expect(ongDashboard.status).toBe(200);
+    expect(ongDashboard.text).toContain('Painel da ONG');
+  });
+
+  test('sessão admin consegue acessar o dashboard administrativo e as páginas de gerenciamento', async () => {
     const agent = request.agent(app);
     await signInAdmin(agent);
 
     const dashboard = await agent.get('/dashboard');
+    const adminHome = await agent.get('/admin');
     const denuncias = await agent.get('/admin/denuncias');
     const ongs = await agent.get('/admin/ongs');
 
-    expect(dashboard.status).toBe(200);
-    expect(dashboard.text).toContain('Painel de Administração');
+    expect(dashboard.status).toBe(302);
+    expect(dashboard.headers.location).toBe('/admin');
+    expect(adminHome.status).toBe(200);
+    expect(adminHome.text).toContain('Painel Administrativo');
     expect(denuncias.status).toBe(200);
     expect(denuncias.text).toContain('Gerenciar Denúncias');
     expect(ongs.status).toBe(200);

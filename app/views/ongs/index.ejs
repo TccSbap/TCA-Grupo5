@@ -90,17 +90,22 @@
                     <i class="fas fa-handshake"></i>
                     Cadastrar ONG
                 </a>
-                <% } else if (!isAdmin) { %>
+                <% } else if (!isOng) { %>
                 <nav class="info-box">
                     <i class="fas fa-info-circle"></i>
-                    <p>Para cadastrar uma ONG, você precisa criar uma conta como administrador.</p>
+                    <% if (isAdmin) { %>
+                    <p>O cadastro e o painel da ONG ficam no perfil de ONG. O seu acesso é ao painel administrativo da plataforma.</p>
+                    <a href="/admin" class="btn btn-outline">Ir para o Painel Admin</a>
+                    <% } else { %>
+                    <p>Para cadastrar uma ONG, você precisa criar uma conta de ONG.</p>
                     <a href="/auth/cadastro" class="btn btn-outline">Criar Conta de ONG</a>
+                    <% } %>
                 </nav>
                 <% } else { %>
                 <nav class="info-box success">
                     <i class="fas fa-check-circle"></i>
-                    <p>Sua ONG já está cadastrada! Acesse o painel administrativo para gerenciar denúncias.</p>
-                    <a href="/ongs/admin" class="btn btn-primary">Painel da ONG</a>
+                    <p>Sua ONG já está cadastrada! Acesse o painel da ONG para gerenciar denúncias e acompanhar respostas.</p>
+                    <a href="/ongs/admin/dashboard" class="btn btn-primary">Painel da ONG</a>
                 </nav>
                 <% } %>
             </nav>

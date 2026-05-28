@@ -21,7 +21,7 @@
                         <label for="userType">Tipo de Usuário</label>
                         <select id="userType" name="userType">
                             <option value="user">Usuário Normal</option>
-                            <option value="admin">ONG</option>
+                            <option value="ong">ONG</option>
                         </select>
                     </nav>
                     
@@ -169,7 +169,7 @@
             }
         };
 
-        const isOngCadastro = () => userType && (userType.value === "admin" || userType.value === "ong");
+        const isOngCadastro = () => userType && userType.value === "ong";
 
         const validateField = (fieldId) => {
             const field = document.getElementById(fieldId);

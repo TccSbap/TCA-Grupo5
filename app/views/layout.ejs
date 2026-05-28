@@ -53,13 +53,20 @@
                         <details class="user-menu">
                             <summary class="user-name">
                                 <i class="fas fa-user"></i>
-                                <%= user.name %>
+                                <%= isOng && user.ongName ? user.ongName : user.name %>
                                 <% if (isAdmin) { %>
+                                    <span class="admin-badge">Admin</span>
+                                <% } else if (isOng) { %>
                                     <span class="admin-badge">ONG</span>
                                 <% } %>
                             </summary>
                             <nav class="dropdown">
-                                <a href="/dashboard">Dashboard</a>
+                                <a href="<%= dashboardPath || '/dashboard' %>">Dashboard</a>
+                                <% if (isAdmin) { %>
+                                    <a href="/admin">Painel Admin</a>
+                                <% } else if (isOng) { %>
+                                    <a href="/ongs/admin/dashboard">Painel da ONG</a>
+                                <% } %>
                                 <a href="/auth/logout">Sair</a>
                             </nav>
                         </details>

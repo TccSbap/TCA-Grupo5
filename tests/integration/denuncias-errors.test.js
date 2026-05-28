@@ -2,6 +2,16 @@ const request = require('supertest');
 const { createMockReq, createMockRes } = require('../helpers/httpMocks');
 const { resetData } = require('../../data/mockDatabase');
 
+const signInOng = async (agent) => {
+  await agent
+    .post('/auth/login')
+    .type('form')
+    .send({
+      email: 'admin@agualimpa.org',
+      password: '123456'
+    });
+};
+
 describe('tratamento de erros das denúncias', () => {
   beforeEach(() => {
     resetData();
@@ -57,13 +67,7 @@ describe('tratamento de erros das denúncias', () => {
     const app = require('../../app');
     const agent = request.agent(app);
 
-    await agent
-      .post('/admin/dashboard')
-      .type('form')
-      .send({
-        email: 'admin@agualimpa.org',
-        password: '123456'
-      });
+    await signInOng(agent);
 
     const response = await agent
       .post('/denuncias/99999/responder')
@@ -81,13 +85,7 @@ describe('tratamento de erros das denúncias', () => {
     const app = require('../../app');
     const agent = request.agent(app);
 
-    await agent
-      .post('/admin/dashboard')
-      .type('form')
-      .send({
-        email: 'admin@agualimpa.org',
-        password: '123456'
-      });
+    await signInOng(agent);
 
     const response = await agent
       .post('/denuncias/99999/status')
@@ -107,13 +105,7 @@ describe('tratamento de erros das denúncias', () => {
     const app = require('../../app');
     const agent = request.agent(app);
 
-    await agent
-      .post('/admin/dashboard')
-      .type('form')
-      .send({
-        email: 'admin@agualimpa.org',
-        password: '123456'
-      });
+    await signInOng(agent);
 
     const response = await agent
       .post('/denuncias/1/status')
@@ -133,13 +125,7 @@ describe('tratamento de erros das denúncias', () => {
     const app = require('../../app');
     const agent = request.agent(app);
 
-    await agent
-      .post('/admin/dashboard')
-      .type('form')
-      .send({
-        email: 'admin@agualimpa.org',
-        password: '123456'
-      });
+    await signInOng(agent);
 
     const response = await agent
       .post('/denuncias/1/responder')

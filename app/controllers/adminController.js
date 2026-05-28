@@ -1,35 +1,51 @@
 const createAdminController = (data) => {
-    const isOngRole = (user) => Boolean(user && (user.type === 'admin' || user.type === 'ong'));
-
-    const renderAdminDashboard = async (req, res) => {
-        if (!req.session.user) {
-            return res.redirect('/admin/login');
+    const loadCollection = async (methodName, fallback = []) => {
+        if (typeof data[methodName] !== 'function') {
+            return fallback;
         }
 
-        if (!isOngRole(req.session.user)) {
-            return res.redirect('/dashboard');
-        }
+        return data[methodName]();
+    };
 
-        const user = req.session.user;
-        const userOng = typeof data.getOngByUserId === 'function' ? await data.getOngByUserId(user.id) : null;
-        const ongId = userOng ? userOng.id : null;
-        const allDenuncias = ongId ? await data.getDenuncias(ongId) : await data.getDenuncias();
-        const allOngs = ongId ? await data.getOngs(ongId) : await data.getOngs();
+    const buildDashboardSummary = async () => {
+        const [users, ongs, denuncias, mensagensContato, doacoes, assinaturasPlano] = await Promise.all([
+            loadCollection('getUsers'),
+            loadCollection('getOngs'),
+            loadCollection('getDenuncias'),
+            loadCollection('getMensagensContato'),
+            loadCollection('getDoacoes'),
+            loadCollection('getAssinaturasPlano')
+        ]);
 
-        return res.render('admin/dashboard', {
-            title: 'Painel Administrativo',
-            user,
-            totalDenuncias: allDenuncias.length,
-            totalOngs: allOngs.length,
-            denunciasResolvidas: allDenuncias.filter((denuncia) => denuncia.status === 'resolvida').length,
-            denunciasEmAndamento: allDenuncias.filter((denuncia) => denuncia.status === 'em_andamento').length,
-            denunciasPendentes: allDenuncias.filter((denuncia) => denuncia.status === 'pendente').length
-        });
+        const totalResponses = denuncias.reduce((count, denuncia) => {
+            return count + (Array.isArray(denuncia.responses) ? denuncia.responses.length : 0);
+        }, 0);
+
+        return {
+            users,
+            ongs,
+            denuncias,
+            mensagensContato,
+            doacoes,
+            assinaturasPlano,
+            totalUsers: users.length,
+            totalOngs: ongs.length,
+            totalDenuncias: denuncias.length,
+            denunciasPendentes: denuncias.filter((denuncia) => denuncia.status === 'pendente').length,
+            denunciasEmAndamento: denuncias.filter((denuncia) => denuncia.status === 'em_andamento').length,
+            denunciasResolvidas: denuncias.filter((denuncia) => denuncia.status === 'resolvida').length,
+            totalResponses,
+            totalMensagensContato: mensagensContato.length,
+            totalDoacoes: doacoes.length,
+            totalAssinaturas: assinaturasPlano.length,
+            recentDenuncias: denuncias.slice(0, 5),
+            recentOngs: ongs.slice(0, 5),
+            recentMensagensContato: mensagensContato.slice(0, 5)
+        };
     };
 
     return {
-        isOngRole,
-        loginPage(req, res) {
+        async loginPage(req, res) {
             res.render('admin/login', { title: 'Login de Administrador', error: req.query.error });
         },
 
@@ -37,7 +53,7 @@ const createAdminController = (data) => {
             const { email, password } = req.body;
 
             const user = await data.authenticateUser(email, password);
-            if (!isOngRole(user)) {
+            if (!user || user.type !== 'admin') {
                 return res.render('admin/login', {
                     title: 'Login de Administrador',
                     error: 'Credenciais inválidas'
@@ -45,32 +61,41 @@ const createAdminController = (data) => {
             }
 
             req.session.user = user;
-            res.redirect('/admin/dashboard_admin');
+            res.redirect('/admin');
         },
 
-        dashboard: renderAdminDashboard,
+        async dashboard(req, res) {
+            const summary = await buildDashboardSummary();
+
+            return res.render('admin/dashboard', {
+                title: 'Painel Administrativo',
+                user: req.session.user,
+                ...summary
+            });
+        },
 
         async denuncias(req, res) {
-            if (!isOngRole(req.session.user)) {
-                return res.redirect('/dashboard');
-            }
+            const denuncias = await loadCollection('getDenuncias');
 
             res.render('admin/denuncias', {
                 title: 'Gerenciar Denúncias',
                 user: req.session.user,
-                denuncias: await data.getDenuncias()
+                denuncias,
+                totalDenuncias: denuncias.length,
+                denunciasPendentes: denuncias.filter((denuncia) => denuncia.status === 'pendente').length,
+                denunciasEmAndamento: denuncias.filter((denuncia) => denuncia.status === 'em_andamento').length,
+                denunciasResolvidas: denuncias.filter((denuncia) => denuncia.status === 'resolvida').length
             });
         },
 
         async ongs(req, res) {
-            if (!isOngRole(req.session.user)) {
-                return res.redirect('/dashboard');
-            }
+            const ongs = await loadCollection('getOngs');
 
             res.render('admin/ongs', {
                 title: 'Gerenciar ONGs',
                 user: req.session.user,
-                ongs: await data.getOngs()
+                ongs,
+                totalOngs: ongs.length
             });
         }
     };

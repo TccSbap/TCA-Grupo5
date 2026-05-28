@@ -1,0 +1,108 @@
+<%- include('partials/header') %>
+
+<section class="dashboard">
+    <section class="container">
+        <header class="dashboard-header">
+            <h1>Meu Dashboard</h1>
+            <p>Olá, <%= user.name %>. Aqui estão suas últimas atividades na plataforma.</p>
+        </header>
+
+        <section class="dashboard-stats">
+            <article class="stat-card">
+                <nav class="stat-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3><%= totalDenuncias %></h3>
+                    <p>Denúncias enviadas</p>
+                </nav>
+            </article>
+
+            <article class="stat-card">
+                <nav class="stat-icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3><%= totalDoacoes %></h3>
+                    <p>Doações realizadas</p>
+                </nav>
+            </article>
+
+            <article class="stat-card">
+                <nav class="stat-icon">
+                    <i class="fas fa-file-signature"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3><%= totalAssinaturas %></h3>
+                    <p>Planos assinados</p>
+                </nav>
+            </article>
+
+            <article class="stat-card">
+                <nav class="stat-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3><%= totalOngs %></h3>
+                    <p>ONGs parceiras</p>
+                </nav>
+            </article>
+        </section>
+
+        <nav class="dashboard-actions">
+            <a href="/denuncias/nova" class="btn btn-primary">Nova denúncia</a>
+            <a href="/doacoes" class="btn btn-outline">Fazer doação</a>
+            <a href="/planos" class="btn btn-secondary">Ver planos</a>
+        </nav>
+
+        <section class="dashboard-panels">
+            <article class="dashboard-panel">
+                <header class="section-header">
+                    <h2>Minhas denúncias</h2>
+                </header>
+
+                <% if (denuncias && denuncias.length > 0) { %>
+                <ul class="dashboard-list">
+                    <% denuncias.forEach((denuncia) => { %>
+                    <li class="dashboard-list-item">
+                        <strong><%= denuncia.title %></strong>
+                        <span class="status status-<%= denuncia.status %>">
+                            <%= denuncia.status.replace('_', ' ') %>
+                        </span>
+                    </li>
+                    <% }) %>
+                </ul>
+                <% } else { %>
+                <p class="empty-dashboard">Você ainda não enviou denúncias.</p>
+                <% } %>
+            </article>
+
+            <article class="dashboard-panel">
+                <header class="section-header">
+                    <h2>Doações e assinaturas</h2>
+                </header>
+
+                <% if ((doacoes && doacoes.length > 0) || (assinaturasPlano && assinaturasPlano.length > 0)) { %>
+                <ul class="dashboard-list">
+                    <% doacoes.forEach((doacao) => { %>
+                    <li class="dashboard-list-item">
+                        <strong>Doação</strong>
+                        <span>R$ <%= Number(doacao.amount || 0).toFixed(2) %></span>
+                    </li>
+                    <% }) %>
+                    <% assinaturasPlano.forEach((assinatura) => { %>
+                    <li class="dashboard-list-item">
+                        <strong><%= assinatura.planName || 'Plano' %></strong>
+                        <span><%= assinatura.status || 'pendente' %></span>
+                    </li>
+                    <% }) %>
+                </ul>
+                <% } else { %>
+                <p class="empty-dashboard">Você ainda não registrou doações nem assinaturas.</p>
+                <% } %>
+            </article>
+        </section>
+    </section>
+</section>
+
+<%- include('partials/footer') %>

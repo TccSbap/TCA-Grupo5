@@ -10,13 +10,13 @@ const createAuthRouter = (data = defaultData) => {
 
     router.get('/login', redirectIfLoggedIn, controller.loginPage);
     router.post('/login', [
-        body('email', 'E-mail inválido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
+        body('email', 'E-mail inválido.').isEmail(),
         body('password', 'Senha é obrigatória').notEmpty()
     ], controller.login);
     router.get('/cadastro', redirectIfLoggedIn, controller.cadastroPage);
     router.post('/cadastro', [
         body('name', 'Nome Completo deve ter no mínimo 10 caracteres').isLength({ min: 10 }),
-        body('email', 'E-mail inválido. Deve conter @ e terminar com .com').isEmail().matches(/@.+\.com$/),
+        body('email', 'E-mail inválido.').isEmail(),
         body('password', 'A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número.')
             .isLength({ min: 8 })
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/),

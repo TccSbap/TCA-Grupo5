@@ -6,8 +6,8 @@ beforeEach(() => {
   resetData();
 });
 
-const signInAdmin = async (agent) => {
-  await agent.post('/admin/dashboard').type('form').send({
+const signInOng = async (agent) => {
+  await agent.post('/auth/login').type('form').send({
     email: 'admin@agualimpa.org',
     password: '123456'
   });
@@ -35,19 +35,19 @@ describe('rotas de ONGs', () => {
     expect(response.text).toContain('ONG não encontrada');
   });
 
-  test('sessão admin consegue acessar o painel administrativo da ONG', async () => {
+  test('sessão ONG consegue acessar o painel da ONG', async () => {
     const agent = request.agent(app);
-    await signInAdmin(agent);
+    await signInOng(agent);
 
     const response = await agent.get('/ongs/admin/dashboard');
 
     expect(response.status).toBe(200);
-    expect(response.text).toContain('Administração da ONG');
+    expect(response.text).toContain('Painel da ONG');
   });
 
-  test('sessão admin consegue acessar a página de estatísticas da ONG', async () => {
+  test('sessão ONG consegue acessar a página de estatísticas da ONG', async () => {
     const agent = request.agent(app);
-    await signInAdmin(agent);
+    await signInOng(agent);
 
     const response = await agent.get('/ongs/admin/stats');
 

@@ -3,32 +3,70 @@ const requireAuth = (req, res, next) => {
     if (!req.session.user) {
         return res.redirect('/auth/login');
     }
+
     next();
 };
 
-const isOngRole = (user) => Boolean(user && (user.type === 'admin' || user.type === 'ong'));
-
-// Middleware para verificar se o usuário é admin (ONG)
-const requireAdmin = (req, res, next) => {
-    if (!isOngRole(req.session.user)) {
-        return res.status(403).render('403', {
-            title: 'Acesso Negado',
-            message: 'Você precisa ser uma ONG para acessar esta área.'
-        });
+const getUserRole = (user) => {
+    if (!user) {
+        return null;
     }
+
+    if (user.type === 'admin') {
+        return 'admin';
+    }
+
+    if (user.type === 'ong') {
+        return 'ong';
+    }
+
+    return 'user';
+};
+
+const getDashboardPathForUser = (user) => {
+    switch (getUserRole(user)) {
+        case 'admin':
+            return '/admin';
+        case 'ong':
+            return '/ongs/admin/dashboard';
+        default:
+            return '/dashboard';
+    }
+};
+
+const requireRole = (role, message) => (req, res, next) => {
+    const user = req.session.user;
+
+    if (!user) {
+        return res.redirect('/auth/login');
+    }
+
+    if (getUserRole(user) !== role) {
+        return res.redirect(getDashboardPathForUser(user));
+    }
+
     next();
 };
+
+const requireUser = requireRole('user');
+const requireOng = requireRole('ong');
+const requireAdmin = requireRole('admin');
 
 // Middleware para redirecionar usuários logados
 const redirectIfLoggedIn = (req, res, next) => {
     if (req.session.user) {
-        return res.redirect(isOngRole(req.session.user) ? '/admin/dashboard_admin' : '/dashboard');
+        return res.redirect(getDashboardPathForUser(req.session.user));
     }
+
     next();
 };
 
 module.exports = {
+    getDashboardPathForUser,
+    getUserRole,
     requireAuth,
     requireAdmin,
+    requireOng,
+    requireUser,
     redirectIfLoggedIn
 };

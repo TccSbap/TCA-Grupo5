@@ -1,5 +1,6 @@
 const {
   requireAuth,
+  requireOng,
   requireAdmin,
   redirectIfLoggedIn
 } = require('../../../app/middleware/auth');
@@ -39,11 +40,7 @@ describe('middleware de autenticação', () => {
 
     requireAdmin(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.render).toHaveBeenCalledWith('403', {
-      title: 'Acesso Negado',
-      message: 'Você precisa ser uma ONG para acessar esta área.'
-    });
+    expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -58,36 +55,58 @@ describe('middleware de autenticação', () => {
     expect(res.status).not.toHaveBeenCalled();
   });
 
-  test('requireAdmin permite o acesso de usuarios do tipo ong', () => {
+  test('requireAdmin rejeita usuarios do tipo ong', () => {
     const req = createMockReq({ session: { user: { id: 1, type: 'ong' } } });
     const res = createMockRes();
     const next = createMockNext();
 
     requireAdmin(req, res, next);
 
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(res.status).not.toHaveBeenCalled();
+    expect(res.redirect).toHaveBeenCalledWith('/ongs/admin/dashboard');
+    expect(next).not.toHaveBeenCalled();
   });
 
-  test('redirectIfLoggedIn envia usuários logados para o dashboard', () => {
+  test('requireOng permite o acesso de usuarios do tipo ong', () => {
+    const req = createMockReq({ session: { user: { id: 1, type: 'ong' } } });
+    const res = createMockRes();
+    const next = createMockNext();
+
+    requireOng(req, res, next);
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(res.redirect).not.toHaveBeenCalled();
+  });
+
+  test('requireOng redireciona administradores para o painel de admin', () => {
+    const req = createMockReq({ session: { user: { id: 1, type: 'admin' } } });
+    const res = createMockRes();
+    const next = createMockNext();
+
+    requireOng(req, res, next);
+
+    expect(res.redirect).toHaveBeenCalledWith('/admin');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  test('redirectIfLoggedIn envia usuários administradores para o painel admin', () => {
     const req = createMockReq({ session: { user: { id: 1, type: 'admin' } } });
     const res = createMockRes();
     const next = createMockNext();
 
     redirectIfLoggedIn(req, res, next);
 
-    expect(res.redirect).toHaveBeenCalledWith('/admin/dashboard_admin');
+    expect(res.redirect).toHaveBeenCalledWith('/admin');
     expect(next).not.toHaveBeenCalled();
   });
 
-  test('redirectIfLoggedIn envia usuarios do tipo ong para o dashboard administrativo', () => {
+  test('redirectIfLoggedIn envia usuarios do tipo ong para o painel da ONG', () => {
     const req = createMockReq({ session: { user: { id: 1, type: 'ong' } } });
     const res = createMockRes();
     const next = createMockNext();
 
     redirectIfLoggedIn(req, res, next);
 
-    expect(res.redirect).toHaveBeenCalledWith('/admin/dashboard_admin');
+    expect(res.redirect).toHaveBeenCalledWith('/ongs/admin/dashboard');
     expect(next).not.toHaveBeenCalled();
   });
 

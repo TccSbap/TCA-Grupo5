@@ -1,6 +1,6 @@
 const express = require('express');
 const defaultData = require('../../data/database');
-const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { requireUser, requireOng } = require('../middleware/auth');
 const { createDenunciasController } = require('../controllers/denunciasController');
 
 const createDenunciasRouter = (data = defaultData) => {
@@ -8,11 +8,11 @@ const createDenunciasRouter = (data = defaultData) => {
     const controller = createDenunciasController(data);
 
     router.get('/', controller.index);
-    router.get('/nova', requireAuth, controller.nova);
-    router.post('/nova', requireAuth, controller.create);
+    router.get('/nova', requireUser, controller.nova);
+    router.post('/nova', requireUser, controller.create);
     router.get('/:id', controller.details);
-    router.post('/:id/responder', requireAdmin, controller.responder);
-    router.post('/:id/status', requireAdmin, controller.updateStatus);
+    router.post('/:id/responder', requireOng, controller.responder);
+    router.post('/:id/status', requireOng, controller.updateStatus);
 
     return router;
 };

@@ -39,7 +39,7 @@ const createOngsController = (data) => {
             );
 
             res.render('ongs/admin', {
-                title: 'Administração da ONG',
+                title: 'Painel da ONG',
                 ong: userOng,
                 pendingDenuncias,
                 respondedDenuncias

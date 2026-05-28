@@ -1,5 +1,6 @@
 const express = require('express');
 const defaultData = require('../../data/database');
+const { requireAdmin } = require('../middleware/auth');
 const { createAdminController } = require('../controllers/adminController');
 
 const createAdminRouter = (data = defaultData) => {
@@ -9,10 +10,10 @@ const createAdminRouter = (data = defaultData) => {
     router.get('/login', controller.loginPage);
     router.post('/login', controller.login);
     router.post('/dashboard', controller.login);
-    router.get('/', controller.dashboard);
-    router.get('/dashboard_admin', controller.dashboard);
-    router.get('/denuncias', controller.denuncias);
-    router.get('/ongs', controller.ongs);
+    router.get('/', requireAdmin, controller.dashboard);
+    router.get('/dashboard_admin', requireAdmin, controller.dashboard);
+    router.get('/denuncias', requireAdmin, controller.denuncias);
+    router.get('/ongs', requireAdmin, controller.ongs);
 
     return router;
 };

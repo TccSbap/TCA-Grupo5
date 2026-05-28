@@ -63,7 +63,15 @@ const createAuthController = (data) => ({
         }
 
         req.session.user = authenticatedUser;
-        return res.redirect(authenticatedUser.type !== 'user' ? '/admin/dashboard_admin' : '/dashboard');
+        if (authenticatedUser.type === 'admin') {
+            return res.redirect('/admin');
+        }
+
+        if (authenticatedUser.type === 'ong') {
+            return res.redirect('/ongs/admin/dashboard');
+        }
+
+        return res.redirect('/dashboard');
     },
 
     cadastroPage(req, res) {
@@ -119,7 +127,7 @@ const createAuthController = (data) => ({
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Descrição da ONG deve ter no mínimo 10 caracteres'));
             }
 
-            const contactRegex = /@.+\.com$/;
+            const contactRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!contactRegex.test(trimmedOngContact)) {
                 return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Email de contato da ONG inválido. Deve conter @ e terminar com .com'));
             }
