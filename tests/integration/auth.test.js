@@ -177,7 +177,7 @@ describe('rotas de autenticação', () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toContain(
-      encodeURIComponent('Email de contato da ONG inválido. Deve conter @ e terminar com .com')
+      encodeURIComponent('O e-mail de contato da ONG deve ser válido.')
     );
   });
 

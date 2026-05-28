@@ -66,9 +66,9 @@
                                 <% } %>
                             </summary>
                             <nav class="dropdown" aria-label="Menu do usuário">
-                                <a href="<%= dashboardPath || '/dashboard' %>">Dashboard</a>
+                                <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
                                 <% if (isAdmin) { %>
-                                    <a href="/admin">Painel Admin</a>
+                                    <a href="/admin">Painel Administrativo</a>
                                 <% } else if (isOng) { %>
                                     <a href="/ongs/admin/dashboard">Painel da ONG</a>
                                 <% } %>

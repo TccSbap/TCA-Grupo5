@@ -129,7 +129,7 @@ const createAuthController = (data) => ({
 
             const contactRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!contactRegex.test(trimmedOngContact)) {
-                return res.redirect('/auth/cadastro?error=' + encodeURIComponent('Email de contato da ONG inválido. Deve conter @ e terminar com .com'));
+                return res.redirect('/auth/cadastro?error=' + encodeURIComponent('O e-mail de contato da ONG deve ser válido.'));
             }
 
             if (!isValidCnpj(trimmedOngCnpj)) {

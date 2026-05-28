@@ -14,7 +14,7 @@ const { createAuthRouter } = require('./app/routes/auth');
 const { createDenunciasRouter } = require('./app/routes/denuncias.js');
 const { createOngsRouter } = require('./app/routes/ongs');
 const { createAdminRouter } = require('./app/routes/admin');
-const { getDashboardPathForUser } = require('./app/middleware/auth');
+const { getDashboardLabelForUser, getDashboardPathForUser } = require('./app/middleware/auth');
 const appPath = path.join(__dirname, 'app');
 
 const createApp = (data = defaultData) => {
@@ -59,6 +59,7 @@ const createApp = (data = defaultData) => {
         res.locals.isAdmin = !!user && user.type === 'admin';
         res.locals.isOng = !!user && user.type === 'ong';
         res.locals.dashboardPath = getDashboardPathForUser(user);
+        res.locals.dashboardLabel = getDashboardLabelForUser(user);
         res.locals.currentPath = req.path;
         res.locals.watchReload = watchReloadEnabled;
         res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '1';

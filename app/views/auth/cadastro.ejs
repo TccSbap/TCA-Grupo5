@@ -18,7 +18,7 @@
                 
                 <form class="auth-form" method="POST" action="/auth/cadastro" id="cadastroForm" novalidate data-submit-lock-mode="manual">
                     <nav class="form-group">
-                        <label for="userType">Tipo de Usuário</label>
+                        <label for="userType">Perfil de Acesso</label>
                         <select id="userType" name="userType">
                             <option value="user">Usuário Normal</option>
                             <option value="ong">ONG</option>
@@ -195,7 +195,7 @@
                 case "email":
                     isValid = validateEmail(value);
                     if (!isValid) {
-                        setError(fieldId, "O e-mail deve conter @ e .com.");
+                        setError(fieldId, "O e-mail deve ser válido.");
                     }
                     break;
                 case "password":
@@ -225,7 +225,7 @@
                 case "ongContact":
                     isValid = validateEmail(value);
                     if (!isValid) {
-                        setError(fieldId, "O e-mail da ONG deve conter @ e .com.");
+                        setError(fieldId, "O e-mail da ONG deve ser válido.");
                     }
                     break;
                 case "ongCnpj":

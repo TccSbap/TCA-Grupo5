@@ -12,11 +12,15 @@ const loginUser = async (page, email = 'joao@email.com', password = '123456') =>
   await page.getByRole('button', { name: 'Entrar' }).click();
 };
 
+const loginOng = async (page, email = 'admin@agualimpa.org', password = '123456') => {
+  await loginUser(page, email, password);
+};
+
 const loginAdmin = async (page, email = 'admin@ods6.org', password = '123456') => {
   await page.goto('/admin/login');
   await page.getByLabel('Email').fill(email);
   await page.locator('#password').fill(password);
-  await page.getByRole('button', { name: 'Entrar como Administrador' }).click();
+  await page.getByRole('button', { name: 'Entrar no Painel Administrativo' }).click();
 };
 
 test.beforeEach(async ({ request }) => {
@@ -161,7 +165,7 @@ test('usuario envia mensagem pelo formulario de contato', async ({ page }) => {
 });
 
 test('ONG responde uma denuncia e acompanha o painel da ONG', async ({ page }) => {
-  await loginUser(page, 'admin@agualimpa.org', '123456');
+  await loginOng(page, 'admin@agualimpa.org', '123456');
 
   await page.goto('/denuncias/15');
   await expect(page.getByRole('heading', { name: /Lagoa contaminada por esgoto/i })).toBeVisible();

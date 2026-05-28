@@ -176,7 +176,7 @@ describe('dependency injection for routes', () => {
       { id: 1, type: 'admin', name: 'Admin Teste' }
     );
 
-    const response = await request(app).get('/dashboard_admin');
+    const response = await request(app).get('/');
 
     expect(data.getUsers).toHaveBeenCalled();
     expect(data.getDenuncias).toHaveBeenCalled();
@@ -186,6 +186,29 @@ describe('dependency injection for routes', () => {
     expect(response.body.locals.totalUsers).toBe(2);
     expect(response.body.locals.totalDenuncias).toBe(2);
     expect(response.body.locals.totalOngs).toBe(2);
+  });
+
+  test('admin route keeps the legacy /dashboard_admin alias as a redirect', async () => {
+    const data = {
+      authenticateUser: jest.fn().mockReturnValue({
+        id: 1,
+        type: 'admin',
+        name: 'Admin Teste'
+      }),
+      getUsers: jest.fn().mockReturnValue([]),
+      getDenuncias: jest.fn().mockReturnValue([]),
+      getOngs: jest.fn().mockReturnValue([]),
+      getMensagensContato: jest.fn().mockReturnValue([]),
+      getDoacoes: jest.fn().mockReturnValue([]),
+      getAssinaturasPlano: jest.fn().mockReturnValue([])
+    };
+
+    const app = buildApp(createAdminRouter(data), { id: 1, type: 'admin', name: 'Admin Teste' });
+
+    const response = await request(app).get('/dashboard_admin');
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/admin');
   });
 
   test('denuncias route uses injected method when creating a report', async () => {

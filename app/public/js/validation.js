@@ -208,7 +208,7 @@ function validateCadastroForm() {
 
     const emailInput = document.getElementById('email');
     if (!validateEmail(emailInput.value)) {
-        document.getElementById('email-error').textContent = 'O e-mail deve conter @ e terminar com .com.';
+        document.getElementById('email-error').textContent = 'O e-mail deve ser válido.';
         emailInput.style.borderColor = 'red';
         isValid = false;
     } else if (emailInput.value.trim() !== '') {
@@ -255,7 +255,7 @@ function validateCadastroForm() {
 
         const ongContactInput = document.getElementById('ongContact');
         if (!validateEmail(ongContactInput.value)) {
-            document.getElementById('ongContact-error').textContent = 'O e-mail da ONG deve conter @ e terminar com .com.';
+            document.getElementById('ongContact-error').textContent = 'O e-mail da ONG deve ser válido.';
             ongContactInput.style.borderColor = 'red';
             isValid = false;
         } else if (ongContactInput.value.trim() !== '') {
@@ -322,7 +322,7 @@ function validateDoacaoForm() {
 
     const emailDoadorInput = document.getElementById('emailDoador');
     if (!validateEmail(emailDoadorInput.value)) {
-        document.getElementById('emailDoador-error').textContent = 'O e-mail deve conter @ e terminar com .com.';
+        document.getElementById('emailDoador-error').textContent = 'O e-mail deve ser válido.';
         isValid = false;
     }
 
@@ -384,7 +384,7 @@ function validatePlanoForm() {
 
     const emailCompradorInput = document.getElementById('emailComprador');
     if (!validateEmail(emailCompradorInput.value)) {
-        document.getElementById('emailComprador-error').textContent = 'O e-mail deve conter @ e terminar com .com.';
+        document.getElementById('emailComprador-error').textContent = 'O e-mail deve ser válido.';
         isValid = false;
     }
 

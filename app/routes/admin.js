@@ -11,7 +11,7 @@ const createAdminRouter = (data = defaultData) => {
     router.post('/login', controller.login);
     router.post('/dashboard', controller.login);
     router.get('/', requireAdmin, controller.dashboard);
-    router.get('/dashboard_admin', requireAdmin, controller.dashboard);
+    router.get('/dashboard_admin', requireAdmin, (req, res) => res.redirect('/admin'));
     router.get('/denuncias', requireAdmin, controller.denuncias);
     router.get('/ongs', requireAdmin, controller.ongs);
 

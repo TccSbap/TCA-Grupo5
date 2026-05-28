@@ -46,7 +46,7 @@ const createAdminController = (data) => {
 
     return {
         async loginPage(req, res) {
-            res.render('admin/login', { title: 'Login de Administrador', error: req.query.error });
+            res.render('admin/login', { title: 'Login do Administrador', error: req.query.error });
         },
 
         async login(req, res) {
@@ -55,7 +55,7 @@ const createAdminController = (data) => {
             const user = await data.authenticateUser(email, password);
             if (!user || user.type !== 'admin') {
                 return res.render('admin/login', {
-                    title: 'Login de Administrador',
+                    title: 'Login do Administrador',
                     error: 'Credenciais inválidas'
                 });
             }

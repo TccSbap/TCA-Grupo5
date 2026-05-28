@@ -34,6 +34,17 @@ const getDashboardPathForUser = (user) => {
     }
 };
 
+const getDashboardLabelForUser = (user) => {
+    switch (getUserRole(user)) {
+        case 'admin':
+            return 'Painel Administrativo';
+        case 'ong':
+            return 'Painel da ONG';
+        default:
+            return 'Meu Dashboard';
+    }
+};
+
 const requireRole = (role, message) => (req, res, next) => {
     const user = req.session.user;
 
@@ -62,6 +73,7 @@ const redirectIfLoggedIn = (req, res, next) => {
 };
 
 module.exports = {
+    getDashboardLabelForUser,
     getDashboardPathForUser,
     getUserRole,
     requireAuth,

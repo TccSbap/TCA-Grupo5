@@ -6,7 +6,7 @@ describe('rotas administrativas', () => {
     const response = await request(app).get('/admin/login');
 
     expect(response.status).toBe(200);
-    expect(response.text).toContain('Login de Administrador');
+    expect(response.text).toContain('Login do Administrador');
   });
 
   test('POST /admin/dashboard rejeita credenciais inválidas', async () => {
@@ -42,7 +42,7 @@ describe('rotas administrativas', () => {
     expect(response.headers.location).toBe('/auth/login');
   });
 
-  test('GET /admin/dashboard_admin renderiza o dashboard para uma sessão admin autenticada', async () => {
+  test('GET /admin/dashboard_admin redireciona uma sessão admin autenticada para o painel atual', async () => {
     const agent = request.agent(app);
 
     await agent
@@ -55,7 +55,7 @@ describe('rotas administrativas', () => {
 
     const response = await agent.get('/admin/dashboard_admin');
 
-    expect(response.status).toBe(200);
-    expect(response.text).toContain('Painel Administrativo');
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/admin');
   });
 });
