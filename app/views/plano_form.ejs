@@ -1,5 +1,4 @@
-<%- include("./partials/header") %>
-<link rel="stylesheet" href="/stylesheets/form.css">
+<%- include("./partials/header", { extraStyles: ["/stylesheets/form.css"] }) %>
 
 <section class="form-page">
     <section class="container">
@@ -138,55 +137,5 @@
 </section>
 
 <script src="/js/validation.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const metodoPagamentoRadios = document.querySelectorAll("input[name=\'metodoPagamento\"]");
-        const cartaoFields = document.getElementById("cartao-fields");
-        const pixFields = document.getElementById("pix-fields");
-        const boletoFields = document.getElementById("boleto-fields");
-
-        metodoPagamentoRadios.forEach(radio => {
-            radio.addEventListener("change", function() {
-                cartaoFields.style.display = "none";
-                pixFields.style.display = "none";
-                boletoFields.style.display = "none";
-
-                document.querySelectorAll("#cartao-fields input").forEach(input => input.removeAttribute("required"));
-
-                if (this.value === "cartao") {
-                    cartaoFields.style.display = "block";
-                    document.getElementById("numeroCartao").setAttribute("required", "required");
-                    document.getElementById("validadeCartao").setAttribute("required", "required");
-                    document.getElementById("cvvCartao").setAttribute("required", "required");
-                } else if (this.value === "pix") {
-                    pixFields.style.display = "block";
-                } else if (this.value === "boleto") {
-                    boletoFields.style.display = "block";
-                }
-            });
-        });
-
-        const planoForm = document.getElementById("planoForm");
-
-        planoForm.addEventListener("submit", function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
-
-            if (window.submitOnce && window.submitOnce.isLocked(planoForm)) {
-                return;
-            }
-
-            // Limpar mensagens de erro anteriores
-            document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
-
-            if (validatePlanoForm()) {
-                if (window.submitOnce) {
-                    window.submitOnce.lock(planoForm);
-                }
-
-                planoForm.submit(); // Envia o formulário se todas as validações passarem
-            }
-        });
-    });
-</script>
-
+<script src="/js/forms/plano-form.js"></script>
 <%- include("./partials/footer") %>

@@ -51,13 +51,13 @@
         
         <nav class="admin-tabs">
             <nav class="tab-buttons">
-                <button class="tab-btn active" onclick="showTab('pending', event)">
+                <button class="tab-btn active" data-tab-target="pending">
                     Denúncias Pendentes (<%= pendingDenuncias.length %>)
                 </button>
-                <button class="tab-btn" onclick="showTab('responded', event)">
+                <button class="tab-btn" data-tab-target="responded">
                     Minhas Respostas (<%= respondedDenuncias.length %>)
                 </button>
-                <button class="tab-btn" onclick="showTab('ong-info', event)">
+                <button class="tab-btn" data-tab-target="ong-info">
                     Informações da ONG
                 </button>
             </nav>
@@ -227,24 +227,6 @@
     </section>
 </section>
 
-<script>
-function showTab(tabName, event) {
-    // Esconder todas as tabs
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Remover classe active de todos os botões
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Mostrar tab selecionada
-    document.getElementById(tabName + '-tab').classList.add('active');
-    
-    // Adicionar classe active ao botão correspondente
-    event.target.classList.add('active');
-}
-</script>
+<script src="/js/ongs/admin.js"></script>
 
 <%- include('../partials/footer') %>

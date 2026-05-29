@@ -71,25 +71,8 @@
                 </footer>
             </form>
 
-<script>
-document.getElementById('cep').addEventListener('blur', async function () {
-    const cep = this.value.replace(/\D/g, '');
-    if (cep.length !== 8) return;
+<script src="/js/denuncias/nova.js"></script>
 
-    try {
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await res.json();
-
-        if (!data.erro) {
-            document.getElementById('location').value =
-                `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
-        }
-    } catch (err) {
-        console.error('Erro ao buscar CEP');
-    }
-});
-</script>
-            
             <aside class="form-info">
                 <h3>Informações Importantes</h3>
                 <ul>

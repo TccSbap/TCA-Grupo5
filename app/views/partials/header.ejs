@@ -43,6 +43,17 @@
     <meta name="robots" content="<%= seoRobotsValue %>">
     <link rel="canonical" href="<%= seoCanonicalValue %>">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
+    <%
+        const extraStylesheets =
+            typeof extraStyles !== 'undefined' && Array.isArray(extraStyles)
+                ? extraStyles
+                : (typeof extraStyles !== 'undefined' && typeof extraStyles === 'string' && extraStyles
+                    ? [extraStyles]
+                    : []);
+    %>
+    <% extraStylesheets.forEach((href) => { %>
+    <link rel="stylesheet" href="<%= href %>">
+    <% }) %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -112,11 +123,6 @@
                                 </summary>
                                 <nav class="dropdown" aria-label="Menu do usuário">
                                     <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
-                                    <% if (isAdmin) { %>
-                                        <a href="/admin">Painel Administrativo</a>
-                                    <% } else if (isOng) { %>
-                                        <a href="/ongs/admin/dashboard">Painel da ONG</a>
-                                    <% } %>
                                     <a href="/auth/logout">Sair</a>
                                 </nav>
                             </details>

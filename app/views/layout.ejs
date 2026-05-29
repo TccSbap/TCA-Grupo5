@@ -97,11 +97,6 @@
                             </summary>
                             <nav class="dropdown">
                                 <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
-                                <% if (isAdmin) { %>
-                                    <a href="/admin">Painel Administrativo</a>
-                                <% } else if (isOng) { %>
-                                    <a href="/ongs/admin/dashboard">Painel da ONG</a>
-                                <% } %>
                                 <a href="/auth/logout">Sair</a>
                             </nav>
                         </details>
@@ -166,37 +161,7 @@
     </footer>
 
     <% if (typeof watchReload !== 'undefined' && watchReload) { %>
-    <script>
-        (() => {
-            let lastVersion = null;
-
-            const checkVersion = async () => {
-                try {
-                    const response = await fetch('/__watch-version', { cache: 'no-store' });
-                    if (!response.ok) {
-                        return;
-                    }
-
-                    const version = (await response.text()).trim();
-                    if (!version) {
-                        return;
-                    }
-
-                    if (lastVersion && version !== lastVersion) {
-                        window.location.reload();
-                        return;
-                    }
-
-                    lastVersion = version;
-                } catch (error) {
-                    // If the server is restarting, the next poll will try again.
-                }
-            };
-
-            checkVersion();
-            setInterval(checkVersion, 1000);
-        })();
-    </script>
+    <script src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
     <% } %>
 
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>

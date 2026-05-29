@@ -1,33 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const valorDoacaoInput = document.getElementById('valorDoacao');
-    const donationAmountOptions = document.querySelector('.donation-amount-options');
     const metodoPagamentoRadios = document.querySelectorAll('input[name="metodoPagamento"]');
     const cartaoFields = document.getElementById('cartao-fields');
     const pixFields = document.getElementById('pix-fields');
     const boletoFields = document.getElementById('boleto-fields');
-    const doacaoForm = document.getElementById('doacaoForm');
+    const planoForm = document.getElementById('planoForm');
 
-    if (!doacaoForm) {
+    if (!planoForm) {
         return;
     }
-
-    if (valorDoacaoInput && donationAmountOptions && valorDoacaoInput.value) {
-        const initialButton = donationAmountOptions.querySelector(`button[data-value="${valorDoacaoInput.value}"]`);
-        if (initialButton) {
-            initialButton.classList.add('active');
-        }
-    }
-
-    donationAmountOptions?.addEventListener('click', (event) => {
-        if (event.target.tagName !== 'BUTTON') {
-            return;
-        }
-
-        donationAmountOptions.querySelectorAll('button').forEach((button) => button.classList.remove('active'));
-        event.target.classList.add('active');
-        valorDoacaoInput.value = event.target.dataset.value;
-        valorDoacaoInput.dispatchEvent(new Event('input'));
-    });
 
     metodoPagamentoRadios.forEach((radio) => {
         radio.addEventListener('change', function handlePaymentMethodChange() {
@@ -50,10 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    doacaoForm.addEventListener('submit', (event) => {
+    planoForm.addEventListener('submit', (event) => {
         event.preventDefault();
 
-        if (window.submitOnce && window.submitOnce.isLocked(doacaoForm)) {
+        if (window.submitOnce && window.submitOnce.isLocked(planoForm)) {
             return;
         }
 
@@ -61,12 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
             element.textContent = '';
         });
 
-        if (window.validateDoacaoForm()) {
+        if (window.validatePlanoForm()) {
             if (window.submitOnce) {
-                window.submitOnce.lock(doacaoForm);
+                window.submitOnce.lock(planoForm);
             }
 
-            doacaoForm.submit();
+            planoForm.submit();
         }
     });
 });
