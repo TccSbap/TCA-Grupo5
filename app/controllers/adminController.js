@@ -1,3 +1,5 @@
+const { toSessionUser } = require('../middleware/sessionUser');
+
 const createAdminController = (data) => {
     const loadCollection = async (methodName, fallback = []) => {
         if (typeof data[methodName] !== 'function') {
@@ -60,7 +62,7 @@ const createAdminController = (data) => {
                 });
             }
 
-            req.session.user = user;
+            req.session.user = toSessionUser(user);
             res.redirect('/admin');
         },
 

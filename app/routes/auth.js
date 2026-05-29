@@ -2,14 +2,16 @@ const express = require('express');
 const { body } = require('express-validator');
 const defaultData = require('../../data/database');
 const { redirectIfLoggedIn } = require('../middleware/auth');
+const { createLoginRateLimiter } = require('../middleware/rateLimit');
 const { createAuthController } = require('../controllers/authController');
 
 const createAuthRouter = (data = defaultData) => {
     const router = express.Router();
     const controller = createAuthController(data);
+    const loginRateLimiter = createLoginRateLimiter();
 
     router.get('/login', redirectIfLoggedIn, controller.loginPage);
-    router.post('/login', [
+    router.post('/login', loginRateLimiter, [
         body('email', 'E-mail inválido.').isEmail(),
         body('password', 'Senha é obrigatória').notEmpty()
     ], controller.login);

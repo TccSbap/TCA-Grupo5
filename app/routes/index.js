@@ -14,6 +14,10 @@ const createIndexRouter = (data = defaultData) => {
     router.get('/sobre', controller.sobre);
     router.get('/contato', controller.contato);
     router.post('/contato', controller.submitContato);
+    router.get('/privacidade', controller.privacidade);
+    router.get('/lgpd', controller.privacidade);
+    router.post('/cookies/consent', controller.setCookieConsent);
+    router.post('/cookies/consent/reset', controller.resetCookieConsent);
     router.get('/doacoes/:ongId/doar', controller.donateForm);
     router.post('/doar', controller.donate);
     router.get('/doacoes', controller.doacoes);

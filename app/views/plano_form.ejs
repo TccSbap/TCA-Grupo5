@@ -15,6 +15,7 @@
         <% } %>
 
         <form action="/assinar-plano" method="POST" class="styled-form" id="planoForm" novalidate data-submit-lock-mode="manual">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="planoId" value="<%= plano.id %>">
             <input type="hidden" name="planoNome" value="<%= plano.title %>">
             <input type="hidden" name="planoPreco" value="<%= plano.price %>">

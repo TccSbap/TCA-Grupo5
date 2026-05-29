@@ -9,7 +9,9 @@ const createDoacoesModel = require('../app/models/doacoes.model');
 const createAssinaturasPlanoModel = require('../app/models/assinaturasPlano.model');
 const createMensagensContatoModel = require('../app/models/mensagensContato.model');
 
-const defaultPasswordHash = bcrypt.hashSync('123456', 10);
+const defaultPasswordHash = process.env.NODE_ENV === 'production'
+    ? null
+    : bcrypt.hashSync('123456', 10);
 
 const ensureDataLoaded = async () => {
     if (!isConfigured) {

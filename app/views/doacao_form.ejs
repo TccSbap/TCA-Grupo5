@@ -15,6 +15,7 @@
         <% } %>
 
         <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate data-submit-lock-mode="manual">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="ongId" value="<%= ong.id %>">
 
             <h2>1. Informações do Doador</h2>
@@ -150,8 +151,13 @@
 </section>
 
 <script src="/js/validation.js"></script>
+<script src="/js/forms/doacao-form.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        if (window.doacaoFormInitialized) {
+            return;
+        }
+
         const valorDoacaoInput = document.getElementById("valorDoacao");
         const donationAmountOptions = document.querySelector(".donation-amount-options");
         const metodoPagamentoRadios = document.querySelectorAll("input[name=\'metodoPagamento\"]");
@@ -208,7 +214,7 @@
             // Limpar mensagens de erro anteriores
             document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
 
-            if (validateDoacaoForm()) {
+            if (window.validateDoacaoForm()) {
                 if (window.submitOnce) {
                     window.submitOnce.lock(doacaoForm);
                 }

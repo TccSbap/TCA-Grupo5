@@ -23,6 +23,7 @@
             <% } %>
             
             <form class="denuncia-form" method="POST" action="/denuncias/nova">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <nav class="form-group">
                     <label for="title">Título da Denúncia *</label>
                     <input type="text" id="title" name="title" required 

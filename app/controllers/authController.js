@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const { toSessionUser } = require('../middleware/sessionUser');
 
 const normalizeDigits = (value) => String(value || '').replace(/\D/g, '');
 
@@ -62,12 +63,12 @@ const createAuthController = (data) => ({
             return res.redirect('/auth/login?error=' + encodeURIComponent('E-mail ou senha inválidos'));
         }
 
-        req.session.user = authenticatedUser;
-        if (authenticatedUser.type === 'admin') {
+        req.session.user = toSessionUser(authenticatedUser);
+        if (req.session.user.type === 'admin') {
             return res.redirect('/admin');
         }
 
-        if (authenticatedUser.type === 'ong') {
+        if (req.session.user.type === 'ong') {
             return res.redirect('/ongs/admin/dashboard');
         }
 

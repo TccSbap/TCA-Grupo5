@@ -5,6 +5,18 @@ const resetApplicationState = async (request) => {
   await request.post('/__test/session/clear');
 };
 
+const acceptCookies = async (context) => {
+  await context.addCookies([
+    {
+      name: 'ods6_cookie_consent',
+      value: 'accepted',
+      url: 'http://127.0.0.1:3000',
+      httpOnly: true,
+      sameSite: 'Lax'
+    }
+  ]);
+};
+
 const loginUser = async (page, email = 'joao@email.com', password = '123456') => {
   await page.goto('/auth/login');
   await page.getByLabel('Email').fill(email);
@@ -25,6 +37,22 @@ const loginAdmin = async (page, email = 'admin@ods6.org', password = '123456') =
 
 test.beforeEach(async ({ request }) => {
   await resetApplicationState(request);
+});
+
+test.beforeEach(async ({ context }) => {
+  await acceptCookies(context);
+});
+
+test('banner de cookies aparece quando nao existe consentimento salvo', async ({ page, context }) => {
+  await context.clearCookies();
+  await page.goto('/');
+
+  await expect(page.getByRole('dialog', { name: /uso de cookies/i })).toBeVisible();
+  await page.getByRole('button', { name: /aceitar cookies/i }).click();
+
+  await expect(page).toHaveURL(/\/$/);
+  await page.reload();
+  await expect(page.locator('.cookie-banner')).toHaveCount(0);
 });
 
 test('a pagina inicial carrega e mostra os atalhos principais', async ({ page }) => {
@@ -48,7 +76,7 @@ test('usuario consegue entrar na plataforma e acessar o dashboard', async ({ pag
 
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.getByRole('heading', { name: /Meu Dashboard/i })).toBeVisible();
-  await expect(page.getByText(/Silva/)).toBeVisible();
+  await expect(page.getByText('João Silva', { exact: true })).toBeVisible();
 });
 
 test('usuario cadastra uma ONG e consegue entrar no painel da ONG', async ({ page }) => {
@@ -109,11 +137,11 @@ test('usuario faz uma doacao completa para uma ONG', async ({ page }) => {
   await page.locator('#nomeCompleto').fill('Maria da Silva');
   await page.locator('#emailDoador').fill('maria@exemplo.com');
   await page.locator('#telefoneDoador').fill('(11) 98888-7777');
-  await page.locator('#documentoDoador').fill('12345678901');
+  await page.locator('#documentoDoador').fill('52998224725');
   await page.locator('#cepDoador').fill('01001000');
   await page.locator('#ruaDoador').fill('Rua das Flores');
   await page.locator('#numeroDoador').fill('123');
-  await page.locator('#bairroDoador').fill('Centro');
+  await page.locator('#bairroDoador').fill('Bairro Central');
   await page.locator('#cidadeDoador').fill('Sao Paulo');
   await page.locator('#estadoDoador').fill('SP');
   await page.locator('#valorDoacao').fill('50');
@@ -132,7 +160,7 @@ test('usuario assina um plano da plataforma', async ({ page }) => {
   await page.locator('#nomeCompleto').fill('Maria da Silva');
   await page.locator('#emailComprador').fill('maria@exemplo.com');
   await page.locator('#telefoneComprador').fill('(11) 98888-7777');
-  await page.locator('#documentoComprador').fill('12345678901');
+  await page.locator('#documentoComprador').fill('52998224725');
   await page.locator('#cepComprador').fill('01001000');
   await page.locator('#ruaComprador').fill('Rua das Flores');
   await page.locator('#numeroComprador').fill('123');

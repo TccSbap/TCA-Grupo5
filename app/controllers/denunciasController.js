@@ -1,3 +1,13 @@
+const {
+    buildAbsoluteUrl,
+    buildBreadcrumbStructuredData,
+    buildCollectionPageStructuredData,
+    buildDenunciaStructuredData,
+    buildItemListStructuredData,
+    buildPageStructuredData,
+    getSiteUrl
+} = require('../utils/seo');
+
 const createDenunciasController = (data) => {
     const findUserOng = async (userId) => {
         if (typeof data.getOngByUserId === 'function') {
@@ -12,6 +22,19 @@ const createDenunciasController = (data) => {
         return ongs.find((ong) => ong.userId === userId) || null;
     };
 
+    const buildSeoPayload = (res, pathname, title, description, options = {}) => ({
+        title,
+        seoCanonical: buildAbsoluteUrl(pathname, getSiteUrl()),
+        seoDescription: description,
+        seoOgDescription: options.seoOgDescription || description,
+        seoOgTitle: options.seoOgTitle || title,
+        seoOgType: options.seoOgType || 'website',
+        seoStructuredData: buildPageStructuredData(
+            res.locals.seoStructuredData,
+            options.structuredData || []
+        )
+    });
+
     return {
         async index(req, res) {
             const denuncias = await data.getDenuncias();
@@ -22,8 +45,46 @@ const createDenunciasController = (data) => {
                 filteredDenuncias = denuncias.filter((d) => d.status === status);
             }
 
+            const pageUrl = '/denuncias';
+            const statusLabelMap = {
+                pendente: 'pendentes',
+                em_andamento: 'em andamento',
+                resolvida: 'resolvidas'
+            };
+            const description = status
+                ? `Acompanhe as denúncias ${statusLabelMap[status] || 'filtradas'} registradas sobre água e saneamento básico.`
+                : 'Acompanhe denúncias registradas e o andamento das ações relacionadas ao saneamento básico.';
+            const structuredData = [
+                buildCollectionPageStructuredData({
+                    name: 'Denúncias registradas',
+                    description,
+                    url: pageUrl,
+                    mainEntity: buildItemListStructuredData(
+                        filteredDenuncias.map((denuncia) => ({
+                            type: 'Report',
+                            name: denuncia.title,
+                            url: `/denuncias/${denuncia.id}`,
+                            description: denuncia.description,
+                            datePublished: denuncia.createdAt
+                        })),
+                        getSiteUrl(),
+                        {
+                            name: 'Denúncias registradas',
+                            description: 'Itens destacados na página pública de denúncias da Água Consciente.',
+                            url: pageUrl,
+                            itemType: 'Report'
+                        }
+                    )
+                }),
+                ...filteredDenuncias.map((denuncia) => buildDenunciaStructuredData(denuncia, getSiteUrl(), `/denuncias/${denuncia.id}`))
+            ];
+
             res.render('denuncias/index', {
-                title: 'Denúncias',
+                ...buildSeoPayload(res, pageUrl, 'Denúncias registradas', description, {
+                    seoOgTitle: 'Denúncias registradas | Água Consciente',
+                    seoOgType: 'website',
+                    structuredData
+                }),
                 denuncias: filteredDenuncias,
                 currentStatus: status
             });
@@ -31,7 +92,12 @@ const createDenunciasController = (data) => {
 
         nova(req, res) {
             res.render('denuncias/nova', {
-                title: 'Nova Denúncia',
+                ...buildSeoPayload(
+                    res,
+                    '/denuncias/nova',
+                    'Nova denúncia',
+                    'Registre uma denúncia sobre água, esgoto ou saneamento básico de forma rápida e segura.'
+                ),
                 error: req.query.error,
                 success: req.query.success
             });
@@ -82,8 +148,22 @@ const createDenunciasController = (data) => {
                 return res.status(404).render('404', { title: 'Denúncia não encontrada' });
             }
 
+            const pageUrl = `/denuncias/${denuncia.id}`;
+            const description = `${denuncia.description} Acompanhe a localização, o status e as respostas enviadas pelas ONGs parceiras.`;
+            const structuredData = [
+                buildBreadcrumbStructuredData([
+                    { name: 'Denúncias', url: '/denuncias' },
+                    { name: denuncia.title, url: pageUrl }
+                ], getSiteUrl()),
+                buildDenunciaStructuredData(denuncia, getSiteUrl(), pageUrl)
+            ];
+
             res.render('denuncias/detalhes', {
-                title: `Denúncia: ${denuncia.title}`,
+                ...buildSeoPayload(res, pageUrl, denuncia.title, description, {
+                    seoOgTitle: `${denuncia.title} | Água Consciente`,
+                    seoOgType: 'article',
+                    structuredData
+                }),
                 denuncia,
                 success: req.query.success,
                 error: req.query.error

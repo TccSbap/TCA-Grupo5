@@ -72,11 +72,11 @@
                 
                 <footer class="denuncia-actions">
                     <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">
-                        Ver Detalhes
+                        Ver denúncia completa
                     </a>
                     <% if (isOng) { %>
                     <a href="/denuncias/<%= denuncia.id %>#responder" class="btn btn-secondary">
-                        Responder
+                        Responder à denúncia
                     </a>
                     <% } %>
                 </footer>
@@ -99,12 +99,12 @@
             <% if (isLoggedIn) { %>
             <a href="/denuncias/nova" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                Fazer Primeira Denúncia
+                Registrar a primeira denúncia
             </a>
             <% } else { %>
             <a href="/auth/cadastro" class="btn btn-primary">
                 <i class="fas fa-user-plus"></i>
-                Cadastre-se para Denunciar
+                Criar conta para denunciar
             </a>
             <% } %>
         </section>

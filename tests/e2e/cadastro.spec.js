@@ -27,7 +27,7 @@ test('usuario normal cadastra sem preencher campos da ONG', async ({ page }) => 
 
 test('usuario ONG precisa preencher os campos da ONG', async ({ page }) => {
   await page.goto('/auth/cadastro');
-  await page.selectOption('#userType', 'admin');
+  await page.selectOption('#userType', 'ong');
 
   await expect(page.locator('#ongFields')).toBeVisible();
 

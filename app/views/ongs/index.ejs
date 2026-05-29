@@ -52,11 +52,11 @@
                 
                 <footer class="ong-actions">
                     <a href="/ongs/<%= ong.id %>" class="btn btn-outline">
-                        Ver Detalhes
+                        Ver perfil da ONG
                     </a>
                     <a href="mailto:<%= ong.contact %>" class="btn btn-primary">
                         <i class="fas fa-envelope"></i>
-                        Contatar
+                        Enviar e-mail para a ONG
                     </a>
                 </footer>
             </article>
@@ -88,7 +88,7 @@
                 <% if (!isLoggedIn) { %>
                 <a href="/auth/cadastro" class="btn btn-primary btn-large">
                     <i class="fas fa-handshake"></i>
-                    Cadastrar ONG
+                    Cadastrar minha ONG
                 </a>
                 <% } else if (!isOng) { %>
                 <nav class="info-box">
@@ -98,14 +98,14 @@
                     <a href="/admin" class="btn btn-outline">Ir para o Painel Administrativo</a>
                     <% } else { %>
                     <p>Para cadastrar uma ONG, você precisa criar uma conta de ONG.</p>
-                    <a href="/auth/cadastro" class="btn btn-outline">Criar Conta de ONG</a>
+                    <a href="/auth/cadastro" class="btn btn-outline">Criar conta de ONG</a>
                     <% } %>
                 </nav>
                 <% } else { %>
                 <nav class="info-box success">
                     <i class="fas fa-check-circle"></i>
                     <p>Sua ONG já está cadastrada! Acesse o painel da ONG para gerenciar denúncias e acompanhar respostas.</p>
-                    <a href="/ongs/admin/dashboard" class="btn btn-primary">Painel da ONG</a>
+                    <a href="/ongs/admin/dashboard" class="btn btn-primary">Acessar painel da ONG</a>
                 </nav>
                 <% } %>
             </nav>

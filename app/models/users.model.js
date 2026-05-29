@@ -55,6 +55,10 @@ module.exports = ({ pool, canUseDatabase, defaultPasswordHash }) => {
         }
 
         const passwordHash = user.password || defaultPasswordHash;
+        if (!passwordHash) {
+            return null;
+        }
+
         if (!bcrypt.compareSync(password, passwordHash)) {
             return null;
         }
@@ -66,6 +70,10 @@ module.exports = ({ pool, canUseDatabase, defaultPasswordHash }) => {
         await ensureDatabase();
 
         const passwordHash = userData.password || userData.password_hash || defaultPasswordHash;
+        if (!passwordHash) {
+            throw new Error('Senha obrigatoria para criar usuario');
+        }
+
         const createdAt = userData.createdAt || new Date().toISOString();
         const [result] = await pool.execute(
             `INSERT INTO users (name, email, password_hash, type, ong_name, created_at)

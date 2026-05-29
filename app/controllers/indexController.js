@@ -1,9 +1,24 @@
-const normalizeText = (value) => String(value || '').trim();
-const digitsOnly = (value) => normalizeText(value).replace(/\D/g, '');
-const hasTwoWords = (value) => normalizeText(value).split(/\s+/).filter(Boolean).length >= 2;
-const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeText(value));
-const isValidState = (value) => /^[A-Z]{2}$/.test(normalizeText(value));
-const isLongEnough = (value, min) => normalizeText(value).length >= min;
+const {
+    validateDonation,
+    validatePlanSubscription,
+    validateContactMessage
+} = require('../utils/validation');
+const {
+    buildAbsoluteUrl,
+    buildCollectionPageStructuredData,
+    buildItemListStructuredData,
+    buildNewsArticleStructuredData,
+    buildPageStructuredData,
+    getSiteUrl
+} = require('../utils/seo');
+const {
+    COOKIE_CONSENT_ACCEPTED,
+    COOKIE_CONSENT_COOKIE_NAME,
+    COOKIE_CONSENT_REJECTED,
+    getClearCookieConsentOptions,
+    getCookieConsentOptions,
+    normalizeReturnTo
+} = require('../utils/cookieConsent');
 
 const pickOngFocus = (ong) => ong.focus || ong.description || 'Projeto socioambiental';
 
@@ -12,125 +27,33 @@ const formatOngForDonation = (ong) => ({
     focus: pickOngFocus(ong)
 });
 
-const validateDonation = (body) => {
-    if (!hasTwoWords(body.nomeCompleto)) {
-        return 'Nome Completo deve conter pelo menos 2 palavras.';
+const buildSeoPayload = (res, pathname, title, description, options = {}) => ({
+    title,
+    seoCanonical: buildAbsoluteUrl(pathname, getSiteUrl()),
+    seoDescription: description,
+    seoOgDescription: options.seoOgDescription || description,
+    seoOgTitle: options.seoOgTitle || title,
+    seoOgType: options.seoOgType || 'website',
+    seoStructuredData: buildPageStructuredData(
+        res.locals.seoStructuredData,
+        options.structuredData || []
+    )
+});
+
+const findOngById = async (data, id) => {
+    if (typeof data.getOngById === 'function') {
+        return data.getOngById(id);
     }
 
-    if (!isValidEmail(body.emailDoador)) {
-        return 'E-mail do doador inválido.';
-    }
-
-    if (digitsOnly(body.telefoneDoador).length < 10) {
-        return 'Telefone inválido.';
-    }
-
-    if (digitsOnly(body.documentoDoador).length !== 11) {
-        return 'CPF inválido. Deve ter 11 dígitos numéricos.';
-    }
-
-    if (digitsOnly(body.cepDoador).length !== 8) {
-        return 'CEP inválido. Deve ter 8 dígitos numéricos.';
-    }
-
-    if (!isLongEnough(body.ruaDoador, 3)) {
-        return 'Rua inválida.';
-    }
-
-    if (!isLongEnough(body.numeroDoador, 1)) {
-        return 'Número inválido.';
-    }
-
-    if (!isLongEnough(body.bairroDoador, 3)) {
-        return 'Bairro inválido.';
-    }
-
-    if (!isLongEnough(body.cidadeDoador, 3)) {
-        return 'Cidade inválida.';
-    }
-
-    if (!isValidState(body.estadoDoador)) {
-        return 'Estado inválido. Use a sigla de 2 letras maiúsculas.';
-    }
-
-    const amount = Number(String(body.valorDoacao || '').replace(',', '.'));
-    if (!Number.isFinite(amount) || amount < 5) {
-        return 'O valor da doação deve ser de pelo menos R$ 5,00.';
-    }
-
-    if (!['cartao', 'pix', 'boleto'].includes(body.metodoPagamento)) {
-        return 'Selecione um método de pagamento válido.';
-    }
-
-    return null;
+    return (await data.getOngs()).find((item) => item.id == id);
 };
 
-const validatePlanSubscription = (body) => {
-    if (!hasTwoWords(body.nomeCompleto)) {
-        return 'Nome Completo deve conter pelo menos 2 palavras.';
+const findPlanoById = async (data, id) => {
+    if (typeof data.getPlanoById === 'function') {
+        return data.getPlanoById(id);
     }
 
-    if (!isValidEmail(body.emailComprador)) {
-        return 'E-mail do comprador inválido.';
-    }
-
-    if (digitsOnly(body.telefoneComprador).length < 10) {
-        return 'Telefone inválido.';
-    }
-
-    if (digitsOnly(body.documentoComprador).length !== 11) {
-        return 'CPF inválido. Deve ter 11 dígitos numéricos.';
-    }
-
-    if (digitsOnly(body.cepComprador).length !== 8) {
-        return 'CEP inválido. Deve ter 8 dígitos numéricos.';
-    }
-
-    if (!isLongEnough(body.ruaComprador, 3)) {
-        return 'Rua inválida.';
-    }
-
-    if (!isLongEnough(body.numeroComprador, 1)) {
-        return 'Número inválido.';
-    }
-
-    if (!isLongEnough(body.bairroComprador, 3)) {
-        return 'Bairro inválido.';
-    }
-
-    if (!isLongEnough(body.cidadeComprador, 3)) {
-        return 'Cidade inválida.';
-    }
-
-    if (!isValidState(body.estadoComprador)) {
-        return 'Estado inválido. Use a sigla de 2 letras maiúsculas.';
-    }
-
-    if (!['cartao', 'pix', 'boleto'].includes(body.metodoPagamento)) {
-        return 'Selecione um método de pagamento válido.';
-    }
-
-    return null;
-};
-
-const validateContactMessage = (body) => {
-    if (!hasTwoWords(body.name)) {
-        return 'Informe seu nome completo.';
-    }
-
-    if (!isValidEmail(body.email)) {
-        return 'Informe um e-mail válido.';
-    }
-
-    if (!normalizeText(body.subject)) {
-        return 'Selecione um assunto.';
-    }
-
-    if (!isLongEnough(body.message, 10)) {
-        return 'A mensagem deve ter pelo menos 10 caracteres.';
-    }
-
-    return null;
+    return (await data.getPlanos()).find((item) => item.id == id);
 };
 
 const createIndexController = (data) => ({
@@ -138,9 +61,12 @@ const createIndexController = (data) => ({
         const allDenuncias = await data.getDenuncias();
         const allOngs = await data.getOngs();
         const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
+        const description = 'Conheça ONGs parceiras, acompanhe denúncias recentes e descubra como apoiar água limpa e saneamento básico.';
 
         res.render('index', {
-            title: 'Água Consciente',
+            ...buildSeoPayload(res, '/', 'Água limpa e saneamento básico', description, {
+                seoOgTitle: 'Água limpa e saneamento básico | Água Consciente'
+            }),
             denuncias: allDenuncias.slice(0, 3),
             ongs: allOngs.slice(0, 3).map(formatOngForDonation),
             noticias: noticias.slice(0, 4),
@@ -182,13 +108,23 @@ const createIndexController = (data) => ({
 
     sobre(req, res) {
         res.render('sobre', {
-            title: 'Sobre o Projeto'
+            ...buildSeoPayload(
+                res,
+                '/sobre',
+                'Sobre a plataforma',
+                'Entenda como a plataforma conecta cidadãos e ONGs na defesa da água limpa e do saneamento básico.'
+            )
         });
     },
 
     contato(req, res) {
         res.render('contato', {
-            title: 'Contato',
+            ...buildSeoPayload(
+                res,
+                '/contato',
+                'Fale com a equipe',
+                'Entre em contato com a equipe da Água Consciente para dúvidas, sugestões e parcerias.'
+            ),
             error: req.query.error,
             success: req.query.success
         });
@@ -213,16 +149,19 @@ const createIndexController = (data) => ({
     },
 
     async donateForm(req, res) {
-        const ong = typeof data.getOngById === 'function'
-            ? await data.getOngById(req.params.ongId)
-            : (await data.getOngs()).find((item) => item.id == req.params.ongId);
+        const ong = await findOngById(data, req.params.ongId);
 
         if (!ong) {
             return res.redirect('/doacoes');
         }
 
         res.render('doacao_form', {
-            title: `Doar para ${ong.name}`,
+            ...buildSeoPayload(
+                res,
+                `/doacoes/${ong.id}/doar`,
+                `Doar para ${ong.name}`,
+                `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
+            ),
             ong: formatOngForDonation(ong),
             error: req.query.error,
             success: req.query.success
@@ -230,9 +169,7 @@ const createIndexController = (data) => ({
     },
 
     async donate(req, res) {
-        const ong = typeof data.getOngById === 'function'
-            ? await data.getOngById(req.body.ongId)
-            : (await data.getOngs()).find((item) => item.id == req.body.ongId);
+        const ong = await findOngById(data, req.body.ongId);
 
         if (!ong) {
             return res.redirect('/doacoes');
@@ -241,7 +178,12 @@ const createIndexController = (data) => ({
         const error = validateDonation(req.body);
         if (error) {
             return res.render('doacao_form', {
-                title: `Doar para ${ong.name}`,
+                ...buildSeoPayload(
+                    res,
+                    `/doacoes/${ong.id}/doar`,
+                    `Doar para ${ong.name}`,
+                    `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
+                ),
                 ong: formatOngForDonation(ong),
                 error
             });
@@ -272,23 +214,31 @@ const createIndexController = (data) => ({
     async doacoes(req, res) {
         const ongs = (await data.getOngs()).map(formatOngForDonation);
         res.render('doacoes', {
-            title: 'Faça sua Doação',
+            ...buildSeoPayload(
+                res,
+                '/doacoes',
+                'Doações para ONGs parceiras',
+                'Conheça as ONGs parceiras e escolha uma organização para apoiar projetos de água limpa e saneamento.'
+            ),
             ongs,
             success: req.query.success
         });
     },
 
     async planForm(req, res) {
-        const plano = typeof data.getPlanoById === 'function'
-            ? await data.getPlanoById(req.params.planoId)
-            : (await data.getPlanos()).find((item) => item.id == req.params.planoId);
+        const plano = await findPlanoById(data, req.params.planoId);
 
         if (!plano) {
             return res.redirect('/planos');
         }
 
         res.render('plano_form', {
-            title: `Assinar ${plano.title}`,
+            ...buildSeoPayload(
+                res,
+                `/planos/${plano.id}/assinar`,
+                `Assinar ${plano.title}`,
+                `Assine o plano ${plano.title} para apoiar as ações da plataforma Água Consciente.`
+            ),
             plano,
             error: req.query.error,
             success: req.query.success
@@ -296,9 +246,7 @@ const createIndexController = (data) => ({
     },
 
     async subscribePlan(req, res) {
-        const plano = typeof data.getPlanoById === 'function'
-            ? await data.getPlanoById(req.body.planoId)
-            : (await data.getPlanos()).find((item) => item.id == req.body.planoId);
+        const plano = await findPlanoById(data, req.body.planoId);
 
         if (!plano) {
             return res.redirect('/planos');
@@ -307,7 +255,12 @@ const createIndexController = (data) => ({
         const error = validatePlanSubscription(req.body);
         if (error) {
             return res.render('plano_form', {
-                title: `Assinar ${plano.title}`,
+                ...buildSeoPayload(
+                    res,
+                    `/planos/${plano.id}/assinar`,
+                    `Assinar ${plano.title}`,
+                    `Assine o plano ${plano.title} para apoiar as ações da plataforma Água Consciente.`
+                ),
                 plano,
                 error
             });
@@ -337,17 +290,90 @@ const createIndexController = (data) => ({
 
     async planos(req, res) {
         res.render('planos', {
-            title: 'Nossos Planos',
+            ...buildSeoPayload(
+                res,
+                '/planos',
+                'Planos de apoio',
+                'Conheça os planos de apoio e escolha a melhor forma de contribuir com a plataforma.'
+            ),
             planos: await data.getPlanos(),
             success: req.query.success
         });
     },
 
     async noticias(req, res) {
+        const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
+        const noticiasPageUrl = '/noticias';
+        const noticiasStructuredData = [
+            buildCollectionPageStructuredData({
+                name: 'Notícias sobre saneamento básico',
+                description: 'Acompanhe as últimas notícias e atualizações sobre saneamento básico e água potável no Brasil.',
+                url: noticiasPageUrl,
+                mainEntity: buildItemListStructuredData(
+                    noticias.map((noticia) => ({
+                        type: 'NewsArticle',
+                        name: noticia.title,
+                        url: noticia.url,
+                        description: noticia.description,
+                        image: noticia.image,
+                        datePublished: noticia.createdAt
+                    })),
+                    getSiteUrl(),
+                    {
+                        name: 'Notícias sobre saneamento básico',
+                        description: 'Itens destacados na página de notícias da Água Consciente.',
+                        url: noticiasPageUrl,
+                        itemType: 'NewsArticle'
+                    }
+                )
+            }),
+            ...noticias.map((noticia) => buildNewsArticleStructuredData(noticia, getSiteUrl(), noticia.url))
+        ];
+
         res.render('noticias', {
-            title: 'Notícias',
-            noticias: typeof data.getNoticias === 'function' ? await data.getNoticias() : []
+            ...buildSeoPayload(
+                res,
+                noticiasPageUrl,
+                'Notícias sobre saneamento básico',
+                'Acompanhe as últimas notícias e atualizações sobre saneamento básico e água potável no Brasil.',
+                {
+                    seoOgTitle: 'Notícias sobre saneamento básico | Água Consciente',
+                    structuredData: noticiasStructuredData
+                }
+            ),
+            noticias
         });
+    },
+
+    async privacidade(req, res) {
+        res.render('privacidade', {
+            ...buildSeoPayload(
+                res,
+                '/privacidade',
+                'Privacidade e cookies',
+                'Entenda como tratamos dados pessoais, cookies e direitos de privacidade na plataforma.'
+            ),
+            cookieConsent: req.cookies?.[COOKIE_CONSENT_COOKIE_NAME] || null
+        });
+    },
+
+    async setCookieConsent(req, res) {
+        const consent = req.body.consent;
+        const returnTo = normalizeReturnTo(req.body.returnTo);
+
+        if (consent !== COOKIE_CONSENT_ACCEPTED && consent !== COOKIE_CONSENT_REJECTED) {
+            return res.redirect(returnTo);
+        }
+
+        res.cookie(COOKIE_CONSENT_COOKIE_NAME, consent, getCookieConsentOptions(req));
+        return res.redirect(returnTo);
+    },
+
+    async resetCookieConsent(req, res) {
+        const returnTo = normalizeReturnTo(req.body.returnTo);
+
+        res.clearCookie(COOKIE_CONSENT_COOKIE_NAME, getClearCookieConsentOptions(req));
+        return res.redirect(returnTo);
     }
 });
 

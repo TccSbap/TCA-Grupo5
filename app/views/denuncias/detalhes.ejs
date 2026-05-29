@@ -127,6 +127,7 @@
                     <h2>Responder como ONG</h2>
                     
                     <form class="response-form" method="POST" action="/denuncias/<%= denuncia.id %>/responder">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <nav class="form-group">
                             <label for="response">Sua Resposta</label>
                             <textarea id="response" name="response" rows="4" required 

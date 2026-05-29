@@ -154,6 +154,38 @@ function validateEstado(estado) {
     return estadoRegex.test(String(estado || '').trim());
 }
 
+function validateCEP(cep) {
+    return normalizeDigits(cep).length === 8;
+}
+
+function validateDonationAmount(value) {
+    const amount = Number(String(value || '').replace(',', '.'));
+    return Number.isFinite(amount) && amount >= 5;
+}
+
+function validateCardNumber(value) {
+    const digits = normalizeDigits(value);
+    return digits.length >= 13 && digits.length <= 19;
+}
+
+function validateCardExpiry(value) {
+    const match = String(value || '').trim().match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+
+    if (!match) {
+        return false;
+    }
+
+    const month = Number(match[1]);
+    const year = 2000 + Number(match[2]);
+    const expiry = new Date(year, month, 0, 23, 59, 59);
+
+    return expiry >= new Date();
+}
+
+function validateCVV(value) {
+    return /^\d{3,4}$/.test(normalizeDigits(value));
+}
+
 function validateNomeCompletoPagamento(nome) {
     const normalized = String(nome || '').trim();
     const partesNome = normalized.split(/\s+/).filter(Boolean);
@@ -435,6 +467,88 @@ function validatePlanoForm() {
     return isValid;
 }
 
+function validateDoacaoFormStrict() {
+    let isValid = true;
+    const markField = (input, errorId, message, valid) => {
+        const error = document.getElementById(errorId);
+
+        if (error) {
+            error.textContent = valid ? '' : message;
+        }
+
+        if (input) {
+            input.style.borderColor = valid ? '' : 'red';
+        }
+
+        if (!valid) {
+            isValid = false;
+        }
+    };
+
+    const nomeCompletoInput = document.getElementById('nomeCompleto');
+    markField(nomeCompletoInput, 'nomeCompleto-error', 'Nome completo deve ter pelo menos 2 palavras e conter apenas letras e espacos.', validateNomeCompletoPagamento(nomeCompletoInput.value));
+
+    const emailDoadorInput = document.getElementById('emailDoador');
+    markField(emailDoadorInput, 'emailDoador-error', 'O e-mail deve ser valido.', validateEmail(emailDoadorInput.value));
+
+    const telefoneDoadorInput = document.getElementById('telefoneDoador');
+    markField(telefoneDoadorInput, 'telefoneDoador-error', 'Telefone invalido. Use 10 ou 11 digitos numericos.', validateTelefone(telefoneDoadorInput.value));
+
+    const documentoDoadorInput = document.getElementById('documentoDoador');
+    markField(documentoDoadorInput, 'documentoDoador-error', 'CPF invalido.', validateCPF(documentoDoadorInput.value));
+
+    const cepDoadorInput = document.getElementById('cepDoador');
+    markField(cepDoadorInput, 'cepDoador-error', 'CEP invalido. Use 8 digitos numericos.', validateCEP(cepDoadorInput.value));
+
+    const ruaDoadorInput = document.getElementById('ruaDoador');
+    markField(ruaDoadorInput, 'ruaDoador-error', 'Rua deve ter no minimo 3 caracteres.', validateRua(ruaDoadorInput.value));
+
+    const numeroDoadorInput = document.getElementById('numeroDoador');
+    markField(numeroDoadorInput, 'numeroDoador-error', 'Numero e obrigatorio.', String(numeroDoadorInput.value || '').trim().length > 0);
+
+    const bairroDoadorInput = document.getElementById('bairroDoador');
+    markField(bairroDoadorInput, 'bairroDoador-error', 'Bairro deve ter entre 10 e 40 caracteres e conter apenas letras e espacos.', validateBairro(bairroDoadorInput.value));
+
+    const cidadeDoadorInput = document.getElementById('cidadeDoador');
+    markField(cidadeDoadorInput, 'cidadeDoador-error', 'Cidade deve ter no minimo 5 caracteres e conter apenas letras e espacos.', validateCidade(cidadeDoadorInput.value));
+
+    const estadoDoadorInput = document.getElementById('estadoDoador');
+    markField(estadoDoadorInput, 'estadoDoador-error', 'Estado deve ser uma sigla de 2 letras maiusculas (ex: SP, RJ, BA).', validateEstado(estadoDoadorInput.value));
+
+    const valorDoacaoInput = document.getElementById('valorDoacao');
+    markField(valorDoacaoInput, 'valorDoacao-error', 'O valor da doacao deve ser de pelo menos R$ 5,00.', validateDonationAmount(valorDoacaoInput.value));
+
+    const metodoPagamentoInput = document.querySelector('input[name="metodoPagamento"]:checked');
+    const metodoPagamentoError = document.getElementById('metodoPagamento-error');
+    if (!metodoPagamentoInput) {
+        metodoPagamentoError.textContent = 'Selecione um metodo de pagamento valido.';
+        isValid = false;
+    } else {
+        metodoPagamentoError.textContent = '';
+    }
+
+    if (metodoPagamentoInput && metodoPagamentoInput.value === 'cartao') {
+        const numeroCartaoInput = document.getElementById('numeroCartao');
+        markField(numeroCartaoInput, 'numeroCartao-error', 'Numero do cartao invalido.', validateCardNumber(numeroCartaoInput.value));
+
+        const validadeCartaoInput = document.getElementById('validadeCartao');
+        markField(validadeCartaoInput, 'validadeCartao-error', 'Validade do cartao invalida. Use MM/AA.', validateCardExpiry(validadeCartaoInput.value));
+
+        const cvvCartaoInput = document.getElementById('cvvCartao');
+        markField(cvvCartaoInput, 'cvvCartao-error', 'CVV invalido.', validateCVV(cvvCartaoInput.value));
+    }
+
+    const confirmacaoInput = document.getElementById('confirmacao');
+    if (confirmacaoInput && !confirmacaoInput.checked) {
+        document.getElementById('confirmacao-error').textContent = 'Confirme os dados para continuar.';
+        isValid = false;
+    } else if (confirmacaoInput) {
+        document.getElementById('confirmacao-error').textContent = '';
+    }
+
+    return isValid;
+}
+
 window.validateEmail = validateEmail;
 window.validateNomeCompleto = validateNomeCompleto;
 window.validatePassword = validatePassword;
@@ -447,7 +561,12 @@ window.validateBairro = validateBairro;
 window.validateRua = validateRua;
 window.validateCidade = validateCidade;
 window.validateEstado = validateEstado;
+window.validateCEP = validateCEP;
+window.validateDonationAmount = validateDonationAmount;
+window.validateCardNumber = validateCardNumber;
+window.validateCardExpiry = validateCardExpiry;
+window.validateCVV = validateCVV;
 window.validateNomeCompletoPagamento = validateNomeCompletoPagamento;
 window.validateCadastroForm = validateCadastroForm;
-window.validateDoacaoForm = validateDoacaoForm;
+window.validateDoacaoForm = validateDoacaoFormStrict;
 window.validatePlanoForm = validatePlanoForm;

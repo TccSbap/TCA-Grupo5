@@ -14,11 +14,12 @@
                     <ul>
                         <li><a href="/noticias">Notícias</a></li>
                         <li><a href="/ongs">ONGs Parceiras</a></li>
-                        <li><a href="/denuncias/nova">Fazer Denúncia</a></li>
-                        <li><a href="/sobre">Sobre o Projeto</a></li>
+                        <li><a href="/denuncias/nova">Registrar denúncia</a></li>
+                        <li><a href="/sobre">Sobre a plataforma</a></li>
                         <li><a href="/contato">Contato</a></li>
                         <li><a href="/doacoes">Doar</a></li>
                         <li><a href="/planos">Planos</a></li>
+                        <li><a href="/privacidade">Privacidade e Cookies</a></li>
                     </ul>
                 </nav>
                 
@@ -47,6 +48,35 @@
             </nav>
         </nav>
     </footer>
+
+    <% if (typeof showCookieBanner !== 'undefined' && showCookieBanner) { %>
+    <aside class="cookie-banner" role="dialog" aria-modal="false" aria-labelledby="cookie-banner-title" aria-describedby="cookie-banner-description">
+        <div class="cookie-banner-content">
+            <h2 id="cookie-banner-title">Uso de cookies</h2>
+            <p id="cookie-banner-description">
+                Usamos cookies estritamente necessários para login, segurança, sessão e proteção CSRF.
+                Você também pode escolher se quer salvar sua preferência para cookies não essenciais.
+            </p>
+            <a href="/privacidade" class="cookie-banner-link">Ler a política de privacidade</a>
+        </div>
+
+        <div class="cookie-banner-actions">
+            <form action="/cookies/consent" method="POST" class="cookie-banner-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="consent" value="rejected">
+                <input type="hidden" name="returnTo" value="<%= currentPath || '/' %>">
+                <button type="submit" class="btn btn-outline">Recusar não essenciais</button>
+            </form>
+
+            <form action="/cookies/consent" method="POST" class="cookie-banner-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="consent" value="accepted">
+                <input type="hidden" name="returnTo" value="<%= currentPath || '/' %>">
+                <button type="submit" class="btn btn-primary">Aceitar cookies</button>
+            </form>
+        </div>
+    </aside>
+    <% } %>
 
     <% if (typeof watchReload !== 'undefined' && watchReload) { %>
     <script>

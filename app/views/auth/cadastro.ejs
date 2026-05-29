@@ -17,6 +17,7 @@
                 <% } %>
 
                 <form class="auth-form" method="POST" action="/auth/cadastro" id="cadastroForm" novalidate data-submit-lock-mode="manual">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <nav class="form-group">
                         <label for="userType">Perfil de Acesso</label>
                         <select id="userType" name="userType">

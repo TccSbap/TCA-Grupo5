@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Plataforma de denúncias e mobilização para água limpa e saneamento básico da ODS 6.">
     <meta name="theme-color" content="#2563eb">
     <meta name="application-name" content="ODS 6">
     <meta name="apple-mobile-web-app-title" content="ODS 6">
@@ -11,20 +10,56 @@
     <link rel="icon" href="/pwa/icon-192.png" sizes="192x192" type="image/png">
     <link rel="icon" href="/pwa/icon-512.png" sizes="512x512" type="image/png">
     <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" sizes="180x180">
-    <title><%= title %> - ODS 6</title>
-    <meta property="og:title" content="<%= typeof ogTitle !== 'undefined' ? ogTitle : title %> - ODS 6">
-    <meta property="og:description" content="<%= typeof ogDescription !== 'undefined' ? ogDescription : 'Plataforma de denúncias e mobilização para água limpa e saneamento básico da ODS 6.' %>">
-    <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : '/pwa/icon-512.png' %>">
-    <meta property="og:url" content="<%= typeof ogUrl !== 'undefined' ? ogUrl : 'https://ods6.org/' %>">
-    <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+    <%
+        const seoSiteName = typeof siteName === 'string' && siteName ? siteName : 'Água Consciente';
+        const pageTitle = typeof title === 'string' && title.trim() ? title.trim() : seoSiteName;
+        const fullTitle = pageTitle === seoSiteName ? pageTitle : `${pageTitle} | ${seoSiteName}`;
+        const seoDescriptionValue = typeof seoDescription === 'string' && seoDescription.trim()
+            ? seoDescription.trim()
+            : 'Plataforma de denúncias e mobilização para água limpa e saneamento básico.';
+        const seoCanonicalValue = typeof seoCanonical === 'string' && seoCanonical.trim()
+            ? seoCanonical.trim()
+            : 'https://ods6.org/';
+        const seoRobotsValue = typeof seoRobots === 'string' && seoRobots.trim()
+            ? seoRobots.trim()
+            : 'index, follow';
+        const seoOgTitleValue = typeof seoOgTitle === 'string' && seoOgTitle.trim()
+            ? seoOgTitle.trim()
+            : pageTitle;
+        const seoOgDescriptionValue = typeof seoOgDescription === 'string' && seoOgDescription.trim()
+            ? seoOgDescription.trim()
+            : seoDescriptionValue;
+        const seoOgImageValue = typeof seoOgImage === 'string' && seoOgImage.trim()
+            ? seoOgImage.trim()
+            : 'https://ods6.org/pwa/icon-512.png';
+        const seoOgTypeValue = typeof seoOgType === 'string' && seoOgType.trim()
+            ? seoOgType.trim()
+            : 'website';
+        const structuredData = Array.isArray(seoStructuredData) ? seoStructuredData : [];
+    %>
+    <title><%= fullTitle %></title>
+    <meta name="description" content="<%= seoDescriptionValue %>">
+    <meta name="robots" content="<%= seoRobotsValue %>">
+    <link rel="canonical" href="<%= seoCanonicalValue %>">
+    <meta property="og:title" content="<%= seoOgTitleValue %>">
+    <meta property="og:description" content="<%= seoOgDescriptionValue %>">
+    <meta property="og:image" content="<%= seoOgImageValue %>">
+    <meta property="og:url" content="<%= seoCanonicalValue %>">
+    <meta property="og:type" content="<%= seoOgTypeValue %>">
     <meta property="og:locale" content="pt_BR">
-    <meta property="og:site_name" content="ODS 6">
+    <meta property="og:site_name" content="<%= seoSiteName %>">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= seoOgTitleValue %>">
+    <meta name="twitter:description" content="<%= seoOgDescriptionValue %>">
+    <meta name="twitter:image" content="<%= seoOgImageValue %>">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <% structuredData.forEach((schema) => { %>
+    <script type="application/ld+json"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+    <% }) %>
 </head>
 <body>
     <!-- Header -->
@@ -99,8 +134,8 @@
                     <ul>
                         <li><a href="/">Início</a></li>
                         <li><a href="/ongs">ONGs Parceiras</a></li>
-                        <li><a href="/denuncias">Fazer Denúncia</a></li>
-                        <li><a href="/sobre">Sobre o Projeto</a></li>
+                        <li><a href="/denuncias">Registrar denúncia</a></li>
+                        <li><a href="/sobre">Sobre a plataforma</a></li>
                     </ul>
                 </section>
                 

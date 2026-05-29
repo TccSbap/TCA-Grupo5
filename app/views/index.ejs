@@ -17,11 +17,11 @@
             <nav class="hero-actions">
                 <a href="/denuncias/nova" class="btn btn-primary btn-large">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Fazer Denúncia
+                    Registrar denúncia
                 </a>
                 <a href="/ongs" class="btn btn-primary btn-large">
                     <i class="fas fa-hands-helping"></i>
-                    Conhecer ONGs
+                    Ver ONGs parceiras
                 </a>
             </nav>
         </section>
@@ -184,7 +184,7 @@
                     <h3><%= noticia.title %></h3>
                     <p><%= noticia.description %></p>
                     <a href="<%= noticia.url %>" target="_blank" rel="noopener noreferrer" class="news-link">
-                        Ler mais <i class="fas fa-arrow-right"></i>
+                        Ler notícia completa <i class="fas fa-arrow-right"></i>
                     </a>
                 </nav>
             </article>
@@ -216,7 +216,7 @@
                 <p class="denuncia-meta">
                     <i class="fas fa-map-marker-alt"></i> <%= denuncia.location %>
                 </p>
-                <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+                <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver denúncia completa</a>
             </article>
             <% }) %>
         </nav>

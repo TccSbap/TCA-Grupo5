@@ -78,6 +78,7 @@
                 <h2>Envie uma Mensagem</h2>
                 
                 <form class="contact-form" action="/contato" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <nav class="form-row">
                         <nav class="form-group">
                             <label for="name">Nome Completo *</label>
