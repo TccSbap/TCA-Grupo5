@@ -93,7 +93,7 @@ module.exports = (defaultPasswordHash) => [
     },
     {
         id: 12,
-        name: 'Administrador da Plataforma',
+        name: 'Administrador',
         email: 'admin@ods6.org',
         password: defaultPasswordHash,
         type: 'admin',
