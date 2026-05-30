@@ -18,23 +18,50 @@ document.addEventListener('DOMContentLoaded', () => {
         this.placeholder = 'Buscando CEP...';
 
         try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const response = await fetch(`/denuncias/cep/${cep}`, {
+                headers: {
+                    Accept: 'application/json'
+                }
+            });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let errorMessage = 'Nao foi possivel buscar o CEP.';
+
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (parseError) {
+                    console.error('Erro ao interpretar a resposta do CEP:', parseError);
+                }
+
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
 
             if (!data.erro) {
-                locationInput.value = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+                const street = [data.logradouro, data.bairro].filter(Boolean).join(', ');
+                const city = [data.localidade, data.uf].filter(Boolean).join('/');
+                const locationParts = [];
+
+                if (street) {
+                    locationParts.push(street);
+                }
+
+                if (city) {
+                    locationParts.push(city);
+                }
+
+                locationInput.value = locationParts.join(' - ');
             } else {
-                alert('CEP não encontrado. Verifique o número e tente novamente.');
+                alert('CEP nao encontrado. Verifique o numero e tente novamente.');
                 locationInput.value = '';
             }
         } catch (error) {
             console.error('Erro ao buscar CEP:', error);
-            alert('Não foi possível buscar o CEP. Verifique sua conexão e tente novamente.');
+            alert(error.message || 'Nao foi possivel buscar o CEP. Verifique sua conexao e tente novamente.');
             locationInput.value = '';
         } finally {
             this.placeholder = originalPlaceholder;
