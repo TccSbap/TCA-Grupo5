@@ -1,0 +1,93 @@
+<%- include("../partials/header") %>
+
+<section class="auth-section">
+    <section class="container">
+        <nav class="auth-container">
+            <article class="auth-card">
+                <header class="auth-header">
+                    <h1>Alterar Senha</h1>
+                    <p>Atualize sua senha de acesso com segurança</p>
+                </header>
+
+                <% if (typeof success !== 'undefined' && success) { %>
+                    <section class="alert alert-success" role="status">
+                        <p><%= success %></p>
+                    </section>
+                <% } %>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <section class="alert alert-error" role="alert">
+                        <p><%= error %></p>
+                    </section>
+                <% } %>
+
+                <form class="auth-form" method="POST" action="/auth/alterar-senha" data-submit-lock-mode="manual">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <nav class="form-group">
+                        <label for="currentPassword">Senha Atual</label>
+                        <div class="password-field">
+                            <input type="password" id="currentPassword" name="currentPassword" required autocomplete="current-password">
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-toggle="currentPassword"
+                                aria-label="Mostrar senha"
+                                aria-pressed="false"
+                                aria-controls="currentPassword"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </nav>
+
+                    <nav class="form-group">
+                        <label for="newPassword">Nova Senha</label>
+                        <div class="password-field">
+                            <input type="password" id="newPassword" name="newPassword" required autocomplete="new-password">
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-toggle="newPassword"
+                                aria-label="Mostrar senha"
+                                aria-pressed="false"
+                                aria-controls="newPassword"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <small>A nova senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número.</small>
+                    </nav>
+
+                    <nav class="form-group">
+                        <label for="confirmNewPassword">Confirmar Nova Senha</label>
+                        <div class="password-field">
+                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required autocomplete="new-password">
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-toggle="confirmNewPassword"
+                                aria-label="Mostrar senha"
+                                aria-pressed="false"
+                                aria-controls="confirmNewPassword"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </nav>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-key"></i>
+                        Salvar Nova Senha
+                    </button>
+                </form>
+
+                <footer class="auth-footer">
+                    <p><a href="<%= dashboardPath || '/dashboard' %>">Voltar para o painel</a></p>
+                </footer>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<%- include("../partials/footer") %>

@@ -12,46 +12,20 @@ const createMensagensContatoModel = require('../app/models/mensagensContato.mode
 const defaultPasswordHash = process.env.NODE_ENV === 'production'
     ? null
     : bcrypt.hashSync('123456', 10);
-const defaultAdminEmail = 'admin@ods6.org';
-const defaultAdminPasswordHash = bcrypt.hashSync('123456', 10);
-
-const users = createUsersModel({
-    pool,
-    canUseDatabase,
-    defaultPasswordHash
-});
-
-const ensureDefaultAdminUser = async () => {
-    const adminUser = await users.getUserByEmail(defaultAdminEmail);
-
-    if (adminUser) {
-        return adminUser.type === 'admin';
-    }
-
-    await users.createUser({
-        name: 'Administrador da Plataforma',
-        email: defaultAdminEmail,
-        password: defaultAdminPasswordHash,
-        type: 'admin',
-        ongName: null
-    });
-
-    return true;
-};
 
 const ensureDataLoaded = async () => {
     if (!isConfigured) {
         return false;
     }
 
-    const databaseReady = await canUseDatabase();
-    if (!databaseReady) {
-        return false;
-    }
-
-    await ensureDefaultAdminUser();
-    return true;
+    return canUseDatabase();
 };
+
+const users = createUsersModel({
+    pool,
+    canUseDatabase,
+    defaultPasswordHash
+});
 
 const denuncias = createDenunciasModel({
     pool,

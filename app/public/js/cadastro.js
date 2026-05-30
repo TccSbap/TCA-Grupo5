@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     window.toggleOngFields = function() {
         const showFields = isOngCadastro();
-        ongFields.style.display = showFields ? "block" : "none";
+        ongFields.hidden = !showFields;
 
         ongFieldIds.forEach((fieldId) => {
             const field = document.getElementById(fieldId);

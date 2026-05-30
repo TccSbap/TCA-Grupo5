@@ -1,97 +1,164 @@
 <%- include('../partials/header') %>
 
-<section class="admin-section">
+<section class="admin-section analytics-page">
     <section class="container">
-        <header class="admin-header">
+        <header class="analytics-hero">
             <h1>Painel da ONG</h1>
-            <p>Gerencie as atividades da <%= ong.name %></p>
+            <p>Gerencie as atividades da <%= ong.name %> com foco em fila, tempo de resposta e resolução dos casos mais urgentes.</p>
+            <nav class="analytics-controls">
+                <a href="<%= reportCsvPath || '/ongs/admin/relatorio.csv' %>" class="btn btn-outline">
+                    <i class="fas fa-file-csv"></i>
+                    Exportar relatório
+                </a>
+                <a href="/ongs/admin/stats" class="btn btn-secondary">
+                    <i class="fas fa-chart-bar"></i>
+                    Ver estatísticas
+                </a>
+            </nav>
         </header>
-        
-        <section class="admin-stats">
-            <article class="stat-card">
-                <nav class="stat-icon">
-                    <i class="fas fa-clock"></i>
-                </nav>
-                <nav class="stat-content">
-                    <h3><%= pendingDenuncias.length %></h3>
-                    <p>Denúncias Pendentes</p>
-                </nav>
+
+        <section class="analytics-kpis">
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-clock"></i> Denúncias pendentes</div>
+                <div class="analytics-kpi__value"><%= analytics.pendingDenuncias.length %></div>
+                <div class="analytics-kpi__meta">Casos que ainda estão na fila da plataforma</div>
             </article>
-            
-            <article class="stat-card">
-                <nav class="stat-icon">
-                    <i class="fas fa-comments"></i>
-                </nav>
-                <nav class="stat-content">
-                    <h3><%= respondedDenuncias.length %></h3>
-                    <p>Denúncias Respondidas</p>
-                </nav>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-comments"></i> Respostas registradas</div>
+                <div class="analytics-kpi__value"><%= analytics.responseVolume %></div>
+                <div class="analytics-kpi__meta">Interações registradas pela ONG em denúncias</div>
             </article>
-            
-            <article class="stat-card">
-                <nav class="stat-icon">
-                    <i class="fas fa-check-circle"></i>
-                </nav>
-                <nav class="stat-content">
-                    <h3><%= respondedDenuncias.filter(d => d.status === 'resolvida').length %></h3>
-                    <p>Casos Resolvidos</p>
-                </nav>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-check-circle"></i> Casos resolvidos</div>
+                <div class="analytics-kpi__value"><%= analytics.resolvedCases.length %></div>
+                <div class="analytics-kpi__meta">Casos concluídos com status resolvido</div>
             </article>
-            
-            <article class="stat-card">
-                <nav class="stat-icon">
-                    <i class="fas fa-percentage"></i>
-                </nav>
-                <nav class="stat-content">
-                    <h3><%= respondedDenuncias.length > 0 ? Math.round((respondedDenuncias.filter(d => d.status === 'resolvida').length / respondedDenuncias.length) * 100) : 0 %>%</h3>
-                    <p>Taxa de Resolução</p>
-                </nav>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-percentage"></i> Taxa de resolução</div>
+                <div class="analytics-kpi__value"><%= analytics.resolutionRate %>%</div>
+                <div class="analytics-kpi__meta">Resolvidos sobre denúncias respondidas pela ONG</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-hourglass-half"></i> Tempo médio até 1ª resposta</div>
+                <div class="analytics-kpi__value"><%= analytics.avgFirstResponseLabel %></div>
+                <div class="analytics-kpi__meta">Média entre abertura do caso e a primeira resposta</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-folder-open"></i> Casos em aberto</div>
+                <div class="analytics-kpi__value"><%= analytics.openCases.length %></div>
+                <div class="analytics-kpi__meta">Casos respondidos que ainda não foram resolvidos</div>
             </article>
         </section>
-        
+
+        <section class="impact-strip" aria-label="Resumo operacional da ONG">
+            <div>
+                <h2>Painel operacional</h2>
+                <p>Use a fila de pendentes para priorizar os casos mais urgentes e acompanhe o ritmo das respostas ao longo do tempo.</p>
+            </div>
+            <div class="impact-strip__stats">
+                <article class="impact-strip__stat">
+                    <h3><%= analytics.pendingDenuncias.length %></h3>
+                    <p>Pendências disponíveis para resposta</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3><%= analytics.responseVolume %></h3>
+                    <p>Respostas publicadas pela ONG</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3><%= analytics.resolutionRate %>%</h3>
+                    <p>Efetividade de resolução</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="analytics-grid" aria-labelledby="ong-analytics-title">
+            <article class="analytics-card analytics-card--half">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title" id="ong-analytics-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Casos resolvidos vs. em aberto
+                        </div>
+                        <p class="analytics-card__subtitle">Situação geral das denúncias respondidas pela ONG</p>
+                    </div>
+                    <span class="analytics-pill"><%= analytics.resolutionRate %>% resolvidas</span>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="ongResolutionChart" class="analytics-canvas analytics-canvas--small" aria-label="Casos resolvidos e em aberto" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="analytics-card analytics-card--half">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-chart-line"></i>
+                            Volume de respostas por período
+                        </div>
+                        <p class="analytics-card__subtitle">Respostas registradas ao longo dos meses</p>
+                    </div>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="ongResponsesChart" class="analytics-canvas analytics-canvas--small" aria-label="Volume de respostas por período" role="img"></canvas>
+                </div>
+            </article>
+        </section>
+
         <nav class="admin-tabs">
             <nav class="tab-buttons">
                 <button class="tab-btn active" data-tab-target="pending">
-                    Denúncias Pendentes (<%= pendingDenuncias.length %>)
+                    Denúncias Pendentes (<%= analytics.pendingDenuncias.length %>)
                 </button>
                 <button class="tab-btn" data-tab-target="responded">
-                    Minhas Respostas (<%= respondedDenuncias.length %>)
+                    Minhas Respostas (<%= analytics.respondedCases.length %>)
                 </button>
                 <button class="tab-btn" data-tab-target="ong-info">
                     Informações da ONG
                 </button>
             </nav>
-            
-            <!-- Tab: Denúncias Pendentes -->
+
             <section id="pending-tab" class="tab-content active">
-                <h2>Denúncias Aguardando Resposta</h2>
-                
-                <% if (pendingDenuncias.length > 0) { %>
-                <nav class="denuncias-list">
-                    <% pendingDenuncias.forEach(denuncia => { %>
-                    <article class="denuncia-item admin">
-                        <nav class="denuncia-info">
+                <header class="analytics-card__header">
+                    <div>
+                        <h2>Denúncias aguardando resposta</h2>
+                        <p class="analytics-card__subtitle">Filtre a fila por tipo de problema para atacar os casos mais urgentes primeiro.</p>
+                    </div>
+                    <div class="analytics-filter">
+                        <label for="pendingCategoryFilter">Filtrar por tipo:</label>
+                        <select id="pendingCategoryFilter">
+                            <option value="all">Todos os tipos</option>
+                            <% Array.from(new Set((analytics.pendingDenuncias || []).map((denuncia) => String(denuncia.category || 'geral').toLowerCase()))).forEach((category) => { %>
+                                <option value="<%= category %>"><%= category.charAt(0).toUpperCase() + category.slice(1) %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </header>
+
+                <p class="analytics-kpi__meta" id="pendingVisibleCount" style="margin-bottom: var(--spacing-4);">
+                    <%= analytics.pendingDenuncias.length %> denúncia(s) visível(is)
+                </p>
+
+                <% if (analytics.pendingDenuncias.length > 0) { %>
+                <nav class="analytics-queue" id="pendingQueueList">
+                    <% analytics.pendingDenuncias.forEach((denuncia) => { %>
+                    <article class="analytics-queue__item" data-pending-item data-category="<%= String(denuncia.category || 'geral').toLowerCase() %>">
+                        <div class="analytics-queue__topline">
                             <h3><%= denuncia.title %></h3>
-                            <p><%= denuncia.description.substring(0, 150) %>...</p>
-                            <nav class="denuncia-meta">
-                                <span class="location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <%= denuncia.location %>
-                                </span>
-                                <span class="date">
-                                    <i class="fas fa-calendar"></i>
-                                    <%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %>
-                                </span>
-                                <span class="category">
-                                    <i class="fas fa-tag"></i>
-                                    <%= (denuncia.category || 'geral').charAt(0).toUpperCase() + (denuncia.category || 'geral').slice(1) %>
-                                </span>
-                            </nav>
-                        </nav>
-                        <footer class="denuncia-actions">
-                            <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">
-                                Ver Detalhes
-                            </a>
+                            <span class="status status-<%= denuncia.status %>"><%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %></span>
+                        </div>
+                        <p class="analytics-list__meta"><%= denuncia.description.substring(0, 150) %>...</p>
+                        <div class="analytics-queue__meta">
+                            <span><i class="fas fa-map-marker-alt"></i> <%= denuncia.location %></span>
+                            <span><i class="fas fa-calendar"></i> <%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></span>
+                            <span><i class="fas fa-tag"></i> <%= (denuncia.category || 'geral').charAt(0).toUpperCase() + (denuncia.category || 'geral').slice(1) %></span>
+                        </div>
+                        <footer class="denuncia-actions" style="margin-top: var(--spacing-4);">
+                            <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">Ver detalhes</a>
                             <a href="/denuncias/<%= denuncia.id %>#responder" class="btn btn-primary">
                                 <i class="fas fa-reply"></i>
                                 Responder
@@ -106,47 +173,28 @@
                         <i class="fas fa-check-circle"></i>
                     </nav>
                     <h3>Todas as denúncias foram respondidas!</h3>
-                    <p>Não há denúncias pendentes no momento. Continue o bom trabalho!</p>
+                    <p>Não há denúncias pendentes no momento. Continue acompanhando as respostas já publicadas.</p>
                 </nav>
                 <% } %>
             </section>
-            
-            <!-- Tab: Minhas Respostas -->
+
             <section id="responded-tab" class="tab-content">
-                <h2>Denúncias que Você Respondeu</h2>
-                
-                <% if (respondedDenuncias.length > 0) { %>
-                <nav class="denuncias-list">
-                    <% respondedDenuncias.forEach(denuncia => { %>
-                    <article class="denuncia-item admin">
-                        <nav class="denuncia-info">
-                            <h3><%= denuncia.title %></h3>
-                            <p><%= denuncia.description.substring(0, 150) %>...</p>
-                            <nav class="denuncia-meta">
-                                <span class="location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <%= denuncia.location %>
-                                </span>
-                                <span class="status status-<%= denuncia.status %>">
-                                    <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
-                                </span>
-                                <span class="responses">
-                                    <i class="fas fa-comments"></i>
-                                    <%= denuncia.responses.filter(r => r.ongId === user.id).length %> resposta(s)
-                                </span>
-                            </nav>
-                        </nav>
-                        <footer class="denuncia-actions">
-                            <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">
-                                Ver Detalhes
-                            </a>
-                            <% if (denuncia.status !== 'resolvida') { %>
-                            <a href="/denuncias/<%= denuncia.id %>#responder" class="btn btn-secondary">
-                                <i class="fas fa-edit"></i>
-                                Atualizar
-                            </a>
-                            <% } %>
-                        </footer>
+                <h2>Denúncias que você respondeu</h2>
+
+                <% if (analytics.respondedCases.length > 0) { %>
+                <nav class="analytics-list">
+                    <% analytics.respondedCases.forEach((denuncia) => { %>
+                    <article class="analytics-list__item">
+                        <div>
+                            <strong><%= denuncia.title %></strong>
+                            <p class="analytics-list__meta"><%= denuncia.location %></p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="status status-<%= denuncia.status %>">
+                                <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
+                            </span>
+                            <p class="analytics-list__meta"><%= denuncia.responses.filter((response) => response.ongId === ong.id).length %> resposta(s) da ONG</p>
+                        </div>
                     </article>
                     <% }) %>
                 </nav>
@@ -160,22 +208,21 @@
                 </nav>
                 <% } %>
             </section>
-            
-            <!-- Tab: Informações da ONG -->
+
             <section id="ong-info-tab" class="tab-content">
                 <h2>Informações da ONG</h2>
-                
+
                 <address class="ong-details">
                     <nav class="detail-group">
                         <label>Nome da ONG:</label>
                         <span><%= ong.name %></span>
                     </nav>
-                    
+
                     <nav class="detail-group">
                         <label>Descrição:</label>
                         <span><%= ong.description %></span>
                     </nav>
-                    
+
                     <nav class="detail-group">
                         <label>Email de Contato:</label>
                         <span><%= ong.contact %></span>
@@ -194,31 +241,31 @@
                         <span><%= ong.rg %></span>
                     </nav>
                     <% } %>
-                    
+
                     <% if (ong.phone) { %>
                     <nav class="detail-group">
                         <label>Telefone:</label>
                         <span><%= ong.phone %></span>
                     </nav>
                     <% } %>
-                    
+
                     <% if (ong.address) { %>
                     <nav class="detail-group">
                         <label>Endereço:</label>
                         <span><%= ong.address %></span>
                     </nav>
                     <% } %>
-                    
+
                     <nav class="detail-group">
                         <label>Cadastrada em:</label>
-                        <span><%= new Date(ong.createdAt).toLocaleDateString('pt-BR', { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
+                        <span><%= new Date(ong.createdAt).toLocaleDateString('pt-BR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
                         }) %></span>
                     </nav>
                 </address>
-                
+
                 <nav class="ong-actions">
                     <p><strong>Nota:</strong> Para alterar as informações da ONG, entre em contato com o administrador da plataforma.</p>
                 </nav>
@@ -227,6 +274,10 @@
     </section>
 </section>
 
-<script src="/js/ongs/admin.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script nonce="<%= cspNonce %>">
+    window.__ONG_ANALYTICS__ = <%- JSON.stringify(analytics).replace(/</g, '\\u003c') %>;
+</script>
+<script src="/js/analytics/ong-operational.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 
 <%- include('../partials/footer') %>

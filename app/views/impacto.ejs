@@ -1,0 +1,109 @@
+<%- include('./partials/header', { extraStyles: ['/css/analytics.css'] }) %>
+
+<section class="analytics-page">
+    <section class="container">
+        <header class="analytics-hero">
+            <h1>Painel de impacto da plataforma</h1>
+            <p>Acompanhe em um só lugar os principais indicadores de mobilização, resposta e apoio às ONGs parceiras.</p>
+            <nav class="analytics-controls">
+                <a href="/impacto/relatorio.csv" class="btn btn-outline">
+                    <i class="fas fa-file-csv"></i>
+                    Exportar dados
+                </a>
+                <a href="/denuncias/nova" class="btn btn-primary">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Registrar denúncia
+                </a>
+            </nav>
+        </header>
+
+        <section class="analytics-kpis">
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-bullhorn"></i> Casos abertos no mês</div>
+                <div class="analytics-kpi__value"><%= impacto.casesOpenedThisMonth %></div>
+                <div class="analytics-kpi__meta">Novas denúncias recebidas no período atual</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-comments"></i> Casos respondidos</div>
+                <div class="analytics-kpi__value"><%= impacto.casesResponded %></div>
+                <div class="analytics-kpi__meta">Denúncias com pelo menos uma resposta</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-check-circle"></i> Casos resolvidos</div>
+                <div class="analytics-kpi__value"><%= impacto.casesResolved %></div>
+                <div class="analytics-kpi__meta">Denúncias concluídas com sucesso</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-hand-holding-heart"></i> Doações recebidas</div>
+                <div class="analytics-kpi__value">R$ <%= Number(impacto.totalDonations || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></div>
+                <div class="analytics-kpi__meta">Valor movimentado para apoiar ações sociais</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-file-signature"></i> Planos assinados</div>
+                <div class="analytics-kpi__value"><%= impacto.activeSubscriptions %></div>
+                <div class="analytics-kpi__meta">Total de assinaturas ativas registradas</div>
+            </article>
+
+            <article class="analytics-kpi">
+                <div class="analytics-kpi__label"><i class="fas fa-hands-helping"></i> ONGs parceiras</div>
+                <div class="analytics-kpi__value"><%= totalOngs %></div>
+                <div class="analytics-kpi__meta">Rede de organizações envolvidas na plataforma</div>
+            </article>
+        </section>
+
+        <section class="analytics-grid">
+            <article class="analytics-card analytics-card--half">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-chart-line"></i>
+                            Evolução mensal da plataforma
+                        </div>
+                        <p class="analytics-card__subtitle">Denúncias, mensagens, doações e assinaturas por mês</p>
+                    </div>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="impactMonthlyChart" class="analytics-canvas" aria-label="Evolução mensal da plataforma" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="analytics-card analytics-card--half">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-chart-pie"></i>
+                            Distribuição do impacto
+                        </div>
+                        <p class="analytics-card__subtitle">Onde a ação da plataforma está concentrada hoje</p>
+                    </div>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="impactDistributionChart" class="analytics-canvas" aria-label="Distribuição do impacto" role="img"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <section class="impact-strip" style="margin-top: var(--spacing-6);">
+            <div>
+                <h2>Por que isso vale para o negócio</h2>
+                <p>Esses indicadores ajudam a coordenação a enxergar gargalos, provar evolução para parceiros e sustentar relatórios, apresentações e prestação de contas.</p>
+            </div>
+            <div class="impact-strip__actions">
+                <a href="/denuncias/nova" class="btn btn-primary">Registrar denúncia</a>
+                <a href="/ongs" class="btn btn-outline">Conhecer ONGs parceiras</a>
+            </div>
+        </section>
+    </section>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script nonce="<%= cspNonce %>">
+    window.__PUBLIC_IMPACT__ = <%- JSON.stringify({ impacto, totalDenuncias, totalOngs }).replace(/</g, '\\u003c') %>;
+</script>
+<script src="/js/analytics/public-impact.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+
+<%- include('./partials/footer') %>

@@ -70,7 +70,7 @@
     <meta name="twitter:description" content="<%= seoOgDescriptionValue %>">
     <meta name="twitter:image" content="<%= seoOgImageValue %>">
     <% structuredData.forEach((schema) => { %>
-    <script type="application/ld+json"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+    <script type="application/ld+json" nonce="<%= cspNonce %>"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
     <% }) %>
 </head>
 <body class="<%= typeof showCookieBanner !== 'undefined' && showCookieBanner ? 'has-cookie-banner' : '' %>">
@@ -105,6 +105,7 @@
                         <li><a href="/contato" class="<%= isActiveRoute('/contato') ? 'active' : '' %>" <%= isActiveRoute('/contato') ? 'aria-current=\"page\"' : '' %>>Contato</a></li>
                         <li><a href="/doacoes" class="<%= isActiveRoute('/doacoes') ? 'active' : '' %>" <%= isActiveRoute('/doacoes') ? 'aria-current=\"page\"' : '' %>>Doações</a></li>
                         <li><a href="/planos" class="<%= isActiveRoute('/planos') ? 'active' : '' %>" <%= isActiveRoute('/planos') ? 'aria-current=\"page\"' : '' %>>Planos</a></li>
+                        <li><a href="/impacto" class="<%= isActiveRoute('/impacto') ? 'active' : '' %>" <%= isActiveRoute('/impacto') ? 'aria-current=\"page\"' : '' %>>Impacto</a></li>
                     </ul>
                 </nav>
 
@@ -123,7 +124,11 @@
                                 </summary>
                                 <nav class="dropdown" aria-label="Menu do usuário">
                                     <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
-                                    <a href="/auth/logout">Sair</a>
+                                    <a href="<%= changePasswordPath || '/auth/alterar-senha' %>"><%= changePasswordLabel || 'Alterar senha' %></a>
+                                    <form action="/auth/logout" method="POST" class="logout-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="logout-button">Sair</button>
+                                    </form>
                                 </nav>
                             </details>
                         <% } else { %>

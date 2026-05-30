@@ -49,7 +49,20 @@ const csrfProtection = (req, res, next) => {
     const requestToken = getRequestToken(req);
 
     if (!requestToken || !cookieToken || requestToken !== cookieToken) {
-        return res.status(403).send('Token CSRF invalido ou ausente.');
+        res.set('X-Robots-Tag', 'noindex, nofollow');
+        return res.status(403).render('403', {
+            title: 'Acesso Negado',
+            errorMessage: 'Sua solicitação não pôde ser validada por segurança. Recarregue a página e tente novamente.',
+            primaryActionHref: req.session?.user ? (res.locals.dashboardPath || '/dashboard') : '/auth/login',
+            primaryActionLabel: req.session?.user ? 'Voltar ao painel' : 'Fazer login',
+            primaryActionIcon: req.session?.user ? 'fas fa-home' : 'fas fa-sign-in-alt',
+            secondaryActionHref: '/',
+            secondaryActionLabel: 'Voltar ao início',
+            secondaryActionIcon: 'fas fa-home',
+            seoRobots: 'noindex, nofollow',
+            seoDescription: 'A solicitação não pôde ser validada por segurança.',
+            seoOgDescription: 'A solicitação não pôde ser validada por segurança.'
+        });
     }
 
     const nextToken = createToken();

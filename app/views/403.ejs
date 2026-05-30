@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { extraStyles: ['/css/pages.css'] }) %>
 
 <section class="error-section">
     <nav class="container">
@@ -10,18 +10,19 @@
             <h1>403 - Acesso Negado</h1>
 
             <p>
-                Você não tem permissão para acessar esta área.
-                Volte para uma página pública ou faça login com um perfil autorizado.
+                <%= typeof errorMessage !== 'undefined' && errorMessage
+                    ? errorMessage
+                    : 'Você não tem permissão para acessar esta área. Volte para uma página pública ou faça login com um perfil autorizado.' %>
             </p>
 
             <nav class="error-actions">
-                <a href="/" class="btn btn-primary">
-                    <i class="fas fa-home"></i>
-                    Voltar ao Início
+                <a href="<%= typeof primaryActionHref !== 'undefined' ? primaryActionHref : '/' %>" class="btn btn-primary">
+                    <i class="<%= typeof primaryActionIcon !== 'undefined' ? primaryActionIcon : 'fas fa-home' %>"></i>
+                    <%= typeof primaryActionLabel !== 'undefined' ? primaryActionLabel : 'Voltar ao Início' %>
                 </a>
-                <a href="/auth/login" class="btn btn-outline">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Fazer Login
+                <a href="<%= typeof secondaryActionHref !== 'undefined' ? secondaryActionHref : '/auth/login' %>" class="btn btn-outline">
+                    <i class="<%= typeof secondaryActionIcon !== 'undefined' ? secondaryActionIcon : 'fas fa-sign-in-alt' %>"></i>
+                    <%= typeof secondaryActionLabel !== 'undefined' ? secondaryActionLabel : 'Fazer Login' %>
                 </a>
             </nav>
         </nav>

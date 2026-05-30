@@ -25,6 +25,8 @@ const createIndexRouter = (data = defaultData) => {
     router.post('/assinar-plano', controller.subscribePlan);
     router.get('/planos', controller.planos);
     router.get('/noticias', controller.noticias);
+    router.get('/impacto', controller.impacto);
+    router.get('/impacto/relatorio.csv', controller.impactoCsv);
 
     return router;
 };

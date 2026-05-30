@@ -7,6 +7,10 @@ const {
     buildPageStructuredData,
     getSiteUrl
 } = require('../utils/seo');
+const {
+    buildOngOperationalAnalytics,
+    buildCsv
+} = require('../utils/analytics');
 
 const createOngsController = (data) => {
     const findUserOng = async (userId) => {
@@ -85,17 +89,57 @@ const createOngsController = (data) => {
             }
 
             const denuncias = await data.getDenuncias();
-            const pendingDenuncias = denuncias.filter((denuncia) => denuncia.status === 'pendente');
-            const respondedDenuncias = denuncias.filter((denuncia) =>
-                denuncia.responses.some((response) => response.ongId === userOng.id)
-            );
+            const analytics = buildOngOperationalAnalytics({
+                denuncias,
+                ong: userOng
+            });
 
             res.render('ongs/admin', {
                 title: 'Painel da ONG',
                 ong: userOng,
-                pendingDenuncias,
-                respondedDenuncias
+                extraStyles: ['/css/analytics.css'],
+                analytics,
+                pendingDenuncias: analytics.pendingDenuncias,
+                respondedDenuncias: analytics.respondedCases,
+                reportCsvPath: '/ongs/admin/relatorio.csv'
             });
+        },
+
+        async report(req, res) {
+            const user = req.session.user;
+            const userOng = await findUserOng(user.id);
+
+            if (!userOng) {
+                return res.status(404).render('404', { title: 'ONG não encontrada' });
+            }
+
+            const denuncias = await data.getDenuncias();
+            const analytics = buildOngOperationalAnalytics({
+                denuncias,
+                ong: userOng
+            });
+
+            const rows = [
+                ['Seção', 'Indicador', 'Valor'],
+                ['Resumo', 'Pendências', analytics.pendingDenuncias.length],
+                ['Resumo', 'Respostas', analytics.responseVolume],
+                ['Resumo', 'Casos resolvidos', analytics.resolvedCases.length],
+                ['Resumo', 'Casos em aberto', analytics.openCases.length],
+                ['Resumo', 'Taxa de resolução', `${analytics.resolutionRate}%`],
+                ['Resumo', 'Tempo médio até 1ª resposta', analytics.avgFirstResponseLabel]
+            ];
+
+            analytics.pendingByCategory.labels.forEach((label, index) => {
+                rows.push(['Pendências por categoria', label, analytics.pendingByCategory.values[index]]);
+            });
+
+            analytics.responsesByMonth.labels.forEach((label, index) => {
+                rows.push(['Respostas por mês', label, analytics.responsesByMonth.values[index]]);
+            });
+
+            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            res.setHeader('Content-Disposition', 'attachment; filename="painel-ong.csv"');
+            return res.send(buildCsv(rows));
         },
 
         async stats(req, res) {
@@ -107,24 +151,27 @@ const createOngsController = (data) => {
             }
 
             const denuncias = await data.getDenuncias();
-
-            const totalResponses = denuncias.reduce((count, denuncia) => {
-                return count + denuncia.responses.filter((response) => response.ongId === userOng.id).length;
-            }, 0);
-
-            const resolvedByOng = denuncias.filter((denuncia) =>
-                denuncia.status === 'resolvida' && denuncia.responses.some((response) => response.ongId === userOng.id)
-            ).length;
-
-            const pendingDenuncias = denuncias.filter((denuncia) => denuncia.status === 'pendente').length;
+            const analytics = buildOngOperationalAnalytics({
+                denuncias,
+                ong: userOng
+            });
 
             res.render('ongs/stats', {
                 title: 'Estatísticas da ONG',
+                ong: userOng,
+                extraStyles: ['/css/analytics.css'],
+                analytics,
+                pendingDenuncias: analytics.pendingDenuncias,
+                respondedDenuncias: analytics.respondedCases,
+                reportCsvPath: '/ongs/admin/relatorio.csv',
                 stats: {
-                    totalResponses,
-                    resolvedByOng,
-                    pendingDenuncias,
-                    totalDenuncias: denuncias.length
+                    totalResponses: analytics.responseVolume,
+                    resolvedByOng: analytics.resolvedCases.length,
+                    pendingDenuncias: analytics.pendingDenuncias.length,
+                    totalDenuncias: denuncias.length,
+                    openCases: analytics.openCases.length,
+                    resolutionRate: analytics.resolutionRate,
+                    avgFirstResponseLabel: analytics.avgFirstResponseLabel
                 }
             });
         },

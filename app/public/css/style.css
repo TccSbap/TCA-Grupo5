@@ -241,6 +241,32 @@ body.has-cookie-banner .main-content {
     background-color: var(--gray-100);
 }
 
+.dropdown .logout-form {
+    margin: 0;
+}
+
+.dropdown .logout-button,
+.admin-nav-links .logout-button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.dropdown .logout-button {
+    display: block;
+    padding: var(--spacing-2) var(--spacing-3);
+    color: var(--gray-700);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s;
+}
+
+.dropdown .logout-button:hover {
+    background-color: var(--gray-100);
+}
+
 /* Botões */
 .btn {
     display: inline-flex;
@@ -2901,6 +2927,10 @@ form[aria-busy="true"] input[type="submit"] {
     margin-bottom: var(--spacing-2);
 }
 
+.admin-nav-links .logout-form {
+    margin: 0;
+}
+
 .admin-nav-links a {
     display: block;
     padding: var(--spacing-3) var(--spacing-4);
@@ -2919,6 +2949,19 @@ form[aria-busy="true"] input[type="submit"] {
     background-color: var(--primary-blue);
     color: var(--white);
     font-weight: 600;
+}
+
+.admin-nav-links .logout-button {
+    display: block;
+    padding: var(--spacing-3) var(--spacing-4);
+    color: var(--gray-700);
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s ease;
+}
+
+.admin-nav-links .logout-button:hover {
+    background-color: var(--gray-100);
+    color: var(--primary-blue);
 }
 
 .admin-content {

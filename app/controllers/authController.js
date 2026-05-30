@@ -3,6 +3,37 @@ const { validationResult } = require('express-validator');
 const { toSessionUser } = require('../middleware/sessionUser');
 
 const normalizeDigits = (value) => String(value || '').replace(/\D/g, '');
+const regenerateSession = (req) => new Promise((resolve, reject) => {
+    if (!req.session || typeof req.session.regenerate !== 'function') {
+        resolve();
+        return;
+    }
+
+    req.session.regenerate((error) => {
+        if (error) {
+            reject(error);
+            return;
+        }
+
+        resolve();
+    });
+});
+
+const destroySession = (req) => new Promise((resolve, reject) => {
+    if (!req.session || typeof req.session.destroy !== 'function') {
+        resolve();
+        return;
+    }
+
+    req.session.destroy((error) => {
+        if (error) {
+            reject(error);
+            return;
+        }
+
+        resolve();
+    });
+});
 
 const isValidTelefone = (telefone) => {
     const digits = normalizeDigits(telefone);
@@ -49,6 +80,15 @@ const createAuthController = (data) => ({
         });
     },
 
+    changePasswordPage(req, res) {
+        res.render('auth/alterar-senha', {
+            title: 'Alterar senha',
+            error: req.query.error,
+            success: req.query.success,
+            user: req.session.user
+        });
+    },
+
     async login(req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -63,6 +103,13 @@ const createAuthController = (data) => ({
             return res.redirect('/auth/login?error=' + encodeURIComponent('E-mail ou senha inválidos'));
         }
 
+        try {
+            await regenerateSession(req);
+        } catch (error) {
+            console.error('Erro ao regenerar sessão durante o login:', error);
+            return res.redirect('/auth/login?error=' + encodeURIComponent('Não foi possível iniciar sua sessão. Tente novamente.'));
+        }
+
         req.session.user = toSessionUser(authenticatedUser);
         if (req.session.user.type === 'admin') {
             return res.redirect('/admin');
@@ -73,6 +120,52 @@ const createAuthController = (data) => ({
         }
 
         return res.redirect('/dashboard');
+    },
+
+    async changePassword(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const firstError = errors.array()[0].msg;
+            return res.redirect('/auth/alterar-senha?error=' + encodeURIComponent(firstError));
+        }
+
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.session.user && req.session.user.id;
+
+        try {
+            const storedUser = await data.getUserById(userId);
+
+            if (!storedUser || !storedUser.password) {
+                return res.redirect('/auth/alterar-senha?error=' + encodeURIComponent('Não foi possível validar sua senha atual.'));
+            }
+
+            if (!bcrypt.compareSync(currentPassword, storedUser.password)) {
+                return res.redirect('/auth/alterar-senha?error=' + encodeURIComponent('Senha atual inválida.'));
+            }
+
+            if (currentPassword === newPassword) {
+                return res.redirect('/auth/alterar-senha?error=' + encodeURIComponent('A nova senha deve ser diferente da senha atual.'));
+            }
+
+            const newPasswordHash = bcrypt.hashSync(newPassword, 10);
+            const updated = await data.updateUserPassword(userId, newPasswordHash);
+
+            if (!updated) {
+                return res.redirect('/auth/alterar-senha?error=' + encodeURIComponent('Não foi possível atualizar sua senha. Tente novamente.'));
+            }
+
+            try {
+                await destroySession(req);
+            } catch (destroyError) {
+                console.error('Erro ao encerrar sessão após troca de senha:', destroyError);
+            }
+
+            res.clearCookie('connect.sid');
+            return res.redirect('/auth/login?success=' + encodeURIComponent('Senha alterada com sucesso. Faça login novamente.'));
+        } catch (error) {
+            console.error('Erro ao alterar senha:', error);
+            return res.redirect('/auth/alterar-senha?error=' + encodeURIComponent('Não foi possível alterar sua senha.'));
+        }
     },
 
     cadastroPage(req, res) {
@@ -179,12 +272,14 @@ const createAuthController = (data) => ({
     },
 
     logout(req, res) {
-        req.session.destroy((err) => {
-            if (err) {
+        destroySession(req)
+            .catch((err) => {
                 console.error('Erro ao fazer logout:', err);
-            }
-            res.redirect('/');
-        });
+            })
+            .finally(() => {
+                res.clearCookie('connect.sid');
+                res.redirect('/');
+            });
     }
 });
 

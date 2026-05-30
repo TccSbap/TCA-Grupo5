@@ -114,6 +114,18 @@ describe('models/users.model', () => {
         });
     });
 
+    test('updates user password hash', async () => {
+        const { model, pool } = buildModel();
+
+        pool.execute.mockResolvedValueOnce([{ affectedRows: 1 }, []]);
+
+        await expect(model.updateUserPassword(7, 'new-hash')).resolves.toBe(true);
+        expect(pool.execute).toHaveBeenCalledWith(
+            'UPDATE users SET password_hash = ? WHERE id = ?',
+            ['new-hash', 7]
+        );
+    });
+
     test('rejects when database access is unavailable', async () => {
         const { model } = buildModel(false);
 

@@ -58,4 +58,41 @@ describe('rotas administrativas', () => {
     expect(response.status).toBe(302);
     expect(response.headers.location).toBe('/admin');
   });
+
+  test('GET /admin renderiza o painel analítico com gráficos de apoio', async () => {
+    const agent = request.agent(app);
+
+    await agent
+      .post('/admin/dashboard')
+      .type('form')
+      .send({
+        email: 'admin@ods6.org',
+        password: '123456'
+      });
+
+    const response = await agent.get('/admin');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('Denúncias por status');
+    expect(response.text).toContain('Linha do tempo');
+  });
+
+  test('GET /admin/relatorio.csv exporta um relatório em CSV', async () => {
+    const agent = request.agent(app);
+
+    await agent
+      .post('/admin/dashboard')
+      .type('form')
+      .send({
+        email: 'admin@ods6.org',
+        password: '123456'
+      });
+
+    const response = await agent.get('/admin/relatorio.csv');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toContain('text/csv');
+    expect(response.text).toContain('Seção,Indicador,Valor');
+    expect(response.text).toContain('Resumo geral,Usuários');
+  });
 });

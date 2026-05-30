@@ -87,6 +87,20 @@ const createUser = (userData) => {
 };
 
 const createUserAndPersist = (userData) => createUser(userData);
+const updateUserPassword = (id, passwordHash) => {
+    const userIndex = users.findIndex((user) => user.id === parseInt(id, 10));
+
+    if (userIndex === -1) {
+        return false;
+    }
+
+    users[userIndex] = {
+        ...users[userIndex],
+        password: passwordHash
+    };
+
+    return true;
+};
 const saveUsers = (newUsers) => {
     users = newUsers;
 };
@@ -247,6 +261,7 @@ module.exports = {
     getUserById,
     getUsers,
     resetData,
+    updateUserPassword,
     saveDenuncias,
     saveOngs,
     saveUsers,

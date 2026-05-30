@@ -101,6 +101,17 @@ module.exports = ({ pool, canUseDatabase, defaultPasswordHash }) => {
 
     const createUserAndPersist = async (userData) => createUser(userData);
 
+    const updateUserPassword = async (id, passwordHash) => {
+        await ensureDatabase();
+
+        const [result] = await pool.execute(
+            'UPDATE users SET password_hash = ? WHERE id = ?',
+            [passwordHash, parseInt(id, 10)]
+        );
+
+        return result.affectedRows > 0;
+    };
+
     return {
         authenticateUser,
         buildSessionUser,
@@ -108,6 +119,7 @@ module.exports = ({ pool, canUseDatabase, defaultPasswordHash }) => {
         createUserAndPersist,
         getUserByEmail,
         getUserById,
-        getUsers
+        getUsers,
+        updateUserPassword
     };
 };

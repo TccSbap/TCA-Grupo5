@@ -340,11 +340,23 @@ document.addEventListener('DOMContentLoaded', function() {
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-        <button class="notification-close">&times;</button>
-    `;
+    const icon = document.createElement('i');
+    const iconClass = type === 'success'
+        ? 'check-circle'
+        : type === 'error'
+            ? 'exclamation-circle'
+            : 'info-circle';
+    icon.className = `fas fa-${iconClass}`;
+
+    const text = document.createElement('span');
+    text.textContent = message;
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'notification-close';
+    closeButton.type = 'button';
+    closeButton.textContent = '×';
+
+    notification.append(icon, text, closeButton);
     
     notification.style.cssText = `
         position: fixed;

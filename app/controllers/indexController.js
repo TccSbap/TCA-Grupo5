@@ -12,6 +12,10 @@ const {
     getSiteUrl
 } = require('../utils/seo');
 const {
+    buildPublicImpactAnalytics,
+    buildCsv
+} = require('../utils/analytics');
+const {
     COOKIE_CONSENT_ACCEPTED,
     COOKIE_CONSENT_COOKIE_NAME,
     COOKIE_CONSENT_REJECTED,
@@ -61,17 +65,28 @@ const createIndexController = (data) => ({
         const allDenuncias = await data.getDenuncias();
         const allOngs = await data.getOngs();
         const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
+        const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
+        const assinaturasPlano = typeof data.getAssinaturasPlano === 'function' ? await data.getAssinaturasPlano() : [];
+        const mensagensContato = typeof data.getMensagensContato === 'function' ? await data.getMensagensContato() : [];
+        const impacto = buildPublicImpactAnalytics({
+            denuncias: allDenuncias,
+            mensagensContato,
+            doacoes,
+            assinaturasPlano
+        });
         const description = 'Conheça ONGs parceiras, acompanhe denúncias recentes e descubra como apoiar água limpa e saneamento básico.';
 
         res.render('index', {
             ...buildSeoPayload(res, '/', 'Água limpa e saneamento básico', description, {
                 seoOgTitle: 'Água limpa e saneamento básico | Água Consciente'
             }),
+            extraStyles: ['/css/analytics.css'],
             denuncias: allDenuncias.slice(0, 3),
             ongs: allOngs.slice(0, 3).map(formatOngForDonation),
             noticias: noticias.slice(0, 4),
             totalDenuncias: allDenuncias.length,
-            totalOngs: allOngs.length
+            totalOngs: allOngs.length,
+            impacto
         });
     },
 
@@ -343,6 +358,80 @@ const createIndexController = (data) => ({
             ),
             noticias
         });
+    },
+
+    async impacto(req, res) {
+        const [denuncias, ongs, mensagensContato, doacoes, assinaturasPlano] = await Promise.all([
+            data.getDenuncias(),
+            data.getOngs(),
+            typeof data.getMensagensContato === 'function' ? data.getMensagensContato() : [],
+            typeof data.getDoacoes === 'function' ? data.getDoacoes() : [],
+            typeof data.getAssinaturasPlano === 'function' ? data.getAssinaturasPlano() : []
+        ]);
+
+        const impacto = buildPublicImpactAnalytics({
+            denuncias,
+            mensagensContato,
+            doacoes,
+            assinaturasPlano
+        });
+
+        const impactPageUrl = '/impacto';
+        const impactDescription = 'Acompanhe o impacto social da plataforma com indicadores de denúncias, respostas, doações e assinaturas em um só lugar.';
+
+        res.render('impacto', {
+            ...buildSeoPayload(res, impactPageUrl, 'Painel de impacto da plataforma', impactDescription, {
+                seoOgTitle: 'Painel de impacto da plataforma | Água Consciente',
+                structuredData: [
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'WebPage',
+                        name: 'Painel de impacto da plataforma',
+                        description: impactDescription,
+                        url: buildAbsoluteUrl(impactPageUrl, getSiteUrl())
+                    }
+                ]
+            }),
+            extraStyles: ['/css/analytics.css'],
+            impacto,
+            totalDenuncias: denuncias.length,
+            totalOngs: ongs.length
+        });
+    },
+
+    async impactoCsv(req, res) {
+        const [denuncias, mensagensContato, doacoes, assinaturasPlano] = await Promise.all([
+            data.getDenuncias(),
+            typeof data.getMensagensContato === 'function' ? data.getMensagensContato() : [],
+            typeof data.getDoacoes === 'function' ? data.getDoacoes() : [],
+            typeof data.getAssinaturasPlano === 'function' ? data.getAssinaturasPlano() : []
+        ]);
+
+        const impacto = buildPublicImpactAnalytics({
+            denuncias,
+            mensagensContato,
+            doacoes,
+            assinaturasPlano
+        });
+
+        const rows = [
+            ['Seção', 'Indicador', 'Valor'],
+            ['Resumo', 'Casos abertos no mês', impacto.casesOpenedThisMonth],
+            ['Resumo', 'Casos respondidos', impacto.casesResponded],
+            ['Resumo', 'Casos resolvidos', impacto.casesResolved],
+            ['Resumo', 'Doações recebidas', impacto.totalDonations],
+            ['Resumo', 'Planos assinados', impacto.activeSubscriptions]
+        ];
+
+        impacto.monthlyActivity.labels.forEach((label, index) => {
+            impacto.monthlyActivity.datasets.forEach((dataset) => {
+                rows.push(['Atividade mensal', `${dataset.label} - ${label}`, dataset.data[index] || 0]);
+            });
+        });
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', 'attachment; filename="painel-impacto.csv"');
+        return res.send(buildCsv(rows));
     },
 
     async privacidade(req, res) {

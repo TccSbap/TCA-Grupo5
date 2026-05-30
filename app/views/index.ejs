@@ -224,4 +224,38 @@
 </section>
 <% } %>
 
+<!-- Impacto da Plataforma -->
+<section class="analytics-page" aria-labelledby="impacto-home-title">
+    <section class="container">
+        <article class="impact-strip">
+            <div>
+                <h2 id="impacto-home-title">Impacto da plataforma</h2>
+                <p>Uma visão rápida do que já foi movimentado na Água Consciente: denúncias recebidas, respostas publicadas e apoio financeiro para ONGs parceiras.</p>
+            </div>
+            <div class="impact-strip__stats">
+                <article class="impact-strip__stat">
+                    <h3><%= impacto.casesOpenedThisMonth %></h3>
+                    <p>Casos abertos no mês</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3><%= impacto.casesResponded %></h3>
+                    <p>Casos respondidos</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3><%= impacto.casesResolved %></h3>
+                    <p>Casos resolvidos</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3>R$ <%= Number(impacto.totalDonations || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></h3>
+                    <p>Doações recebidas</p>
+                </article>
+            </div>
+            <div class="impact-strip__actions">
+                <a href="/impacto" class="btn btn-primary">Ver painel de impacto completo</a>
+                <a href="/denuncias/nova" class="btn btn-outline">Registrar denúncia</a>
+            </div>
+        </article>
+    </section>
+</section>
+
 <%- include('partials/footer') %>

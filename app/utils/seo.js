@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
     '/doacoes',
     '/planos',
     '/noticias',
+    '/impacto',
     '/ongs',
     '/privacidade',
     '/lgpd',
@@ -38,6 +39,7 @@ const PAGE_DESCRIPTION_MAP = [
     [/^\/doacoes$/, 'Contribua com ONGs parceiras e ajude projetos de água limpa e saneamento básico.'],
     [/^\/planos$/, 'Conheça os planos de apoio e escolha a melhor forma de contribuir com a plataforma.'],
     [/^\/noticias$/, 'Confira notícias e atualizações sobre saneamento básico, mobilização social e água limpa.'],
+    [/^\/impacto$/, 'Acompanhe o impacto social da plataforma com indicadores de denúncias, respostas, doações e assinaturas.'],
     [/^\/privacidade$/, 'Entenda como tratamos dados pessoais, cookies e direitos de privacidade na plataforma.'],
     [/^\/lgpd$/, 'Entenda como tratamos dados pessoais, cookies e direitos de privacidade na plataforma.'],
     [/^\/auth(\/|$)/, 'Área de autenticação da plataforma Água Consciente.'],
@@ -57,6 +59,7 @@ const PAGE_OG_TYPE_MAP = [
     [/^\/doacoes$/, 'website'],
     [/^\/planos$/, 'website'],
     [/^\/noticias$/, 'collection'],
+    [/^\/impacto$/, 'website'],
     [/^\/privacidade$/, 'article'],
     [/^\/lgpd$/, 'article']
 ];

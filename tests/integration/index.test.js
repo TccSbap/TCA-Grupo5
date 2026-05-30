@@ -70,6 +70,22 @@ describe('rotas principais', () => {
     expect(response.text).toContain('Notícias');
   });
 
+  test('GET /impacto renderiza o painel público de impacto', async () => {
+    const response = await request(app).get('/impacto');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('Painel de impacto da plataforma');
+  });
+
+  test('GET /impacto/relatorio.csv exporta os dados públicos em CSV', async () => {
+    const response = await request(app).get('/impacto/relatorio.csv');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toContain('text/csv');
+    expect(response.text).toContain('Seção,Indicador,Valor');
+    expect(response.text).toContain('Resumo,Casos abertos no mês');
+  });
+
   test('GET /denuncias/nova redireciona usuários anônimos para o login', async () => {
     const response = await request(app).get('/denuncias/nova');
 

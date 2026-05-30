@@ -11,24 +11,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     metodoPagamentoRadios.forEach((radio) => {
         radio.addEventListener('change', function handlePaymentMethodChange() {
-            cartaoFields.style.display = 'none';
-            pixFields.style.display = 'none';
-            boletoFields.style.display = 'none';
+            cartaoFields.hidden = true;
+            pixFields.hidden = true;
+            boletoFields.hidden = true;
 
             document.querySelectorAll('#cartao-fields input').forEach((input) => input.removeAttribute('required'));
 
             if (this.value === 'cartao') {
-                cartaoFields.style.display = 'block';
+                cartaoFields.hidden = false;
                 document.getElementById('numeroCartao').setAttribute('required', 'required');
                 document.getElementById('validadeCartao').setAttribute('required', 'required');
                 document.getElementById('cvvCartao').setAttribute('required', 'required');
             } else if (this.value === 'pix') {
-                pixFields.style.display = 'block';
+                pixFields.hidden = false;
             } else if (this.value === 'boleto') {
-                boletoFields.style.display = 'block';
+                boletoFields.hidden = false;
             }
         });
     });
+
+    const selectedPaymentMethod = document.querySelector('input[name="metodoPagamento"]:checked');
+    if (selectedPaymentMethod) {
+        selectedPaymentMethod.dispatchEvent(new Event('change'));
+    }
 
     planoForm.addEventListener('submit', (event) => {
         event.preventDefault();

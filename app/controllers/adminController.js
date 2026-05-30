@@ -1,4 +1,23 @@
 const { toSessionUser } = require('../middleware/sessionUser');
+const {
+    buildAdminAnalytics,
+    buildCsv
+} = require('../utils/analytics');
+const regenerateSession = (req) => new Promise((resolve, reject) => {
+    if (!req.session || typeof req.session.regenerate !== 'function') {
+        resolve();
+        return;
+    }
+
+    req.session.regenerate((error) => {
+        if (error) {
+            reject(error);
+            return;
+        }
+
+        resolve();
+    });
+});
 
 const createAdminController = (data) => {
     const loadCollection = async (methodName, fallback = []) => {
@@ -62,18 +81,86 @@ const createAdminController = (data) => {
                 });
             }
 
+            try {
+                await regenerateSession(req);
+            } catch (error) {
+                console.error('Erro ao regenerar sessão do administrador:', error);
+                return res.render('admin/login', {
+                    title: 'Login do Administrador',
+                    error: 'Não foi possível iniciar sua sessão. Tente novamente.'
+                });
+            }
+
             req.session.user = toSessionUser(user);
             res.redirect('/admin');
         },
 
         async dashboard(req, res) {
             const summary = await buildDashboardSummary();
+            const analytics = buildAdminAnalytics({
+                denuncias: summary.denuncias,
+                ongs: summary.ongs,
+                mensagensContato: summary.mensagensContato,
+                doacoes: summary.doacoes,
+                assinaturasPlano: summary.assinaturasPlano
+            });
 
             return res.render('admin/dashboard', {
                 title: 'Painel Administrativo',
                 user: req.session.user,
+                extraStyles: ['/css/analytics.css'],
+                analytics,
+                reportCsvPath: '/admin/relatorio.csv',
                 ...summary
             });
+        },
+
+        async report(req, res) {
+            const summary = await buildDashboardSummary();
+            const analytics = buildAdminAnalytics({
+                denuncias: summary.denuncias,
+                ongs: summary.ongs,
+                mensagensContato: summary.mensagensContato,
+                doacoes: summary.doacoes,
+                assinaturasPlano: summary.assinaturasPlano
+            });
+
+            const rows = [
+                ['Seção', 'Indicador', 'Valor'],
+                ['Resumo geral', 'Usuários', summary.totalUsers],
+                ['Resumo geral', 'ONGs', summary.totalOngs],
+                ['Resumo geral', 'Denúncias', summary.totalDenuncias],
+                ['Resumo geral', 'Pendentes', summary.denunciasPendentes],
+                ['Resumo geral', 'Em andamento', summary.denunciasEmAndamento],
+                ['Resumo geral', 'Resolvidas', summary.denunciasResolvidas],
+                ['Resumo geral', 'Respostas', summary.totalResponses],
+                ['Resumo geral', 'Mensagens', summary.totalMensagensContato],
+                ['Resumo geral', 'Doações', summary.totalDoacoes],
+                ['Resumo geral', 'Assinaturas', summary.totalAssinaturas],
+                ['Taxa', 'Resolução', `${analytics.resolution.rate}%`]
+            ];
+
+            analytics.statusCounts.forEach((item) => {
+                rows.push(['Denúncias por status', item.label, item.value]);
+            });
+
+            analytics.category.labels.forEach((label, index) => {
+                rows.push(['Denúncias por categoria', label, analytics.category.values[index]]);
+            });
+
+            analytics.responsesByOng.labels.forEach((label, index) => {
+                rows.push(['Respostas por ONG', label, analytics.responsesByOng.values[index]]);
+            });
+
+            analytics.monthlyActivity.labels.forEach((label, index) => {
+                analytics.monthlyActivity.datasets.forEach((dataset) => {
+                    rows.push(['Atividade mensal', `${dataset.label} - ${label}`, dataset.data[index] || 0]);
+                });
+            });
+
+            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            res.setHeader('Content-Disposition', 'attachment; filename="painel-administrativo.csv"');
+            return res.send(buildCsv(rows));
         },
 
         async denuncias(req, res) {

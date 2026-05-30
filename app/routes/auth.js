@@ -1,7 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const defaultData = require('../../data/database');
-const { redirectIfLoggedIn } = require('../middleware/auth');
+const { redirectIfLoggedIn, requireAuth } = require('../middleware/auth');
 const { createLoginRateLimiter } = require('../middleware/rateLimit');
 const { createAuthController } = require('../controllers/authController');
 
@@ -15,6 +15,19 @@ const createAuthRouter = (data = defaultData) => {
         body('email', 'E-mail inválido.').isEmail(),
         body('password', 'Senha é obrigatória').notEmpty()
     ], controller.login);
+    router.get('/alterar-senha', requireAuth, controller.changePasswordPage);
+    router.post('/alterar-senha', requireAuth, [
+        body('currentPassword', 'A senha atual é obrigatória.').notEmpty(),
+        body('newPassword', 'A nova senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número.')
+            .isLength({ min: 8 })
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/),
+        body('confirmNewPassword').custom((value, { req }) => {
+            if (value !== req.body.newPassword) {
+                throw new Error('A confirmação da nova senha não coincide.');
+            }
+            return true;
+        })
+    ], controller.changePassword);
     router.get('/cadastro', redirectIfLoggedIn, controller.cadastroPage);
     router.post('/cadastro', [
         body('name', 'Nome Completo deve ter no mínimo 10 caracteres').isLength({ min: 10 }),
@@ -29,7 +42,8 @@ const createAuthRouter = (data = defaultData) => {
             return true;
         })
     ], controller.cadastro);
-    router.get('/logout', controller.logout);
+    router.post('/logout', controller.logout);
+    router.get('/logout', (req, res) => res.redirect('/'));
 
     return router;
 };

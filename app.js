@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
@@ -70,6 +71,29 @@ const createApp = (data = defaultData) => {
     app.use(bodyParser.json());
     app.use(cookieParser());
     app.use(express.static(path.join(appPath, 'public')));
+    app.use((req, res, next) => {
+        res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+
+        const cspDirectives = [
+            "default-src 'self'",
+            "base-uri 'self'",
+            "object-src 'none'",
+            "frame-ancestors 'self'",
+            "form-action 'self'",
+            "img-src 'self' data: https:",
+            "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'",
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
+            `script-src 'self' https://cdnjs.cloudflare.com 'nonce-${res.locals.cspNonce}'`,
+            "connect-src 'self'"
+        ];
+
+        if (isProduction) {
+            cspDirectives.push('upgrade-insecure-requests');
+        }
+
+        res.setHeader('Content-Security-Policy', cspDirectives.join('; '));
+        next();
+    });
 
     const sessionOptions = {
         secret: sessionSecret,
@@ -103,6 +127,8 @@ const createApp = (data = defaultData) => {
         res.locals.isOng = !!user && user.type === 'ong';
         res.locals.dashboardPath = getDashboardPathForUser(user);
         res.locals.dashboardLabel = getDashboardLabelForUser(user);
+        res.locals.changePasswordPath = '/auth/alterar-senha';
+        res.locals.changePasswordLabel = 'Alterar senha';
         res.locals.currentPath = req.path;
         res.locals.siteName = seo.siteName;
         res.locals.seoCanonical = seo.canonical;

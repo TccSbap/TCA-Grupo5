@@ -11,7 +11,13 @@
                 <li><a href="/admin" class="active">Visão Geral</a></li>
                 <li><a href="/admin/denuncias">Denúncias</a></li>
                 <li><a href="/admin/ongs">ONGs</a></li>
-                <li><a href="/auth/logout">Sair</a></li>
+                <li><a href="/auth/alterar-senha">Alterar senha</a></li>
+                <li>
+                    <form action="/auth/logout" method="POST" class="logout-form">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="logout-button">Sair</button>
+                    </form>
+                </li>
             </ul>
         </nav>
     </aside>
@@ -20,6 +26,16 @@
         <header class="admin-header">
             <h1>Painel Administrativo</h1>
             <p>Bem-vindo, <%= user.name %>. Visão global da plataforma, com foco em moderação, volume e operação.</p>
+            <nav class="analytics-controls">
+                <a href="<%= reportCsvPath || '/admin/relatorio.csv' %>" class="btn btn-outline">
+                    <i class="fas fa-file-csv"></i>
+                    Exportar CSV
+                </a>
+                <a href="/impacto" class="btn btn-secondary">
+                    <i class="fas fa-chart-line"></i>
+                    Ver impacto público
+                </a>
+            </nav>
         </header>
 
         <section class="admin-stats">
@@ -69,6 +85,90 @@
                     <h3>Mensagens</h3>
                 </header>
                 <nav class="stat-value"><%= totalMensagensContato %></nav>
+            </article>
+        </section>
+
+        <section class="analytics-grid analytics-grid--stacked" aria-labelledby="painel-analitico-admin">
+            <article class="analytics-card analytics-card--third">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title" id="painel-analitico-admin">
+                            <i class="fas fa-chart-pie"></i>
+                            Denúncias por status
+                        </div>
+                        <p class="analytics-card__subtitle">Pendentes, em andamento e resolvidas</p>
+                    </div>
+                    <span class="analytics-pill"><%= analytics.resolution.rate %>% resolvidas</span>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="adminStatusChart" class="analytics-canvas analytics-canvas--small" aria-label="Gráfico de denúncias por status" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="analytics-card analytics-card--third">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-chart-line"></i>
+                            Linha do tempo
+                        </div>
+                        <p class="analytics-card__subtitle">Denúncias por dia, semana ou mês</p>
+                    </div>
+                    <div class="analytics-controls" role="tablist" aria-label="Selecionar período da linha do tempo">
+                        <button type="button" class="analytics-toggle is-active" data-admin-timeline="day">Dia</button>
+                        <button type="button" class="analytics-toggle" data-admin-timeline="week">Semana</button>
+                        <button type="button" class="analytics-toggle" data-admin-timeline="month">Mês</button>
+                    </div>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="adminTimelineChart" class="analytics-canvas analytics-canvas--small" aria-label="Linha do tempo de denúncias" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="analytics-card analytics-card--third">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-layer-group"></i>
+                            Categorias mais afetadas
+                        </div>
+                        <p class="analytics-card__subtitle">Água, esgoto, poluição e outros</p>
+                    </div>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="adminCategoryChart" class="analytics-canvas analytics-canvas--small" aria-label="Categorias de denúncias" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="analytics-card analytics-card--half">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-hands-helping"></i>
+                            Respostas por ONG
+                        </div>
+                        <p class="analytics-card__subtitle">Quem mais respondeu denúncias na plataforma</p>
+                    </div>
+                    <span class="analytics-pill"><%= analytics.resolution.total %> denúncias</span>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="adminResponsesChart" class="analytics-canvas" aria-label="Respostas por ONG" role="img"></canvas>
+                </div>
+            </article>
+
+            <article class="analytics-card analytics-card--half">
+                <header class="analytics-card__header">
+                    <div>
+                        <div class="analytics-card__title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Atividade mensal
+                        </div>
+                        <p class="analytics-card__subtitle">Mensagens, doações e assinaturas por mês</p>
+                    </div>
+                </header>
+                <div class="analytics-card__body">
+                    <canvas id="adminMonthlyActivityChart" class="analytics-canvas" aria-label="Atividade mensal da plataforma" role="img"></canvas>
+                </div>
             </article>
         </section>
 
@@ -142,5 +242,11 @@
         </section>
     </main>
 </section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script nonce="<%= cspNonce %>">
+    window.__ADMIN_ANALYTICS__ = <%- JSON.stringify(analytics).replace(/</g, '\\u003c') %>;
+</script>
+<script src="/js/analytics/admin-dashboard.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 
 <%- include('../partials/footer') %>

@@ -11,6 +11,7 @@ const createOngsRouter = (data = defaultData) => {
     router.get('/admin', requireOng, controller.adminDashboard);
     router.get('/admin/dashboard', requireOng, controller.adminDashboard);
     router.get('/admin/stats', requireOng, controller.stats);
+    router.get('/admin/relatorio.csv', requireOng, controller.report);
     router.get('/:id', controller.details);
 
     return router;

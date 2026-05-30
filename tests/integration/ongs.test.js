@@ -55,6 +55,29 @@ describe('rotas de ONGs', () => {
     expect(response.text).toContain('Estatísticas da ONG');
   });
 
+  test('sessão ONG consegue acessar o painel operacional analítico', async () => {
+    const agent = request.agent(app);
+    await signInOng(agent);
+
+    const response = await agent.get('/ongs/admin/dashboard');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('Tempo médio');
+    expect(response.text).toContain('Volume de respostas por período');
+  });
+
+  test('sessão ONG consegue exportar o relatório operacional em CSV', async () => {
+    const agent = request.agent(app);
+    await signInOng(agent);
+
+    const response = await agent.get('/ongs/admin/relatorio.csv');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toContain('text/csv');
+    expect(response.text).toContain('Seção,Indicador,Valor');
+    expect(response.text).toContain('Resumo,Pendências');
+  });
+
   test('ONG recém-cadastrada recebe respostas e vê as denúncias corretas no perfil', async () => {
     const agent = request.agent(app);
     const email = 'ongnova@teste.com';

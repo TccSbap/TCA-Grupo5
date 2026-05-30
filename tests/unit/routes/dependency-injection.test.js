@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const request = require('supertest');
 const { createAuthRouter } = require('../../../app/routes/auth');
 const { createAdminRouter } = require('../../../app/routes/admin');
@@ -24,7 +25,8 @@ describe('dependency injection for routes', () => {
       authenticateUser: jest.fn().mockReturnValue({ id: 11, type: 'user' }),
       getUserByEmail: jest.fn().mockReturnValue(null),
       createUser: jest.fn().mockReturnValue({ id: 99 }),
-      createOng: jest.fn()
+      createOng: jest.fn(),
+      getUserById: jest.fn()
     };
 
     const app = buildApp(createAuthRouter(data));
@@ -67,6 +69,37 @@ describe('dependency injection for routes', () => {
     }));
     expect(signupResponse.status).toBe(302);
     expect(signupResponse.headers.location).toContain('/auth/login?success=');
+  });
+
+  test('auth route uses injected methods in password change', async () => {
+    const passwordHash = bcrypt.hashSync('123456', 10);
+    const data = {
+      authenticateUser: jest.fn().mockReturnValue({ id: 11, type: 'user' }),
+      getUserByEmail: jest.fn().mockReturnValue(null),
+      getUserById: jest.fn().mockReturnValue({
+        id: 11,
+        password: passwordHash
+      }),
+      updateUserPassword: jest.fn().mockResolvedValue(true),
+      createUser: jest.fn().mockReturnValue({ id: 99 }),
+      createOng: jest.fn()
+    };
+
+    const app = buildApp(createAuthRouter(data), { id: 11, type: 'user', name: 'João' });
+
+    const response = await request(app)
+      .post('/alterar-senha')
+      .type('form')
+      .send({
+        currentPassword: '123456',
+        newPassword: 'NovaSenha123',
+        confirmNewPassword: 'NovaSenha123'
+      });
+
+    expect(data.getUserById).toHaveBeenCalledWith(11);
+    expect(data.updateUserPassword).toHaveBeenCalledWith(11, expect.any(String));
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain('/auth/login?success=');
   });
 
   test('admin route uses injected authentication method', async () => {

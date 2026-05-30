@@ -12,7 +12,13 @@
                 <li><a href="/admin">Visão Geral</a></li>
                 <li><a href="/admin/denuncias">Denúncias</a></li>
                 <li><a href="/admin/ongs" class="active">ONGs</a></li>
-                <li><a href="/auth/logout">Sair</a></li>
+                <li><a href="/auth/alterar-senha">Alterar senha</a></li>
+                <li>
+                    <form action="/auth/logout" method="POST" class="logout-form">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="logout-button">Sair</button>
+                    </form>
+                </li>
             </ul>
         </nav>
     </aside>

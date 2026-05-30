@@ -58,7 +58,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <% structuredData.forEach((schema) => { %>
-    <script type="application/ld+json"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+    <script type="application/ld+json" nonce="<%= cspNonce %>"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
     <% }) %>
 </head>
 <body>
@@ -80,6 +80,7 @@
                         <li><a href="/denuncias">Denúncias</a></li>
                         <li><a href="/sobre">Sobre</a></li>
                         <li><a href="/contato">Contato</a></li>
+                        <li><a href="/impacto">Impacto</a></li>
                     </ul>
                 </nav>
                 
@@ -97,7 +98,11 @@
                             </summary>
                             <nav class="dropdown">
                                 <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
-                                <a href="/auth/logout">Sair</a>
+                                <a href="<%= changePasswordPath || '/auth/alterar-senha' %>"><%= changePasswordLabel || 'Alterar senha' %></a>
+                                <form action="/auth/logout" method="POST" class="logout-form">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="logout-button">Sair</button>
+                                </form>
                             </nav>
                         </details>
                     <% } else { %>
@@ -129,6 +134,7 @@
                     <ul>
                         <li><a href="/">Início</a></li>
                         <li><a href="/ongs">ONGs Parceiras</a></li>
+                        <li><a href="/impacto">Impacto da plataforma</a></li>
                         <li><a href="/denuncias">Registrar denúncia</a></li>
                         <li><a href="/sobre">Sobre a plataforma</a></li>
                     </ul>
