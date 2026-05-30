@@ -1,4 +1,4 @@
-﻿---
+---
 tags:
   - rotas
   - routes
@@ -10,7 +10,7 @@ created: 2026-05-13
 
 ---
 
-## Rota Raiz -- routes/index.js
+## Rota Raiz -- app/routes/index.js
 
 | Método | Caminho | Descrição | Middleware |
 |--------|---------|-----------|------------|
@@ -29,7 +29,7 @@ Validações: validateDonation, validatePlanSubscription, validateContactMessage
 
 ---
 
-## Autenticação -- routes/auth.js
+## Autenticação -- app/routes/auth.js
 
 | Método | Caminho | Descrição | Middleware |
 |--------|---------|-----------|------------|
@@ -41,7 +41,7 @@ Validações: validateDonation, validatePlanSubscription, validateContactMessage
 
 ---
 
-## Denúncias -- routes/denuncias.js
+## Denúncias -- app/routes/denuncias.js
 
 | Método | Caminho | Descrição | Middleware |
 |--------|---------|-----------|------------|
@@ -56,7 +56,7 @@ Filtros: status, cidade, bairro, estado.
 
 ---
 
-## ONGs -- routes/ongs.js
+## ONGs -- app/routes/ongs.js
 
 | Método | Caminho | Descrição | Middleware |
 |--------|---------|-----------|------------|
@@ -67,12 +67,13 @@ Filtros: status, cidade, bairro, estado.
 
 ---
 
-## Admin -- routes/admin.js
+## Admin -- app/routes/admin.js
 
 | Método | Caminho | Descrição | Middleware |
 |--------|---------|-----------|------------|
 | GET | /admin/login | Login admin | redirectIfLoggedIn |
-| POST | /admin/login | Autenticar admin | -- |
+| POST | /admin/login | Autenticar admin (rota canônica) | -- |
+| POST | /admin/dashboard | Alias legada do login admin | -- |
 | GET | /admin/dashboard | Painel admin | requireAdmin |
 | GET | /admin/dashboard_admin | Painel admin alt. | requireAdmin |
 | GET | /admin/denuncias | Gerenciar denúncias | requireAdmin |
@@ -82,7 +83,7 @@ Filtros: status, cidade, bairro, estado.
 
 ## Tratamento de Erros
 
-- **404**: Qualquer rota não encontrada renderiza views/404.ejs
-- **403**: Acesso negado renderiza views/403.ejs
+- **404**: Qualquer rota não encontrada renderiza app/views/404.ejs
+- **403**: Acesso negado renderiza app/views/403.ejs
 
 Veja [[Middleware]] para detalhes de requireAuth e requireAdmin.

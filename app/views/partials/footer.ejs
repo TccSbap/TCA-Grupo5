@@ -1,0 +1,88 @@
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <nav class="container">
+            <nav class="footer-content">
+                <nav class="footer-section">
+                    <h3>ODS 6 - Água Limpa e Saneamento</h3>
+                    <p>Plataforma dedicada a promover o acesso universal à água potável e saneamento básico através de denúncias e ações colaborativas.</p>
+                </nav>
+                
+                <nav class="footer-section">
+                    <h4>Links Úteis</h4>
+                    <ul>
+                        <li><a href="/noticias">Notícias</a></li>
+                        <li><a href="/ongs">ONGs Parceiras</a></li>
+                        <li><a href="/impacto">Impacto da plataforma</a></li>
+                        <li><a href="/denuncias/nova">Registrar denúncia</a></li>
+                        <li><a href="/sobre">Sobre a plataforma</a></li>
+                        <li><a href="/contato">Contato</a></li>
+                        <li><a href="/doacoes">Doar</a></li>
+                        <li><a href="/planos">Planos</a></li>
+                        <li><a href="/privacidade">Privacidade e Cookies</a></li>
+                    </ul>
+                </nav>
+                
+                <nav class="footer-section">
+                    <h4>Contato</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contato@ods6.org</li>
+                        <li><i class="fas fa-phone"></i> (11) 9999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                    </ul>
+                </nav>
+                
+                <nav class="footer-section">
+                    <h4>Redes Sociais</h4>
+                    <nav class="social-links">
+                        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    </nav>
+                </nav>
+            </nav>
+            
+            <nav class="footer-bottom">
+                <p>&copy; 2025 ODS 6 - Todos os direitos reservados.</p>
+            </nav>
+        </nav>
+    </footer>
+
+    <% if (typeof showCookieBanner !== 'undefined' && showCookieBanner) { %>
+    <aside class="cookie-banner" role="dialog" aria-modal="false" aria-labelledby="cookie-banner-title" aria-describedby="cookie-banner-description">
+        <div class="cookie-banner-content">
+            <h2 id="cookie-banner-title">Uso de cookies</h2>
+            <p id="cookie-banner-description">
+                Usamos cookies estritamente necessários para login, segurança, sessão e proteção CSRF.
+                Você também pode escolher se quer salvar sua preferência para cookies não essenciais.
+            </p>
+            <a href="/privacidade" class="cookie-banner-link">Ler a política de privacidade</a>
+        </div>
+
+        <div class="cookie-banner-actions">
+            <form action="/cookies/consent" method="POST" class="cookie-banner-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="consent" value="rejected">
+                <input type="hidden" name="returnTo" value="<%= currentPath || '/' %>">
+                <button type="submit" class="btn btn-outline">Recusar não essenciais</button>
+            </form>
+
+            <form action="/cookies/consent" method="POST" class="cookie-banner-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="consent" value="accepted">
+                <input type="hidden" name="returnTo" value="<%= currentPath || '/' %>">
+                <button type="submit" class="btn btn-primary">Aceitar cookies</button>
+            </form>
+        </div>
+    </aside>
+    <% } %>
+
+    <% if (typeof watchReload !== 'undefined' && watchReload) { %>
+    <script src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+    <% } %>
+
+    <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+</body>
+</html>

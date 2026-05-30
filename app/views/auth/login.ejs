@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<section class="auth-section">
+    <section class="container">
+        <nav class="auth-container">
+            <article class="auth-card">
+                <header class="auth-header">
+                    <h1>Entrar na Plataforma</h1>
+                    <p>Acesse sua conta para fazer denúncias e acompanhar o progresso</p>
+                </header>
+                
+                <% if (typeof success !== 'undefined' && success) { %>
+                <nav class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <%= success %>
+                </nav>
+                <% } %>
+
+                <% if (error) { %>
+                <nav class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <%= error %>
+                </nav>
+                <% } %>
+                
+                <form class="auth-form" method="POST" action="/auth/login">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <nav class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </nav>
+                    
+                    <nav class="form-group">
+                        <label for="password">Senha</label>
+                        <div class="password-field">
+                            <input type="password" id="password" name="password" required autocomplete="current-password">
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-toggle="password"
+                                aria-label="Mostrar senha"
+                                aria-pressed="false"
+                                aria-controls="password"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </nav>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Entrar
+                    </button>
+                </form>
+                
+                <footer class="auth-footer">
+                    <p>Não tem uma conta? <a href="/auth/cadastro">Cadastre-se aqui</a></p>
+                    <p>É administrador da plataforma? <a href="/admin/login">Entrar como Administrador da Plataforma</a></p>
+                </footer>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<%- include('../partials/footer') %>

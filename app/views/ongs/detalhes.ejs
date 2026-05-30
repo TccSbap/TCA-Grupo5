@@ -1,0 +1,67 @@
+<%- include("../partials/header") %>
+
+<section class="ong-details-section">
+    <section class="container">
+        <header class="section-header">
+            <h1><%= ong.name %></h1>
+            <p><%= ong.description %></p>
+        </header>
+
+        <nav class="ong-details-grid">
+            <address class="ong-info-card card">
+                <h2>Informações de Contato</h2>
+                <nav class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span><%= ong.contact %></span>
+                </nav>
+                <% if (ong.cnpj) { %>
+                <nav class="info-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>CNPJ: <%= ong.cnpj %></span>
+                </nav>
+                <% } %>
+                <% if (ong.rg) { %>
+                <nav class="info-item">
+                    <i class="fas fa-id-badge"></i>
+                    <span>RG do responsável: <%= ong.rg %></span>
+                </nav>
+                <% } %>
+                <% if (ong.phone) { %>
+                <nav class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <span><%= ong.phone %></span>
+                </nav>
+                <% } %>
+                <% if (ong.address) { %>
+                <nav class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span><%= ong.address %></span>
+                </nav>
+                <% } %>
+                <nav class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Parceira desde <%= new Date(ong.createdAt).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) %></span>
+                </nav>
+            </address>
+
+            <section class="ong-responses-card card">
+                <h2>Denúncias Respondidas</h2>
+                <% if (responses && responses.length > 0) { %>
+                <nav class="denuncias-list">
+                    <% responses.forEach(denuncia => { %>
+                    <article class="denuncia-item">
+                        <h3><%= denuncia.title %></h3>
+                        <p><%= denuncia.description.substring(0, 100) %>...</p>
+                        <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver denúncia completa</a>
+                    </article>
+                    <% }) %>
+                </nav>
+                <% } else { %>
+                <p>Esta ONG ainda não respondeu a nenhuma denúncia.</p>
+                <% } %>
+            </section>
+        </nav>
+    </section>
+</section>
+
+<%- include("../partials/footer") %>

@@ -35,6 +35,33 @@ describe('smoke tests da aplicação', () => {
     expect(response.text).toContain('CACHE_NAME');
   });
 
+  test('GET /robots.txt entrega regras de indexação e sitemap', async () => {
+    const response = await request(app).get('/robots.txt');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('User-agent: *');
+    expect(response.text).toContain('Disallow: /auth/');
+    expect(response.text).toContain('Sitemap: https://ods6.org/sitemap.xml');
+  });
+
+  test('GET /sitemap.xml lista as paginas publicas principais', async () => {
+    const response = await request(app).get('/sitemap.xml');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+    expect(response.text).toContain('<loc>https://ods6.org/</loc>');
+    expect(response.text).toContain('<loc>https://ods6.org/sobre</loc>');
+    expect(response.text).toContain('<loc>https://ods6.org/ongs</loc>');
+  });
+
+  test('paginas internas recebem noindex', async () => {
+    const response = await request(app).get('/auth/login');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('<meta name="robots" content="noindex, nofollow">');
+    expect(response.headers['x-robots-tag']).toBe('noindex, nofollow');
+  });
+
   test('GET /unknown-page retorna 404', async () => {
     const response = await request(app).get('/unknown-page');
 

@@ -6,7 +6,7 @@ beforeEach(() => {
 
 describe('camada de dados em memória', () => {
   test('inicia com os dados padrão esperados', () => {
-    expect(database.getUsers()).toHaveLength(11);
+    expect(database.getUsers()).toHaveLength(12);
     expect(database.getOngs()).toHaveLength(10);
     expect(database.getDenuncias()).toHaveLength(16);
   });
@@ -55,8 +55,8 @@ describe('camada de dados em memória', () => {
       type: 'user'
     });
 
-    expect(created.id).toBe(12);
-    expect(database.getUsers()).toHaveLength(12);
+    expect(created.id).toBe(13);
+    expect(database.getUsers()).toHaveLength(13);
   });
 
   test('createDenuncia força status pendente e respostas vazias', () => {
@@ -135,11 +135,11 @@ describe('camada de dados em memória', () => {
       type: 'user'
     });
 
-    expect(database.getUsers()).toHaveLength(12);
+    expect(database.getUsers()).toHaveLength(13);
 
     database.resetData();
 
-    expect(database.getUsers()).toHaveLength(11);
+    expect(database.getUsers()).toHaveLength(12);
     expect(database.getOngs()).toHaveLength(10);
     expect(database.getDenuncias()).toHaveLength(16);
   });

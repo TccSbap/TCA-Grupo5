@@ -1,0 +1,42 @@
+<%- include("./partials/header", { extraStyles: ["/stylesheets/planos.css"] }) %>
+
+<section class="planos-page">
+    <section class="container">
+        <header class="page-header">
+            <h1>Nossos Planos</h1>
+            <p>Escolha o plano ideal para sua ONG e amplie seu impacto!</p>
+        </header>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <section class="alert alert-success" role="status">
+                <p><%= success %></p>
+            </section>
+        <% } %>
+
+        <nav class="planos-grid">
+            <% if (planos && planos.length > 0) { %>
+                <% planos.forEach(function(plano) { %>
+                    <article class="plano-card">
+                        <nav class="card-header">
+                            <h2><%= plano.title %></h2>
+                            <p class="price"><%= plano.price %></p>
+                        </nav>
+                        <nav class="card-body">
+                            <p class="subtitle"><%= plano.subtitle %></p>
+                            <ul class="features-list">
+                                <% plano.features.forEach(function(feature) { %>
+                                    <li><%= feature %></li>
+                                <% }); %>
+                            </ul>
+                            <a href="/planos/<%= plano.id %>/assinar" class="btn btn-primary">Assinar Plano</a>
+                        </nav>
+                    </article>
+                <% }); %>
+            <% } else { %>
+                <p>Nenhum plano disponível no momento.</p>
+            <% } %>
+        </nav>
+    </section>
+</section>
+
+<%- include("./partials/footer") %>

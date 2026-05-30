@@ -5,22 +5,54 @@ const resetApplicationState = async (request) => {
   await request.post('/__test/session/clear');
 };
 
+const acceptCookies = async (context) => {
+  await context.addCookies([
+    {
+      name: 'ods6_cookie_consent',
+      value: 'accepted',
+      url: 'http://127.0.0.1:3000',
+      httpOnly: true,
+      sameSite: 'Lax'
+    }
+  ]);
+};
+
 const loginUser = async (page, email = 'joao@email.com', password = '123456') => {
   await page.goto('/auth/login');
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Senha').fill(password);
+  await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Entrar' }).click();
 };
 
-const loginAdmin = async (page, email = 'admin@agualimpa.org', password = '123456') => {
+const loginOng = async (page, email = 'admin@agualimpa.org', password = '123456') => {
+  await loginUser(page, email, password);
+};
+
+const loginAdmin = async (page, email = 'admin@ods6.org', password = '123456') => {
   await page.goto('/admin/login');
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Senha').fill(password);
-  await page.getByRole('button', { name: 'Entrar como Administrador' }).click();
+  await page.locator('#password').fill(password);
+  await page.getByRole('button', { name: 'Entrar no Painel Administrativo' }).click();
 };
 
 test.beforeEach(async ({ request }) => {
   await resetApplicationState(request);
+});
+
+test.beforeEach(async ({ context }) => {
+  await acceptCookies(context);
+});
+
+test('banner de cookies aparece quando nao existe consentimento salvo', async ({ page, context }) => {
+  await context.clearCookies();
+  await page.goto('/');
+
+  await expect(page.getByRole('dialog', { name: /uso de cookies/i })).toBeVisible();
+  await page.getByRole('button', { name: /aceitar cookies/i }).click();
+
+  await expect(page).toHaveURL(/\/$/);
+  await page.reload();
+  await expect(page.locator('.cookie-banner')).toHaveCount(0);
 });
 
 test('a pagina inicial carrega e mostra os atalhos principais', async ({ page }) => {
@@ -43,13 +75,13 @@ test('usuario consegue entrar na plataforma e acessar o dashboard', async ({ pag
   await loginUser(page);
 
   await expect(page).toHaveURL(/\/dashboard$/);
-  await expect(page.getByRole('heading', { name: /Painel de Admin/i })).toBeVisible();
-  await expect(page.getByText(/Silva/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Meu Dashboard/i })).toBeVisible();
+  await expect(page.getByText('João Silva', { exact: true })).toBeVisible();
 });
 
-test('usuario cadastra uma ONG e consegue entrar no painel administrativo', async ({ page }) => {
+test('usuario cadastra uma ONG e consegue entrar no painel da ONG', async ({ page }) => {
   await page.goto('/auth/cadastro');
-  await page.selectOption('#userType', 'admin');
+  await page.selectOption('#userType', 'ong');
   await page.locator('#name').fill('Nova ONG Teste');
   await page.locator('#email').fill('nova-ong-teste@exemplo.com');
   await page.locator('#password').fill('SenhaForte123');
@@ -57,6 +89,8 @@ test('usuario cadastra uma ONG e consegue entrar no painel administrativo', asyn
   await page.locator('#ongName').fill('ONG Teste E2E');
   await page.locator('#ongDescription').fill('Descricao suficiente para passar na validacao.');
   await page.locator('#ongContact').fill('contato@ongteste.com');
+  await page.locator('#ongCnpj').fill('04.252.011/0001-10');
+  await page.locator('#ongRg').fill('12.345.678-9');
   await page.locator('#ongPhone').fill('(11) 99999-8888');
   await page.locator('#ongAddress').fill('Rua dos Testes, 123');
   await page.getByRole('button', { name: 'Criar Conta' }).click();
@@ -64,18 +98,19 @@ test('usuario cadastra uma ONG e consegue entrar no painel administrativo', asyn
   await expect(page).toHaveURL(/\/auth\/login\?success=/);
   await expect(page.getByText(/Cadastro realizado com sucesso/i)).toBeVisible();
 
-  await loginAdmin(page, 'nova-ong-teste@exemplo.com', 'SenhaForte123');
-  await expect(page).toHaveURL(/\/admin\/dashboard_admin$/);
-  await expect(page.getByRole('heading', { name: /Painel Admin/i })).toBeVisible();
+  await loginUser(page, 'nova-ong-teste@exemplo.com', 'SenhaForte123');
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
+  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
 
   await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: /Painel Admin/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
+  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
 
   await page.goto('/admin/denuncias');
-  await expect(page.getByRole('heading', { name: /Gerenciar Den[úu]ncias/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
 
   await page.goto('/admin/ongs');
-  await expect(page.getByRole('heading', { name: /Gerenciar ONGs/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
 });
 
 test('usuario autenticado envia uma denuncia e acompanha os detalhes', async ({ page }) => {
@@ -102,11 +137,11 @@ test('usuario faz uma doacao completa para uma ONG', async ({ page }) => {
   await page.locator('#nomeCompleto').fill('Maria da Silva');
   await page.locator('#emailDoador').fill('maria@exemplo.com');
   await page.locator('#telefoneDoador').fill('(11) 98888-7777');
-  await page.locator('#documentoDoador').fill('12345678901');
+  await page.locator('#documentoDoador').fill('52998224725');
   await page.locator('#cepDoador').fill('01001000');
   await page.locator('#ruaDoador').fill('Rua das Flores');
   await page.locator('#numeroDoador').fill('123');
-  await page.locator('#bairroDoador').fill('Centro');
+  await page.locator('#bairroDoador').fill('Bairro Central');
   await page.locator('#cidadeDoador').fill('Sao Paulo');
   await page.locator('#estadoDoador').fill('SP');
   await page.locator('#valorDoacao').fill('50');
@@ -125,7 +160,7 @@ test('usuario assina um plano da plataforma', async ({ page }) => {
   await page.locator('#nomeCompleto').fill('Maria da Silva');
   await page.locator('#emailComprador').fill('maria@exemplo.com');
   await page.locator('#telefoneComprador').fill('(11) 98888-7777');
-  await page.locator('#documentoComprador').fill('12345678901');
+  await page.locator('#documentoComprador').fill('52998224725');
   await page.locator('#cepComprador').fill('01001000');
   await page.locator('#ruaComprador').fill('Rua das Flores');
   await page.locator('#numeroComprador').fill('123');
@@ -157,8 +192,8 @@ test('usuario envia mensagem pelo formulario de contato', async ({ page }) => {
   await expect(page.getByText(/Mensagem enviada com sucesso/i)).toBeVisible();
 });
 
-test('administrador responde uma denuncia e acompanha os paines da ONG', async ({ page }) => {
-  await loginAdmin(page);
+test('ONG responde uma denuncia e acompanha o painel da ONG', async ({ page }) => {
+  await loginOng(page, 'admin@agualimpa.org', '123456');
 
   await page.goto('/denuncias/15');
   await expect(page.getByRole('heading', { name: /Lagoa contaminada por esgoto/i })).toBeVisible();
@@ -171,11 +206,28 @@ test('administrador responde uma denuncia e acompanha os paines da ONG', async (
   await expect(page.getByText(/Nossa ONG vai vistoriar o local/i)).toBeVisible();
 
   await page.goto('/ongs/admin/dashboard');
-  await expect(page.getByRole('heading', { name: /Administra/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Den[úu]ncias Pendentes/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Minhas Respostas/i })).toBeVisible();
 
   await page.goto('/ongs/admin/stats');
   await expect(page.getByRole('heading', { name: /Estat/i })).toBeVisible();
   await expect(page.getByText(/Total de Denúncias/i)).toBeVisible();
+});
+
+test('administrador acessa o painel administrativo separado', async ({ page }) => {
+  await loginAdmin(page);
+
+  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page.getByRole('heading', { name: /Painel Administrativo/i })).toBeVisible();
+
+  await page.goto('/dashboard');
+  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page.getByRole('heading', { name: /Painel Administrativo/i })).toBeVisible();
+
+  await page.goto('/admin/denuncias');
+  await expect(page.getByRole('heading', { name: /Gerenciar Den[úu]ncias/i })).toBeVisible();
+
+  await page.goto('/admin/ongs');
+  await expect(page.getByRole('heading', { name: /Gerenciar ONGs/i })).toBeVisible();
 });

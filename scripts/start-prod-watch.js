@@ -3,14 +3,11 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const rootDir = path.join(__dirname, '..');
-const versionFile = path.join(rootDir, 'tmp', 'prod-watch-version.txt');
+const versionFile = path.join(rootDir, 'tmp', 'watch-version.txt');
 const watchTargets = [
     path.join(rootDir, 'app.js'),
-    path.join(rootDir, 'routes'),
-    path.join(rootDir, 'views'),
-    path.join(rootDir, 'public'),
-    path.join(rootDir, 'data'),
-    path.join(rootDir, 'middleware')
+    path.join(rootDir, 'app'),
+    path.join(rootDir, 'data')
 ];
 
 const env = {

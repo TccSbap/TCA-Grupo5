@@ -6,7 +6,7 @@ beforeEach(() => {
 
 describe('bootstrap da camada de dados em teste', () => {
     test('carrega a massa de dados inicial para os principais contextos', () => {
-        expect(database.getUsers()).toHaveLength(11);
+        expect(database.getUsers()).toHaveLength(12);
         expect(database.getOngs()).toHaveLength(10);
         expect(database.getPlanos()).toHaveLength(3);
         expect(database.getNoticias()).toHaveLength(6);
@@ -41,11 +41,11 @@ describe('bootstrap da camada de dados em teste', () => {
             type: 'user'
         });
 
-        expect(database.getUsers()).toHaveLength(12);
+        expect(database.getUsers()).toHaveLength(13);
 
         database.resetData();
 
-        expect(database.getUsers()).toHaveLength(11);
+        expect(database.getUsers()).toHaveLength(12);
         expect(database.getOngs()).toHaveLength(10);
         expect(database.getDenuncias()).toHaveLength(16);
     });

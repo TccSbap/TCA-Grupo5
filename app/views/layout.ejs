@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="application-name" content="ODS 6">
+    <meta name="apple-mobile-web-app-title" content="ODS 6">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/pwa/icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/pwa/icon-512.png" sizes="512x512" type="image/png">
+    <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" sizes="180x180">
+    <%
+        const seoSiteName = typeof siteName === 'string' && siteName ? siteName : 'Água Consciente';
+        const pageTitle = typeof title === 'string' && title.trim() ? title.trim() : seoSiteName;
+        const fullTitle = pageTitle === seoSiteName ? pageTitle : `${pageTitle} | ${seoSiteName}`;
+        const seoDescriptionValue = typeof seoDescription === 'string' && seoDescription.trim()
+            ? seoDescription.trim()
+            : 'Plataforma de denúncias e mobilização para água limpa e saneamento básico.';
+        const seoCanonicalValue = typeof seoCanonical === 'string' && seoCanonical.trim()
+            ? seoCanonical.trim()
+            : 'https://ods6.org/';
+        const seoRobotsValue = typeof seoRobots === 'string' && seoRobots.trim()
+            ? seoRobots.trim()
+            : 'index, follow';
+        const seoOgTitleValue = typeof seoOgTitle === 'string' && seoOgTitle.trim()
+            ? seoOgTitle.trim()
+            : pageTitle;
+        const seoOgDescriptionValue = typeof seoOgDescription === 'string' && seoOgDescription.trim()
+            ? seoOgDescription.trim()
+            : seoDescriptionValue;
+        const seoOgImageValue = typeof seoOgImage === 'string' && seoOgImage.trim()
+            ? seoOgImage.trim()
+            : 'https://ods6.org/pwa/icon-512.png';
+        const seoOgTypeValue = typeof seoOgType === 'string' && seoOgType.trim()
+            ? seoOgType.trim()
+            : 'website';
+        const structuredData = Array.isArray(seoStructuredData) ? seoStructuredData : [];
+    %>
+    <title><%= fullTitle %></title>
+    <meta name="description" content="<%= seoDescriptionValue %>">
+    <meta name="robots" content="<%= seoRobotsValue %>">
+    <link rel="canonical" href="<%= seoCanonicalValue %>">
+    <meta property="og:title" content="<%= seoOgTitleValue %>">
+    <meta property="og:description" content="<%= seoOgDescriptionValue %>">
+    <meta property="og:image" content="<%= seoOgImageValue %>">
+    <meta property="og:url" content="<%= seoCanonicalValue %>">
+    <meta property="og:type" content="<%= seoOgTypeValue %>">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="<%= seoSiteName %>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= seoOgTitleValue %>">
+    <meta name="twitter:description" content="<%= seoOgDescriptionValue %>">
+    <meta name="twitter:image" content="<%= seoOgImageValue %>">
+    <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <% structuredData.forEach((schema) => { %>
+    <script type="application/ld+json" nonce="<%= cspNonce %>"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+    <% }) %>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <section class="container">
+                <nav class="nav-brand">
+                    <a href="/" class="logo">
+                        <i class="fas fa-tint"></i>
+                        <span>ODS 6</span>
+                    </a>
+                </nav>
+                
+                <nav class="nav-menu">
+                    <ul class="nav-links">
+                        <li><a href="/">Início</a></li>
+                        <li><a href="/ongs">ONGs</a></li>
+                        <li><a href="/denuncias">Denúncias</a></li>
+                        <li><a href="/sobre">Sobre</a></li>
+                        <li><a href="/contato">Contato</a></li>
+                        <li><a href="/impacto">Impacto</a></li>
+                    </ul>
+                </nav>
+                
+                <nav class="nav-auth">
+                    <% if (isLoggedIn) { %>
+                        <details class="user-menu">
+                            <summary class="user-name">
+                                <i class="fas fa-user"></i>
+                                <%= isOng && user.ongName ? user.ongName : user.name %>
+                                <% if (isAdmin) { %>
+                                    <span class="admin-badge">Administrador</span>
+                                <% } else if (isOng) { %>
+                                    <span class="admin-badge">ONG</span>
+                                <% } %>
+                            </summary>
+                            <nav class="dropdown">
+                                <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
+                                <a href="<%= changePasswordPath || '/auth/alterar-senha' %>"><%= changePasswordLabel || 'Alterar senha' %></a>
+                                <form action="/auth/logout" method="POST" class="logout-form">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="logout-button">Sair</button>
+                                </form>
+                            </nav>
+                        </details>
+                    <% } else { %>
+                        <a href="/auth/login" class="btn btn-outline">Entrar</a>
+                        <a href="/auth/cadastro" class="btn btn-primary">Cadastrar</a>
+                    <% } %>
+                </nav>
+                
+            </section>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <section class="container">
+            <section class="footer-content">
+                <section class="footer-section">
+                    <h3>ODS 6 - Água Limpa e Saneamento</h3>
+                    <p>Plataforma dedicada a promover o acesso universal à água potável e saneamento básico através de denúncias e ações colaborativas.</p>
+                </section>
+                
+                <section class="footer-section">
+                    <h4>Links Úteis</h4>
+                    <ul>
+                        <li><a href="/">Início</a></li>
+                        <li><a href="/ongs">ONGs Parceiras</a></li>
+                        <li><a href="/impacto">Impacto da plataforma</a></li>
+                        <li><a href="/denuncias">Registrar denúncia</a></li>
+                        <li><a href="/sobre">Sobre a plataforma</a></li>
+                    </ul>
+                </section>
+                
+                <section class="footer-section">
+                    <h4>Contato</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contato@ods6.org</li>
+                        <li><i class="fas fa-phone"></i> (11) 9999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                    </ul>
+                </section>
+                
+                <section class="footer-section">
+                    <h4>Redes Sociais</h4>
+                    <nav class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </nav>
+                </section>
+            </section>
+            
+            <section class="footer-bottom">
+                <p>&copy; 2024 ODS 6 - Todos os direitos reservados.</p>
+            </section>
+        </section>
+    </footer>
+
+    <% if (typeof watchReload !== 'undefined' && watchReload) { %>
+    <script src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+    <% } %>
+
+    <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+</body>
+</html>

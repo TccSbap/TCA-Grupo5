@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Views.md",
+                "file": "Configuração.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Views"
+              "title": "Configuração"
             }
           }
         ]
@@ -183,16 +183,16 @@
   "active": "f69fdf16ba930e11",
   "lastOpenFiles": [
     "PWA.md",
-    "Configuração.md",
     "Middleware.md",
-    "Visão Geral.md",
-    "Referência Rápida.md",
-    "Testes.md",
-    "Views.md",
-    "Rotas.md",
-    "Arquitetura.md",
     "Índice.md",
+    "Configuração.md",
     "Camada de Dados.md",
+    "Visão Geral.md",
+    "Views.md",
+    "Testes.md",
+    "Rotas.md",
+    "Referência Rápida.md",
+    "Arquitetura.md",
     "Bem-vindo.md"
   ]
 }

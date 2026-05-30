@@ -17,7 +17,7 @@ O projeto segue Injeção de Dependência manual com factories:
 1. app.js cria o servidor Express
 2. Cada rota é uma factory que recebe o objeto data (database)
 3. O objeto data expõe métodos CRUD unificados
-4. [[Camada de Dados|Repositórios]] implementam a lógica de banco
+4. [[Camada de Dados|Models]] implementam a lógica de banco
 
 `
 app.js
@@ -65,10 +65,10 @@ Veja [[Camada de Dados]].
 | Camada | Diretório |
 |--------|-----------|
 | Entry Point | [[Configuração#app.js|app.js]] |
-| Rotas | [[Rotas|routes/]] |
-| Views | [[Views|views/]] |
+| Rotas | [[Rotas|app/routes/]] |
+| Views | [[Views|app/views/]] |
 | Data Layer | [[Camada de Dados|data/]] |
-| Middleware | [[Middleware|middleware/]] |
+| Middleware | [[Middleware|app/middleware/]] |
 | Config | [[Configuração|config/]] |
-| Assets | public/ |
+| Assets | app/public/ |
 | Testes | [[Testes|tests/]] |

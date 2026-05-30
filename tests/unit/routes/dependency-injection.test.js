@@ -1,10 +1,11 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const request = require('supertest');
-const { createAuthRouter } = require('../../../routes/auth');
-const { createAdminRouter } = require('../../../routes/admin');
-const { createDenunciasRouter } = require('../../../routes/denuncias.js');
-const { createIndexRouter } = require('../../../routes/index');
-const { createOngsRouter } = require('../../../routes/ongs');
+const { createAuthRouter } = require('../../../app/routes/auth');
+const { createAdminRouter } = require('../../../app/routes/admin');
+const { createDenunciasRouter } = require('../../../app/routes/denuncias.js');
+const { createIndexRouter } = require('../../../app/routes/index');
+const { createOngsRouter } = require('../../../app/routes/ongs');
 
 const buildApp = (router, user = null) => {
   const app = express();
@@ -24,7 +25,8 @@ describe('dependency injection for routes', () => {
       authenticateUser: jest.fn().mockReturnValue({ id: 11, type: 'user' }),
       getUserByEmail: jest.fn().mockReturnValue(null),
       createUser: jest.fn().mockReturnValue({ id: 99 }),
-      createOng: jest.fn()
+      createOng: jest.fn(),
+      getUserById: jest.fn()
     };
 
     const app = buildApp(createAuthRouter(data));
@@ -49,7 +51,7 @@ describe('dependency injection for routes', () => {
         email: 'maria@exemplo.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+      userType: 'ong',
         ongName: 'ONG Exemplo',
         ongDescription: 'Descricao longa o suficiente para validar.',
         ongContact: 'contato@ongexemplo.com',
@@ -67,6 +69,37 @@ describe('dependency injection for routes', () => {
     }));
     expect(signupResponse.status).toBe(302);
     expect(signupResponse.headers.location).toContain('/auth/login?success=');
+  });
+
+  test('auth route uses injected methods in password change', async () => {
+    const passwordHash = bcrypt.hashSync('123456', 10);
+    const data = {
+      authenticateUser: jest.fn().mockReturnValue({ id: 11, type: 'user' }),
+      getUserByEmail: jest.fn().mockReturnValue(null),
+      getUserById: jest.fn().mockReturnValue({
+        id: 11,
+        password: passwordHash
+      }),
+      updateUserPassword: jest.fn().mockResolvedValue(true),
+      createUser: jest.fn().mockReturnValue({ id: 99 }),
+      createOng: jest.fn()
+    };
+
+    const app = buildApp(createAuthRouter(data), { id: 11, type: 'user', name: 'João' });
+
+    const response = await request(app)
+      .post('/alterar-senha')
+      .type('form')
+      .send({
+        currentPassword: '123456',
+        newPassword: 'NovaSenha123',
+        confirmNewPassword: 'NovaSenha123'
+      });
+
+    expect(data.getUserById).toHaveBeenCalledWith(11);
+    expect(data.updateUserPassword).toHaveBeenCalledWith(11, expect.any(String));
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain('/auth/login?success=');
   });
 
   test('admin route uses injected authentication method', async () => {
@@ -92,10 +125,10 @@ describe('dependency injection for routes', () => {
 
     expect(data.authenticateUser).toHaveBeenCalledWith('admin@teste.com', '123456');
     expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/admin/dashboard_admin');
+    expect(response.headers.location).toBe('/admin');
   });
 
-  test('admin route accepts ONG users in login', async () => {
+  test('admin route rejeita usuarios do tipo ong no login', async () => {
     const data = {
       authenticateUser: jest.fn().mockReturnValue({
         id: 21,
@@ -118,23 +151,22 @@ describe('dependency injection for routes', () => {
       });
 
     expect(data.authenticateUser).toHaveBeenCalledWith('ong@teste.com', '123456');
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/admin/dashboard_admin');
+    expect(response.status).toBe(200);
+    expect(response.body.view).toBe('admin/login');
+    expect(response.body.locals.error).toBe('Credenciais inválidas');
   });
 
-  test('admin route allows ONG users and filters dashboard data by ONG id', async () => {
+  test('admin route usa dados globais no dashboard administrativo', async () => {
     const data = {
       authenticateUser: jest.fn().mockReturnValue({
-        id: 21,
-        type: 'ong',
+        id: 1,
+        type: 'admin',
         ongName: 'ONG Teste'
       }),
-      getOngByUserId: jest.fn().mockReturnValue({
-        id: 31,
-        userId: 21,
-        name: 'ONG Teste',
-        description: 'Descricao de teste.'
-      }),
+      getUsers: jest.fn().mockReturnValue([
+        { id: 1, type: 'admin' },
+        { id: 2, type: 'user' }
+      ]),
       getDenuncias: jest.fn().mockReturnValue([
         {
           id: 1,
@@ -144,7 +176,7 @@ describe('dependency injection for routes', () => {
         {
           id: 2,
           status: 'resolvida',
-          responses: [{ ongId: 31 }]
+          responses: [{ ongId: 31 }, { ongId: 32 }]
         }
       ]),
       getOngs: jest.fn().mockReturnValue([
@@ -153,24 +185,63 @@ describe('dependency injection for routes', () => {
           userId: 21,
           name: 'ONG Teste',
           description: 'Descricao de teste.'
+        },
+        {
+          id: 32,
+          userId: 22,
+          name: 'ONG Extra',
+          description: 'Descricao extra.'
         }
+      ]),
+      getMensagensContato: jest.fn().mockReturnValue([
+        { id: 1, status: 'nova' }
+      ]),
+      getDoacoes: jest.fn().mockReturnValue([
+        { id: 1, userId: 2, amount: 50 }
+      ]),
+      getAssinaturasPlano: jest.fn().mockReturnValue([
+        { id: 1, userId: 2, planName: 'Plano Base' }
       ])
     };
 
     const app = buildApp(
       createAdminRouter(data),
-      { id: 21, type: 'ong', ongName: 'ONG Teste' }
+      { id: 1, type: 'admin', name: 'Admin Teste' }
     );
+
+    const response = await request(app).get('/');
+
+    expect(data.getUsers).toHaveBeenCalled();
+    expect(data.getDenuncias).toHaveBeenCalled();
+    expect(data.getOngs).toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(response.body.view).toBe('admin/dashboard');
+    expect(response.body.locals.totalUsers).toBe(2);
+    expect(response.body.locals.totalDenuncias).toBe(2);
+    expect(response.body.locals.totalOngs).toBe(2);
+  });
+
+  test('admin route keeps the legacy /dashboard_admin alias as a redirect', async () => {
+    const data = {
+      authenticateUser: jest.fn().mockReturnValue({
+        id: 1,
+        type: 'admin',
+        name: 'Admin Teste'
+      }),
+      getUsers: jest.fn().mockReturnValue([]),
+      getDenuncias: jest.fn().mockReturnValue([]),
+      getOngs: jest.fn().mockReturnValue([]),
+      getMensagensContato: jest.fn().mockReturnValue([]),
+      getDoacoes: jest.fn().mockReturnValue([]),
+      getAssinaturasPlano: jest.fn().mockReturnValue([])
+    };
+
+    const app = buildApp(createAdminRouter(data), { id: 1, type: 'admin', name: 'Admin Teste' });
 
     const response = await request(app).get('/dashboard_admin');
 
-    expect(data.getOngByUserId).toHaveBeenCalledWith(21);
-    expect(data.getDenuncias).toHaveBeenCalledWith(31);
-    expect(data.getOngs).toHaveBeenCalledWith(31);
-    expect(response.status).toBe(200);
-    expect(response.body.view).toBe('admin/dashboard');
-    expect(response.body.locals.totalDenuncias).toBe(2);
-    expect(response.body.locals.totalOngs).toBe(1);
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/admin');
   });
 
   test('denuncias route uses injected method when creating a report', async () => {
@@ -285,7 +356,7 @@ describe('dependency injection for routes', () => {
 
     const app = buildApp(
       createOngsRouter(data),
-      { id: 1, name: 'Admin Teste', type: 'admin' }
+      { id: 1, name: 'ONG Teste', type: 'ong', ongName: 'ONG Teste' }
     );
 
     const response = await request(app).get('/admin/dashboard');

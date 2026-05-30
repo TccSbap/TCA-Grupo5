@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+
+<section class="privacy-section">
+    <section class="container">
+        <header class="section-header">
+            <h1>Privacidade, LGPD e Cookies</h1>
+            <p>
+                Explicamos de forma direta quais dados tratamos, por que eles são usados e como você
+                pode controlar sua preferência de cookies.
+            </p>
+        </header>
+
+        <section class="privacy-status" aria-label="Status do consentimento de cookies">
+            <div>
+                <h2>Sua escolha atual</h2>
+                <% if (cookieConsent === 'accepted') { %>
+                    <p class="privacy-status-text privacy-status-accepted">Cookies não essenciais aceitos.</p>
+                <% } else if (cookieConsent === 'rejected') { %>
+                    <p class="privacy-status-text privacy-status-rejected">Cookies não essenciais recusados.</p>
+                <% } else { %>
+                    <p class="privacy-status-text privacy-status-pending">Nenhuma preferência registrada ainda.</p>
+                <% } %>
+            </div>
+
+            <form action="/cookies/consent/reset" method="POST" class="privacy-status-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="returnTo" value="/privacidade">
+                <button type="submit" class="btn btn-outline">Alterar minha escolha</button>
+            </form>
+        </section>
+
+        <section class="privacy-grid">
+            <article class="privacy-card">
+                <h2>O que coletamos</h2>
+                <ul class="privacy-list">
+                    <li>Dados informados em formulários, como nome, email e telefone.</li>
+                    <li>Informações necessárias para autenticação e manutenção da sessão.</li>
+                    <li>Dados enviados voluntariamente em denúncias, doações, planos e contato.</li>
+                </ul>
+            </article>
+
+            <article class="privacy-card">
+                <h2>Cookies usados no site</h2>
+                <ul class="privacy-list">
+                    <li>Cookies estritamente necessários para login, sessão e proteção CSRF.</li>
+                    <li>Cookies de preferência para guardar a escolha de aceitação ou recusa.</li>
+                    <li>Não usamos cookies de publicidade ou rastreamento analítico neste momento.</li>
+                </ul>
+            </article>
+
+            <article class="privacy-card">
+                <h2>Seus direitos</h2>
+                <ul class="privacy-list">
+                    <li>Confirmar a existência de tratamento de dados.</li>
+                    <li>Acessar, corrigir e atualizar informações pessoais.</li>
+                    <li>Solicitar exclusão quando aplicável e permitido pela lei.</li>
+                    <li>Revisar sua preferência de cookies quando quiser.</li>
+                </ul>
+            </article>
+
+            <article class="privacy-card">
+                <h2>Base de transparência</h2>
+                <p>
+                    Seguimos o princípio de informar de forma clara e simples o que é estritamente
+                    necessário para o funcionamento do site e o que depende da sua escolha.
+                </p>
+                <p>
+                    Se o projeto passar a usar analytics, marketing ou integrações adicionais, esta página
+                    e o banner de cookies serão atualizados antes da ativação.
+                </p>
+            </article>
+        </section>
+
+        <section class="privacy-footer">
+            <a href="/contato" class="btn btn-primary">Falar com a equipe</a>
+            <a href="/" class="btn btn-outline">Voltar para o início</a>
+        </section>
+    </section>
+</section>
+
+<%- include('partials/footer') %>

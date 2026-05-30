@@ -1,0 +1,52 @@
+<%- include('partials/header', { extraStyles: ['/css/pages.css'] }) %>
+
+<section class="error-section">
+    <nav class="container">
+        <nav class="error-content">
+            <header class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </header>
+            
+            <h1>404 - Página Não Encontrada</h1>
+            
+            <p>
+                Ops! A página que você está procurando não existe ou foi movida. 
+                Verifique se o endereço está correto ou navegue para uma das páginas abaixo.
+            </p>
+            
+            <nav class="error-actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Voltar ao Início
+                </a>
+                <a href="/denuncias" class="btn btn-outline">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Ver denúncias registradas
+                </a>
+                <a href="/ongs" class="btn btn-outline">
+                    <i class="fas fa-hands-helping"></i>
+                    Ver ONGs parceiras
+                </a>
+            </nav>
+            
+            <section class="helpful-links">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="/">Página Inicial</a></li>
+                    <li><a href="/denuncias">Denúncias registradas</a></li>
+                    <li><a href="/ongs">ONGs Parceiras</a></li>
+                    <li><a href="/sobre">Sobre a plataforma</a></li>
+                    <li><a href="/contato">Contato</a></li>
+                    <% if (!isLoggedIn) { %>
+                    <li><a href="/auth/login">Login</a></li>
+                    <li><a href="/auth/cadastro">Cadastro</a></li>
+                    <% } else { %>
+                    <li><a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a></li>
+                    <% } %>
+                </ul>
+            </section>
+        </nav>
+    </nav>
+</section>
+
+<%- include('partials/footer') %>

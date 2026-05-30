@@ -1,0 +1,261 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<section class="hero">
+    <nav class="hero-background">
+        <nav class="hero-overlay"></nav>
+    </nav>
+    <section class="container">
+        <section class="hero-content">
+            <h1 class="hero-title">
+                Água Consciente para Todos
+            </h1>
+            <p class="hero-subtitle">
+                Juntos podemos garantir o acesso universal à água potável e saneamento básico.
+                Faça sua denúncia e contribua para um futuro mais sustentável.
+            </p>
+            <nav class="hero-actions">
+                <a href="/denuncias/nova" class="btn btn-primary btn-large">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Registrar denúncia
+                </a>
+                <a href="/ongs" class="btn btn-primary btn-large">
+                    <i class="fas fa-hands-helping"></i>
+                    Ver ONGs parceiras
+                </a>
+            </nav>
+        </section>
+    </section>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <section class="container">
+        <nav class="stats-grid">
+            <article class="stat-item">
+                <nav class="stat-icon2">
+                    <i class="fas fa-tint"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number">2.2 Bi</h3>
+                    <p class="stat-label">Pessoas sem acesso à água potável</p>
+                </nav>
+            </article>
+
+            <article class="stat-item">
+                <nav class="stat-icon1">
+                    <i class="fas fa-toilet"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number">4.2 Bi</h3>
+                    <p class="stat-label">Pessoas sem saneamento básico</p>
+                </nav>
+            </article>
+
+            <article class="stat-item">
+                <nav class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number"><%= totalDenuncias || 0 %></h3>
+                    <p class="stat-label">Denúncias registradas</p>
+                </nav>
+            </article>
+
+            <article class="stat-item">
+                <nav class="stat-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </nav>
+                <nav class="stat-content">
+                    <h3 class="stat-number"><%= totalOngs || 0 %></h3>
+                    <p class="stat-label">ONGs parceiras</p>
+                </nav>
+            </article>
+        </nav>
+    </section>
+</section>
+
+<!-- About Água Consciente -->
+<section class="about-ods">
+    <section class="container">
+        <header class="section-header">
+            <h2>Água Consciente</h2>
+            <p>Assegurar a disponibilidade e gestão sustentável da água e saneamento para todos</p>
+        </header>
+
+        <nav class="ods-content">
+            <nav class="ods-text">
+                <article class="ods-card">
+                    <header class="ods-card-header">
+                        <nav class="ods-card-icon">
+                            <i class="fas fa-star"></i>
+                        </nav>
+                        <h3>Valores da Empresa</h3>
+                    </header>
+                    <section class="ods-card-body">
+                        <ul class="ods-list values-list">
+                            <li><i class="fas fa-check-circle"></i> Transparência</li>
+                            <li><i class="fas fa-check-circle"></i> Colaboração</li>
+                            <li><i class="fas fa-check-circle"></i> Impacto Social</li>
+                            <li><i class="fas fa-check-circle"></i> Sustentabilidade</li>
+                        </ul>
+                    </section>
+                </article>
+
+                <article class="ods-card">
+                    <header class="ods-card-header">
+                        <nav class="ods-card-icon importance-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </nav>
+                        <h3>Por que é importante?</h3>
+                    </header>
+                    <section class="ods-card-body">
+                        <p>
+                            O acesso à água potável e ao saneamento básico é um direito humano fundamental.
+                            Milhões de pessoas ainda vivem sem esses serviços essenciais, o que afeta
+                            diretamente a saúde, educação e desenvolvimento econômico.
+                        </p>
+                    </section>
+                </article>
+
+                <article class="ods-card">
+                    <header class="ods-card-header">
+                        <nav class="ods-card-icon help-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </nav>
+                        <h3>Como você pode ajudar?</h3>
+                    </header>
+                    <section class="ods-card-body">
+                        <ul class="ods-list how-to-help-list">
+                            <li><i class="fas fa-check-circle"></i> Denuncie problemas de saneamento em sua região</li>
+                            <li><i class="fas fa-check-circle"></i> Apoie ONGs que trabalham com água e saneamento</li>
+                            <li><i class="fas fa-check-circle"></i> Conscientize outros sobre a importância do tema</li>
+                            <li><i class="fas fa-check-circle"></i> Pratique o uso consciente da água</li>
+                        </ul>
+                    </section>
+                </article>
+            </nav>
+        </nav>
+    </section>
+</section>
+
+<!-- Galeria e Notícias -->
+<section class="photo-gallery">
+    <section class="container">
+        <header class="section-header">
+            <h2>Água Consciente em Foco</h2>
+            <p>Imagens que ilustram a importância do acesso universal à água limpa e saneamento básico</p>
+        </header>
+
+        <nav class="gallery-grid">
+            <figure class="gallery-item">
+                <img src="/images/agua-potavel.webp" alt="Água Potável Limpa">
+                <figcaption class="gallery-overlay">
+                    <h4>Água Potável</h4>
+                    <p>Acesso à água limpa é um direito fundamental</p>
+                </figcaption>
+            </figure>
+            <figure class="gallery-item">
+                <img src="/images/saneamento.webp" alt="Sistema de Saneamento">
+                <figcaption class="gallery-overlay">
+                    <h4>Saneamento Básico</h4>
+                    <p>Tratamento adequado de esgoto protege a saúde</p>
+                </figcaption>
+            </figure>
+        </nav>
+    </section>
+</section>
+
+<section class="news-section">
+    <section class="container">
+        <header class="section-header">
+            <h2>Notícias sobre Saneamento Básico</h2>
+            <p>Fique por dentro das últimas novidades sobre água e saneamento no Brasil</p>
+        </header>
+
+        <nav class="news-grid">
+            <% (noticias || []).slice(0, 4).forEach(function(noticia) { %>
+            <article class="news-card">
+                <nav class="news-icon">
+                    <i class="<%= noticia.iconClass || 'fas fa-newspaper' %>"></i>
+                </nav>
+                <nav class="news-content">
+                    <span class="news-date"><%= noticia.date %></span>
+                    <h3><%= noticia.title %></h3>
+                    <p><%= noticia.description %></p>
+                    <a href="<%= noticia.url %>" target="_blank" rel="noopener noreferrer" class="news-link">
+                        Ler notícia completa <i class="fas fa-arrow-right"></i>
+                    </a>
+                </nav>
+            </article>
+            <% }) %>
+        </nav>
+    </section>
+</section>
+
+<% if (denuncias && denuncias.length > 0) { %>
+<section class="recent-denuncias">
+    <section class="container">
+        <header class="section-header">
+            <h2>Denúncias Recentes</h2>
+            <p>Veja as últimas denúncias registradas na plataforma</p>
+        </header>
+
+        <nav class="denuncias-grid">
+            <% denuncias.forEach(denuncia => { %>
+            <article class="denuncia-card">
+                <header class="denuncia-header">
+                    <h3><%= denuncia.title %></h3>
+                    <span class="status status-<%= denuncia.status %>">
+                        <%= denuncia.status.charAt(0).toUpperCase() + denuncia.status.slice(1) %>
+                    </span>
+                </header>
+                <p class="denuncia-description">
+                    <%= denuncia.description.substring(0, 100) %>...
+                </p>
+                <p class="denuncia-meta">
+                    <i class="fas fa-map-marker-alt"></i> <%= denuncia.location %>
+                </p>
+                <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver denúncia completa</a>
+            </article>
+            <% }) %>
+        </nav>
+    </section>
+</section>
+<% } %>
+
+<!-- Impacto da Plataforma -->
+<section class="analytics-page" aria-labelledby="impacto-home-title">
+    <section class="container">
+        <article class="impact-strip">
+            <div>
+                <h2 id="impacto-home-title">Impacto da plataforma</h2>
+                <p>Uma visão rápida do que já foi movimentado na Água Consciente: denúncias recebidas, respostas publicadas e apoio financeiro para ONGs parceiras.</p>
+            </div>
+            <div class="impact-strip__stats">
+                <article class="impact-strip__stat">
+                    <h3><%= impacto.casesOpenedThisMonth %></h3>
+                    <p>Casos abertos no mês</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3><%= impacto.casesResponded %></h3>
+                    <p>Casos respondidos</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3><%= impacto.casesResolved %></h3>
+                    <p>Casos resolvidos</p>
+                </article>
+                <article class="impact-strip__stat">
+                    <h3>R$ <%= Number(impacto.totalDonations || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></h3>
+                    <p>Doações recebidas</p>
+                </article>
+            </div>
+            <div class="impact-strip__actions">
+                <a href="/impacto" class="btn btn-primary">Ver painel de impacto completo</a>
+                <a href="/denuncias/nova" class="btn btn-outline">Registrar denúncia</a>
+            </div>
+        </article>
+    </section>
+</section>
+
+<%- include('partials/footer') %>

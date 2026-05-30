@@ -2,6 +2,11 @@ const request = require('supertest');
 const app = require('../../app');
 const { resetData } = require('../../data/mockDatabase');
 
+const extractCsrfToken = (html) => {
+  const match = html.match(/name="_csrf" value="([^"]+)"/);
+  return match ? match[1] : null;
+};
+
 beforeEach(() => {
   resetData();
 });
@@ -19,6 +24,23 @@ describe('rotas de autenticação', () => {
 
     expect(response.status).toBe(200);
     expect(response.text).toContain('Cadastro');
+  });
+
+  test('GET /auth/alterar-senha responde com a página de troca de senha para usuários logados', async () => {
+    const agent = request.agent(app);
+
+    await agent
+      .post('/auth/login')
+      .type('form')
+      .send({
+        email: 'joao@email.com',
+        password: '123456'
+      });
+
+    const response = await agent.get('/auth/alterar-senha');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('Alterar Senha');
   });
 
   test('GET /auth/login redireciona usuários logados para o dashboard', async () => {
@@ -105,7 +127,7 @@ describe('rotas de autenticação', () => {
         email: 'admin1@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin'
+        userType: 'ong'
       });
 
     expect(response.status).toBe(302);
@@ -121,7 +143,7 @@ describe('rotas de autenticação', () => {
         email: 'admin2@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'AB',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -144,7 +166,7 @@ describe('rotas de autenticação', () => {
         email: 'admin3@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'curta',
         ongContact: 'contato@teste.com',
@@ -167,7 +189,7 @@ describe('rotas de autenticação', () => {
         email: 'admin4@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste',
@@ -177,7 +199,7 @@ describe('rotas de autenticação', () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toContain(
-      encodeURIComponent('Email de contato da ONG inválido. Deve conter @ e terminar com .com')
+      encodeURIComponent('O e-mail de contato da ONG deve ser válido.')
     );
   });
 
@@ -190,7 +212,7 @@ describe('rotas de autenticação', () => {
         email: 'admin4b@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -213,7 +235,7 @@ describe('rotas de autenticação', () => {
         email: 'admin4c@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -236,7 +258,7 @@ describe('rotas de autenticação', () => {
         email: 'admin5@teste.com',
         password: 'Senha123',
         confirmPassword: 'Senha123',
-        userType: 'admin',
+        userType: 'ong',
         ongName: 'ONG Teste',
         ongDescription: 'Organização de teste validada.',
         ongContact: 'contato@teste.com',
@@ -285,5 +307,76 @@ describe('rotas de autenticação', () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toBe('/');
+  });
+
+  test('POST /auth/alterar-senha atualiza a senha e exige novo login', async () => {
+    const agent = request.agent(app);
+
+    await agent
+      .post('/auth/login')
+      .type('form')
+      .send({
+        email: 'joao@email.com',
+        password: '123456'
+      });
+
+    const page = await agent.get('/auth/alterar-senha');
+    const csrfToken = extractCsrfToken(page.text);
+
+    expect(csrfToken).toBeTruthy();
+
+    const response = await agent
+      .post('/auth/alterar-senha')
+      .type('form')
+      .send({
+        _csrf: csrfToken,
+        currentPassword: '123456',
+        newPassword: 'SenhaNova123',
+        confirmNewPassword: 'SenhaNova123'
+      });
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toContain('/auth/login?success=');
+
+    const oldLogin = await request(app)
+      .post('/auth/login')
+      .type('form')
+      .send({
+        email: 'joao@email.com',
+        password: '123456'
+      });
+
+    expect(oldLogin.status).toBe(302);
+    expect(oldLogin.headers.location).toContain('/auth/login?error=');
+
+    const newLogin = await request(app)
+      .post('/auth/login')
+      .type('form')
+      .send({
+        email: 'joao@email.com',
+        password: 'SenhaNova123'
+      });
+
+    expect(newLogin.status).toBe(302);
+    expect(newLogin.headers.location).toBe('/dashboard');
+  });
+
+  test('POST sem CSRF renderiza a pagina 403 do site', async () => {
+    const response = await request(app)
+      .post('/auth/cadastro')
+      .set('User-Agent', 'Mozilla/5.0')
+      .type('form')
+      .send({
+        name: 'Maria da Silva',
+        email: 'maria-csrf@exemplo.com',
+        password: 'Senha123',
+        confirmPassword: 'Senha123',
+        userType: 'user'
+      });
+
+    expect(response.status).toBe(403);
+    expect(response.text).toContain('403 - Acesso Negado');
+    expect(response.text).toContain('Sua solicitação não pôde ser validada por segurança');
+    expect(response.text).not.toContain('Token CSRF invalido ou ausente.');
   });
 });

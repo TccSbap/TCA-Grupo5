@@ -1,0 +1,115 @@
+<%- include('../partials/header') %>
+
+<section class="denuncias-section">
+    <section class="container">
+        <header class="section-header">
+            <h1>Denúncias Registradas</h1>
+            <p>Acompanhe as denúncias sobre problemas de saneamento básico</p>
+        </header>
+        
+        <nav class="denuncias-filters">
+            <nav class="filter-buttons">
+                <a href="/denuncias" class="filter-btn <%= !currentStatus ? 'active' : '' %>">
+                    Todas
+                </a>
+                <a href="/denuncias?status=pendente" class="filter-btn <%= currentStatus === 'pendente' ? 'active' : '' %>">
+                    Pendentes
+                </a>
+                <a href="/denuncias?status=em_andamento" class="filter-btn <%= currentStatus === 'em_andamento' ? 'active' : '' %>">
+                    Em Andamento
+                </a>
+                <a href="/denuncias?status=resolvida" class="filter-btn <%= currentStatus === 'resolvida' ? 'active' : '' %>">
+                    Resolvidas
+                </a>
+            </nav>
+            
+            <% if (isLoggedIn) { %>
+            <a href="/denuncias/nova" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Nova Denúncia
+            </a>
+            <% } %>
+        </nav>
+        
+        <% if (denuncias.length > 0) { %>
+        <nav class="denuncias-grid">
+            <% denuncias.forEach(denuncia => { %>
+            <article class="denuncia-card">
+                <header class="denuncia-header">
+                    <h3><%= denuncia.title %></h3>
+                    <span class="status status-<%= denuncia.status %>">
+                        <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
+                    </span>
+                </header>
+                
+                <p class="denuncia-description">
+                    <%= denuncia.description.substring(0, 150) %>...
+                </p>
+                
+                <nav class="denuncia-meta">
+                    <nav class="meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span><%= denuncia.location %></span>
+                    </nav>
+                    <nav class="meta-item">
+                        <i class="fas fa-user"></i>
+                        <span><%= denuncia.userName %></span>
+                    </nav>
+                    <nav class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></span>
+                    </nav>
+                </nav>
+                
+                <% if (denuncia.responses.length > 0) { %>
+                <section class="denuncia-responses">
+                    <nav class="responses-count">
+                        <i class="fas fa-comments"></i>
+                        <%= denuncia.responses.length %> resposta(s)
+                    </nav>
+                </section>
+                <% } %>
+                
+                <footer class="denuncia-actions">
+                    <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">
+                        Ver denúncia completa
+                    </a>
+                    <% if (isOng) { %>
+                    <a href="/denuncias/<%= denuncia.id %>#responder" class="btn btn-secondary">
+                        Responder à denúncia
+                    </a>
+                    <% } %>
+                </footer>
+            </article>
+            <% }) %>
+        </nav>
+        <% } else { %>
+        <section class="empty-state">
+            <nav class="empty-icon">
+                <i class="fas fa-search"></i>
+            </nav>
+            <h3>Nenhuma denúncia encontrada</h3>
+            <p>
+                <% if (currentStatus) { %>
+                    Não há denúncias com o status "<%= currentStatus.replace('_', ' ') %>" no momento.
+                <% } else { %>
+                    Ainda não há denúncias registradas na plataforma.
+                <% } %>
+            </p>
+            <% if (isLoggedIn) { %>
+            <a href="/denuncias/nova" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Registrar a primeira denúncia
+            </a>
+            <% } else { %>
+            <a href="/auth/cadastro" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i>
+                Criar conta para denunciar
+            </a>
+            <% } %>
+        </section>
+        <% } %>
+    </section>
+</section>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma de denúncias e mobilização para água limpa e saneamento básico da ODS 6.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="application-name" content="ODS 6">
+    <meta name="apple-mobile-web-app-title" content="ODS 6">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/pwa/icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/pwa/icon-512.png" sizes="512x512" type="image/png">
+    <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" sizes="180x180">
+    <%
+        const seoSiteName = typeof siteName === 'string' && siteName ? siteName : 'Água Consciente';
+        const pageTitle = typeof title === 'string' && title.trim() ? title.trim() : seoSiteName;
+        const fullTitle = pageTitle === seoSiteName ? pageTitle : `${pageTitle} | ${seoSiteName}`;
+        const seoDescriptionValue = typeof seoDescription === 'string' && seoDescription.trim()
+            ? seoDescription.trim()
+            : 'Plataforma de denúncias e mobilização para água limpa e saneamento básico.';
+        const seoCanonicalValue = typeof seoCanonical === 'string' && seoCanonical.trim()
+            ? seoCanonical.trim()
+            : 'https://ods6.org/';
+        const seoRobotsValue = typeof seoRobots === 'string' && seoRobots.trim()
+            ? seoRobots.trim()
+            : 'index, follow';
+        const seoOgTitleValue = typeof seoOgTitle === 'string' && seoOgTitle.trim()
+            ? seoOgTitle.trim()
+            : pageTitle;
+        const seoOgDescriptionValue = typeof seoOgDescription === 'string' && seoOgDescription.trim()
+            ? seoOgDescription.trim()
+            : seoDescriptionValue;
+        const seoOgImageValue = typeof seoOgImage === 'string' && seoOgImage.trim()
+            ? seoOgImage.trim()
+            : 'https://ods6.org/pwa/icon-512.png';
+        const seoOgTypeValue = typeof seoOgType === 'string' && seoOgType.trim()
+            ? seoOgType.trim()
+            : 'website';
+        const structuredData = Array.isArray(seoStructuredData) ? seoStructuredData : [];
+    %>
+    <title><%= fullTitle %></title>
+    <meta name="description" content="<%= seoDescriptionValue %>">
+    <meta name="robots" content="<%= seoRobotsValue %>">
+    <link rel="canonical" href="<%= seoCanonicalValue %>">
+    <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
+    <%
+        const extraStylesheets =
+            typeof extraStyles !== 'undefined' && Array.isArray(extraStyles)
+                ? extraStyles
+                : (typeof extraStyles !== 'undefined' && typeof extraStyles === 'string' && extraStyles
+                    ? [extraStyles]
+                    : []);
+    %>
+    <% extraStylesheets.forEach((href) => { %>
+    <link rel="stylesheet" href="<%= href %>">
+    <% }) %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta property="og:title" content="<%= seoOgTitleValue %>">
+    <meta property="og:description" content="<%= seoOgDescriptionValue %>">
+    <meta property="og:image" content="<%= seoOgImageValue %>">
+    <meta property="og:url" content="<%= seoCanonicalValue %>">
+    <meta property="og:type" content="<%= seoOgTypeValue %>">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="<%= seoSiteName %>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= seoOgTitleValue %>">
+    <meta name="twitter:description" content="<%= seoOgDescriptionValue %>">
+    <meta name="twitter:image" content="<%= seoOgImageValue %>">
+    <% structuredData.forEach((schema) => { %>
+    <script type="application/ld+json" nonce="<%= cspNonce %>"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+    <% }) %>
+</head>
+<body class="<%= typeof showCookieBanner !== 'undefined' && showCookieBanner ? 'has-cookie-banner' : '' %>">
+    <%
+        const currentRoute = typeof currentPath === 'string' ? currentPath : '/';
+        const isActiveRoute = (route) => {
+            if (route === '/') {
+                return currentRoute === '/';
+            }
+
+            return currentRoute === route || currentRoute.startsWith(route + '/');
+        };
+    %>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <section class="container">
+                <nav class="nav-brand">
+                    <a href="/" class="logo" aria-label="Ir para a página inicial">
+                        <img src="/images/logo.png" alt="ODS 6 Logo" class="logo-img">
+                        <span>Água Consciente</span>
+                    </a>
+                </nav>
+
+                <nav class="nav-menu" id="primary-navigation" aria-label="Menu principal">
+                    <ul class="nav-links">
+                        <li><a href="/" class="<%= isActiveRoute('/') ? 'active' : '' %>" <%= isActiveRoute('/') ? 'aria-current=\"page\"' : '' %>>Início</a></li>
+                        <li><a href="/noticias" class="<%= isActiveRoute('/noticias') ? 'active' : '' %>" <%= isActiveRoute('/noticias') ? 'aria-current=\"page\"' : '' %>>Notícias</a></li>
+                        <li><a href="/ongs" class="<%= isActiveRoute('/ongs') ? 'active' : '' %>" <%= isActiveRoute('/ongs') ? 'aria-current=\"page\"' : '' %>>ONGs</a></li>
+                        <li><a href="/denuncias" class="<%= isActiveRoute('/denuncias') ? 'active' : '' %>" <%= isActiveRoute('/denuncias') ? 'aria-current=\"page\"' : '' %>>Denúncias</a></li>
+                        <li><a href="/sobre" class="<%= isActiveRoute('/sobre') ? 'active' : '' %>" <%= isActiveRoute('/sobre') ? 'aria-current=\"page\"' : '' %>>Sobre</a></li>
+                        <li><a href="/contato" class="<%= isActiveRoute('/contato') ? 'active' : '' %>" <%= isActiveRoute('/contato') ? 'aria-current=\"page\"' : '' %>>Contato</a></li>
+                        <li><a href="/doacoes" class="<%= isActiveRoute('/doacoes') ? 'active' : '' %>" <%= isActiveRoute('/doacoes') ? 'aria-current=\"page\"' : '' %>>Doações</a></li>
+                        <li><a href="/planos" class="<%= isActiveRoute('/planos') ? 'active' : '' %>" <%= isActiveRoute('/planos') ? 'aria-current=\"page\"' : '' %>>Planos</a></li>
+                        <li><a href="/impacto" class="<%= isActiveRoute('/impacto') ? 'active' : '' %>" <%= isActiveRoute('/impacto') ? 'aria-current=\"page\"' : '' %>>Impacto</a></li>
+                    </ul>
+                </nav>
+
+                <nav class="header-actions" aria-label="Ações do cabeçalho">
+                    <nav class="nav-auth">
+                        <% if (isLoggedIn) { %>
+                            <details class="user-menu">
+                                <summary class="user-name">
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                    <span><%= isOng && user.ongName ? user.ongName : user.name %></span>
+                                    <% if (isAdmin) { %>
+                                        <span class="admin-badge">Administrador</span>
+                                    <% } else if (isOng) { %>
+                                        <span class="admin-badge">ONG</span>
+                                    <% } %>
+                                </summary>
+                                <nav class="dropdown" aria-label="Menu do usuário">
+                                    <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
+                                    <a href="<%= changePasswordPath || '/auth/alterar-senha' %>"><%= changePasswordLabel || 'Alterar senha' %></a>
+                                    <form action="/auth/logout" method="POST" class="logout-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="logout-button">Sair</button>
+                                    </form>
+                                </nav>
+                            </details>
+                        <% } else { %>
+                            <a href="/auth/login" class="btn btn-outline">Entrar</a>
+                            <a href="/auth/cadastro" class="btn btn-primary">Cadastrar</a>
+                        <% } %>
+                    </nav>
+
+                    <button
+                        type="button"
+                        class="mobile-menu-toggle"
+                        aria-controls="primary-navigation"
+                        aria-expanded="false"
+                        aria-label="Abrir menu principal"
+                    >
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+                </nav>
+            </section>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">

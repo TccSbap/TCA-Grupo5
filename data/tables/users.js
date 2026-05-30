@@ -6,7 +6,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin ONG Água Limpa',
         email: 'admin@agualimpa.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'ONG Água Limpa',
         createdAt: createTimestamp()
     },
@@ -15,7 +15,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Saneamento para Todos',
         email: 'admin@saneamento.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Saneamento para Todos',
         createdAt: createTimestamp()
     },
@@ -24,7 +24,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Rios Vivos',
         email: 'admin@riosvivos.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Rios Vivos',
         createdAt: createTimestamp()
     },
@@ -33,7 +33,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Água para a Vida',
         email: 'admin@aguavida.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Água para a Vida',
         createdAt: createTimestamp()
     },
@@ -42,7 +42,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Cidadania e Saneamento',
         email: 'admin@cidadaniasaneamento.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Cidadania e Saneamento',
         createdAt: createTimestamp()
     },
@@ -51,7 +51,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Planeta Água',
         email: 'admin@planetaagua.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Planeta Água',
         createdAt: createTimestamp()
     },
@@ -60,7 +60,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Esgoto Zero',
         email: 'admin@esgotozero.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Esgoto Zero',
         createdAt: createTimestamp()
     },
@@ -69,7 +69,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Saúde Hídrica',
         email: 'admin@saudehidrica.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Saúde Hídrica',
         createdAt: createTimestamp()
     },
@@ -78,7 +78,7 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Água é Direito',
         email: 'admin@aguadireito.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Água é Direito',
         createdAt: createTimestamp()
     },
@@ -87,8 +87,16 @@ module.exports = (defaultPasswordHash) => [
         name: 'Admin Comunidade Sustentável',
         email: 'admin@comunidadesustentavel.org',
         password: defaultPasswordHash,
-        type: 'admin',
+        type: 'ong',
         ongName: 'Comunidade Sustentável',
+        createdAt: createTimestamp()
+    },
+    {
+        id: 12,
+        name: 'Administrador da Plataforma',
+        email: 'admin@ods6.org',
+        password: defaultPasswordHash,
+        type: 'admin',
         createdAt: createTimestamp()
     },
     {

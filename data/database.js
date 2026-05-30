@@ -1,15 +1,17 @@
 const bcrypt = require('bcryptjs');
 const { canUseDatabase, isConfigured, pool } = require('../config/database');
-const createUsersRepository = require('./repositories/users.repository');
-const createDenunciasRepository = require('./repositories/denuncias.repository');
-const createOngsRepository = require('./repositories/ongs.repository');
-const createPlanosRepository = require('./repositories/planos.repository');
-const createNoticiasRepository = require('./repositories/noticias.repository');
-const createDoacoesRepository = require('./repositories/doacoes.repository');
-const createAssinaturasPlanoRepository = require('./repositories/assinaturasPlano.repository');
-const createMensagensContatoRepository = require('./repositories/mensagensContato.repository');
+const createUsersModel = require('../app/models/users.model');
+const createDenunciasModel = require('../app/models/denuncias.model');
+const createOngsModel = require('../app/models/ongs.model');
+const createPlanosModel = require('../app/models/planos.model');
+const createNoticiasModel = require('../app/models/noticias.model');
+const createDoacoesModel = require('../app/models/doacoes.model');
+const createAssinaturasPlanoModel = require('../app/models/assinaturasPlano.model');
+const createMensagensContatoModel = require('../app/models/mensagensContato.model');
 
-const defaultPasswordHash = bcrypt.hashSync('123456', 10);
+const defaultPasswordHash = process.env.NODE_ENV === 'production'
+    ? null
+    : bcrypt.hashSync('123456', 10);
 
 const ensureDataLoaded = async () => {
     if (!isConfigured) {
@@ -19,43 +21,43 @@ const ensureDataLoaded = async () => {
     return canUseDatabase();
 };
 
-const users = createUsersRepository({
+const users = createUsersModel({
     pool,
     canUseDatabase,
     defaultPasswordHash
 });
 
-const denuncias = createDenunciasRepository({
+const denuncias = createDenunciasModel({
     pool,
     canUseDatabase
 });
 
-const ongs = createOngsRepository({
+const ongs = createOngsModel({
     pool,
     canUseDatabase
 });
 
-const planos = createPlanosRepository({
+const planos = createPlanosModel({
     pool,
     canUseDatabase
 });
 
-const noticias = createNoticiasRepository({
+const noticias = createNoticiasModel({
     pool,
     canUseDatabase
 });
 
-const doacoes = createDoacoesRepository({
+const doacoes = createDoacoesModel({
     pool,
     canUseDatabase
 });
 
-const assinaturasPlano = createAssinaturasPlanoRepository({
+const assinaturasPlano = createAssinaturasPlanoModel({
     pool,
     canUseDatabase
 });
 
-const mensagensContato = createMensagensContatoRepository({
+const mensagensContato = createMensagensContatoModel({
     pool,
     canUseDatabase
 });

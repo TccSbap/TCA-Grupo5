@@ -6,6 +6,7 @@
     "start": "node app.js",
     "dev": "node app.js",
     "start:prod:watch": "node scripts/start-prod-watch.js",
+    "start:watch": "node scripts/start-watch.js",
     "test": "jest",
     "test:unit": "jest --runInBand",
     "test:integration": "jest tests/integration --runInBand",
@@ -31,8 +32,10 @@
     "dotenv": "^17.4.2",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.5.2",
     "express-session": "^1.18.2",
     "express-validator": "^7.3.2",
+    "helmet": "^8.2.0",
     "i": "^0.3.7",
     "multer": "^2.0.2",
     "mysql2": "^3.22.2"

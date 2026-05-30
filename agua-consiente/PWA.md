@@ -17,15 +17,15 @@ O site ODS 6 possui suporte PWA, permitindo instalacao como aplicativo e funcion
 
 ---
 
-## Manifest (public/manifest.webmanifest)
+## Manifest (app/public/manifest.webmanifest)
 
 Define o aplicativo para instalacao no dispositivo com nome, icones (192px e 512px), tema azul e display standalone.
 
-Referenciado em [[Views|layout.ejs]].
+Referenciado em [[Views|app/views/layout.ejs]].
 
 ---
 
-## Service Worker (public/sw.js)
+## Service Worker (app/public/sw.js)
 
 Estrategia de cache:
 - Cache First: CSS, JS, imagens, fontes, manifest
@@ -33,7 +33,7 @@ Estrategia de cache:
 
 ---
 
-## Offline (public/offline.html)
+## Offline (app/public/offline.html)
 
 Pagina exibida quando o usuario esta offline e a pagina requisitada nao esta em cache. Contem logo, mensagem e botao Tentar Novamente.
 
@@ -41,16 +41,16 @@ Pagina exibida quando o usuario esta offline e a pagina requisitada nao esta em 
 
 ## Meta Tags
 
-Incluidas em layout.ejs: theme-color, application-name, apple-mobile-web-app-title, icones PWA, apple-touch-icon.
+Incluidas em app/views/layout.ejs: theme-color, application-name, apple-mobile-web-app-title, icones PWA, apple-touch-icon.
 
 ---
 
 ## Screenshots
 
-public/pwa/screenshots/: home-desktop.png, home-mobile.png
+app/public/pwa/screenshots/: home-desktop.png, home-mobile.png
 
 ---
 
 ## Registro do SW
 
-Em public/js/main.js: registra o service worker (/sw.js) apos o carregamento da pagina.
+Em app/public/js/main.js: registra o service worker (/sw.js) apos o carregamento da pagina.

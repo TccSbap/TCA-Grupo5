@@ -13,7 +13,7 @@ created: 2026-05-13
 
 ## Arquivo Único
 
-Todo o middleware de autenticação está em middleware/auth.js.
+Todo o middleware de autenticação está em app/middleware/auth.js.
 
 ---
 
