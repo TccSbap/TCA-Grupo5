@@ -119,7 +119,7 @@ const createAuthController = (data) => ({
             return res.redirect('/ongs/admin/dashboard');
         }
 
-        return res.redirect('/dashboard');
+        return res.redirect('/');
     },
 
     async changePassword(req, res) {
