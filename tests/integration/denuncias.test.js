@@ -170,42 +170,19 @@ describe('rotas de denúncias', () => {
     expect(response.text).toContain('Denúncia não encontrada');
   });
 
-  test('POST /denuncias/:id/status redireciona usuários anônimos para o login', async () => {
-    const response = await request(app)
-      .post('/denuncias/1/status')
-      .type('form')
-      .send({ status: 'resolvida' });
-
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/auth/login');
+  test('rotas de resposta e status nao aceitam atualizacoes sem login', async () => {
+    const response = await request(app).post('/denuncias/1/responder').type('form').send({ response: 'texto' });
+    const status = await request(app).post('/denuncias/1/status').type('form').send({ status: 'resolvida' });
+    expect(response.status).toBe(404);
+    expect(status.status).toBe(404);
   });
 
-  test('sessão ONG consegue atualizar o status de uma denúncia', async () => {
+  test('ONG nao pode alterar status nem responder a denuncias', async () => {
     const agent = request.agent(app);
     await signInOng(agent);
-
-    const response = await agent
-      .post('/denuncias/1/status')
-      .type('form')
-      .send({ status: 'resolvida' });
-
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toContain('/denuncias/1?success=Status%20atualizado%20com%20sucesso!');
-  });
-
-  test('sessão ONG consegue adicionar uma resposta à denúncia', async () => {
-    const agent = request.agent(app);
-    await signInOng(agent);
-
-    const response = await agent
-      .post('/denuncias/1/responder')
-      .type('form')
-      .send({
-        response: 'Estamos verificando a situação com prioridade.',
-        newStatus: 'em_andamento'
-      });
-
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toContain('/denuncias/1?success=Resposta%20adicionada%20com%20sucesso!');
+    const response = await agent.post('/denuncias/1/responder').type('form').send({ response: 'texto' });
+    const status = await agent.post('/denuncias/1/status').type('form').send({ status: 'resolvida' });
+    expect(response.status).toBe(404);
+    expect(status.status).toBe(404);
   });
 });

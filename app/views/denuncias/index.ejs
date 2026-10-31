@@ -1,12 +1,10 @@
 <%- include('../partials/header') %>
-
 <section class="denuncias-section">
     <section class="container">
         <header class="section-header">
             <h1>Denúncias Registradas</h1>
             <p>Acompanhe as denúncias sobre problemas de saneamento básico</p>
         </header>
-        
         <nav class="denuncias-filters">
             <nav class="filter-buttons">
                 <a href="/denuncias" class="filter-btn <%= !currentStatus ? 'active' : '' %>">
@@ -22,7 +20,6 @@
                     Resolvidas
                 </a>
             </nav>
-            
             <% if (isLoggedIn) { %>
             <a href="/denuncias/nova" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
@@ -30,7 +27,6 @@
             </a>
             <% } %>
         </nav>
-        
         <% if (denuncias.length > 0) { %>
         <nav class="denuncias-grid">
             <% denuncias.forEach(denuncia => { %>
@@ -41,11 +37,9 @@
                         <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
                     </span>
                 </header>
-                
                 <p class="denuncia-description">
                     <%= denuncia.description.substring(0, 150) %>...
                 </p>
-                
                 <nav class="denuncia-meta">
                     <nav class="meta-item">
                         <i class="fas fa-map-marker-alt"></i>
@@ -60,25 +54,10 @@
                         <span><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></span>
                     </nav>
                 </nav>
-                
-                <% if (denuncia.responses.length > 0) { %>
-                <section class="denuncia-responses">
-                    <nav class="responses-count">
-                        <i class="fas fa-comments"></i>
-                        <%= denuncia.responses.length %> resposta(s)
-                    </nav>
-                </section>
-                <% } %>
-                
                 <footer class="denuncia-actions">
                     <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">
                         Ver denúncia completa
                     </a>
-                    <% if (isOng) { %>
-                    <a href="/denuncias/<%= denuncia.id %>#responder" class="btn btn-secondary">
-                        Responder à denúncia
-                    </a>
-                    <% } %>
                 </footer>
             </article>
             <% }) %>
@@ -111,5 +90,4 @@
         <% } %>
     </section>
 </section>
-
 <%- include('../partials/footer') %>

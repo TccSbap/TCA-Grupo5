@@ -49,11 +49,13 @@ describe('rotas principais', () => {
     expect(response.text).toContain('Contato');
   });
 
-  test('GET /planos renderiza a página de planos', async () => {
-    const response = await request(app).get('/planos');
-
-    expect(response.status).toBe(200);
-    expect(response.text).toContain('Nossos Planos');
+  test('rotas de planos e assinaturas nao existem', async () => {
+    const planos = await request(app).get('/planos');
+    const formulario = await request(app).get('/planos/1/assinar');
+    const assinatura = await request(app).post('/assinar-plano').type('form').send({ planoId: 1 });
+    expect(planos.status).toBe(404);
+    expect(formulario.status).toBe(404);
+    expect(assinatura.status).toBe(404);
   });
 
   test('GET /doacoes renderiza a página de doações', async () => {
@@ -115,20 +117,6 @@ describe('rotas principais', () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toBe('/doacoes');
-  });
-
-  test('GET /planos/:planoId/assinar renderiza o formulário de assinatura do plano', async () => {
-    const response = await request(app).get('/planos/1/assinar');
-
-    expect(response.status).toBe(200);
-    expect(response.text).toContain('Assinar Plano Essencial');
-  });
-
-  test('GET /planos/:planoId/assinar redireciona quando o plano não existe', async () => {
-    const response = await request(app).get('/planos/999/assinar');
-
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/planos');
   });
 
   test('usuário autenticado consegue enviar uma nova denúncia', async () => {

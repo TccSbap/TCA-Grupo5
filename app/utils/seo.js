@@ -8,7 +8,6 @@ const PUBLIC_PATHS = [
     '/sobre',
     '/contato',
     '/doacoes',
-    '/planos',
     '/noticias',
     '/impacto',
     '/ongs',
@@ -23,7 +22,6 @@ const NOINDEX_PATH_PATTERNS = [
     /^\/dashboard(\/|$)/,
     /^\/ongs\/admin(\/|$)/,
     /^\/doacoes\/\d+\/doar$/,
-    /^\/planos\/\d+\/assinar$/,
     /^\/denuncias\/nova$/,
     /^\/__test(\/|$)/
 ];
@@ -35,11 +33,10 @@ const PAGE_DESCRIPTION_MAP = [
     [/^\/ongs$/, 'Conheça as ONGs parceiras e veja como cada organização atua em saneamento e água limpa.'],
     [/^\/ongs\/\d+$/, 'Veja a ficha da ONG parceira, sua atuação e os caminhos para apoiar o trabalho da organização.'],
     [/^\/denuncias$/, 'Acompanhe denúncias registradas e o andamento das ações relacionadas ao saneamento básico.'],
-    [/^\/denuncias\/\d+$/, 'Consulte os detalhes de uma denúncia pública e acompanhe as respostas associadas.'],
+    [/^\/denuncias\/\d+$/, 'Consulte os detalhes de uma denúncia pública e acompanhe o status.'],
     [/^\/doacoes$/, 'Contribua com ONGs parceiras e ajude projetos de água limpa e saneamento básico.'],
-    [/^\/planos$/, 'Conheça os planos de apoio e escolha a melhor forma de contribuir com a plataforma.'],
     [/^\/noticias$/, 'Confira notícias e atualizações sobre saneamento básico, mobilização social e água limpa.'],
-    [/^\/impacto$/, 'Acompanhe o impacto social da plataforma com indicadores de denúncias, respostas, doações e assinaturas.'],
+    [/^\/impacto$/, 'Acompanhe os indicadores de impacto da plataforma.'],
     [/^\/privacidade$/, 'Entenda como tratamos dados pessoais, cookies e direitos de privacidade na plataforma.'],
     [/^\/lgpd$/, 'Entenda como tratamos dados pessoais, cookies e direitos de privacidade na plataforma.'],
     [/^\/auth(\/|$)/, 'Área de autenticação da plataforma Água Consciente.'],
@@ -57,9 +54,8 @@ const PAGE_OG_TYPE_MAP = [
     [/^\/denuncias$/, 'collection'],
     [/^\/denuncias\/\d+$/, 'article'],
     [/^\/doacoes$/, 'website'],
-    [/^\/planos$/, 'website'],
     [/^\/noticias$/, 'collection'],
-    [/^\/impacto$/, 'website'],
+    [/^\/impacto$/, 'Acompanhe os indicadores de impacto da plataforma.'],
     [/^\/privacidade$/, 'article'],
     [/^\/lgpd$/, 'article']
 ];

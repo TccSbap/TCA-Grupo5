@@ -51,11 +51,10 @@
         new Chart(distributionCanvas, {
             type: 'doughnut',
             data: {
-                labels: ['Casos abertos', 'Casos respondidos', 'Casos resolvidos'],
+                labels: ['Casos abertos no m?s', 'Casos resolvidos'],
                 datasets: [{
                     data: [
                         impacto.casesOpenedThisMonth,
-                        impacto.casesResponded,
                         impacto.casesResolved
                     ],
                     backgroundColor: [colors.amber, colors.blue, colors.green],

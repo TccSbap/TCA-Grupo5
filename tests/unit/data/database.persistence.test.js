@@ -185,6 +185,6 @@ describe('camada de dados com persistência via SQL', () => {
         expect(connection.commit).toHaveBeenCalled();
         expect(connection.release).toHaveBeenCalled();
         expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncias'))).toBe(true);
-        expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncia_responses'))).toBe(true);
+        expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncia_responses'))).toBe(false);
     });
 });

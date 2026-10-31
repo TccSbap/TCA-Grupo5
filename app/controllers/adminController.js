@@ -29,18 +29,13 @@ const createAdminController = (data) => {
     };
 
     const buildDashboardSummary = async () => {
-        const [users, ongs, denuncias, mensagensContato, doacoes, assinaturasPlano] = await Promise.all([
+        const [users, ongs, denuncias, mensagensContato, doacoes] = await Promise.all([
             loadCollection('getUsers'),
             loadCollection('getOngs'),
             loadCollection('getDenuncias'),
             loadCollection('getMensagensContato'),
-            loadCollection('getDoacoes'),
-            loadCollection('getAssinaturasPlano')
+            loadCollection('getDoacoes')
         ]);
-
-        const totalResponses = denuncias.reduce((count, denuncia) => {
-            return count + (Array.isArray(denuncia.responses) ? denuncia.responses.length : 0);
-        }, 0);
 
         return {
             users,
@@ -48,17 +43,14 @@ const createAdminController = (data) => {
             denuncias,
             mensagensContato,
             doacoes,
-            assinaturasPlano,
             totalUsers: users.length,
             totalOngs: ongs.length,
             totalDenuncias: denuncias.length,
             denunciasPendentes: denuncias.filter((denuncia) => denuncia.status === 'pendente').length,
             denunciasEmAndamento: denuncias.filter((denuncia) => denuncia.status === 'em_andamento').length,
             denunciasResolvidas: denuncias.filter((denuncia) => denuncia.status === 'resolvida').length,
-            totalResponses,
             totalMensagensContato: mensagensContato.length,
             totalDoacoes: doacoes.length,
-            totalAssinaturas: assinaturasPlano.length,
             recentDenuncias: denuncias.slice(0, 5),
             recentOngs: ongs.slice(0, 5),
             recentMensagensContato: mensagensContato.slice(0, 5)
@@ -101,8 +93,7 @@ const createAdminController = (data) => {
                 denuncias: summary.denuncias,
                 ongs: summary.ongs,
                 mensagensContato: summary.mensagensContato,
-                doacoes: summary.doacoes,
-                assinaturasPlano: summary.assinaturasPlano
+                doacoes: summary.doacoes
             });
 
             return res.render('admin/dashboard', {
@@ -121,8 +112,7 @@ const createAdminController = (data) => {
                 denuncias: summary.denuncias,
                 ongs: summary.ongs,
                 mensagensContato: summary.mensagensContato,
-                doacoes: summary.doacoes,
-                assinaturasPlano: summary.assinaturasPlano
+                doacoes: summary.doacoes
             });
 
             const rows = [
@@ -133,10 +123,8 @@ const createAdminController = (data) => {
                 ['Resumo geral', 'Pendentes', summary.denunciasPendentes],
                 ['Resumo geral', 'Em andamento', summary.denunciasEmAndamento],
                 ['Resumo geral', 'Resolvidas', summary.denunciasResolvidas],
-                ['Resumo geral', 'Respostas', summary.totalResponses],
                 ['Resumo geral', 'Mensagens', summary.totalMensagensContato],
                 ['Resumo geral', 'Doações', summary.totalDoacoes],
-                ['Resumo geral', 'Assinaturas', summary.totalAssinaturas],
                 ['Taxa', 'Resolução', `${analytics.resolution.rate}%`]
             ];
 
@@ -147,11 +135,6 @@ const createAdminController = (data) => {
             analytics.category.labels.forEach((label, index) => {
                 rows.push(['Denúncias por categoria', label, analytics.category.values[index]]);
             });
-
-            analytics.responsesByOng.labels.forEach((label, index) => {
-                rows.push(['Respostas por ONG', label, analytics.responsesByOng.values[index]]);
-            });
-
             analytics.monthlyActivity.labels.forEach((label, index) => {
                 analytics.monthlyActivity.datasets.forEach((dataset) => {
                     rows.push(['Atividade mensal', `${dataset.label} - ${label}`, dataset.data[index] || 0]);

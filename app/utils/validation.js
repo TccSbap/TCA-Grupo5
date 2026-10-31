@@ -121,54 +121,6 @@ const validateDonation = (body) => {
     return null;
 };
 
-const validatePlanSubscription = (body) => {
-    if (!hasTwoWords(body.nomeCompleto)) {
-        return 'Nome completo deve conter pelo menos 2 palavras.';
-    }
-
-    if (!isValidEmail(body.emailComprador)) {
-        return 'E-mail do comprador invalido.';
-    }
-
-    if (digitsOnly(body.telefoneComprador).length < 10) {
-        return 'Telefone invalido.';
-    }
-
-    if (digitsOnly(body.documentoComprador).length !== 11) {
-        return 'CPF invalido. Deve ter 11 digitos numericos.';
-    }
-
-    if (digitsOnly(body.cepComprador).length !== 8) {
-        return 'CEP invalido. Deve ter 8 digitos numericos.';
-    }
-
-    if (!isLongEnough(body.ruaComprador, 3)) {
-        return 'Rua invalida.';
-    }
-
-    if (!isLongEnough(body.numeroComprador, 1)) {
-        return 'Numero invalido.';
-    }
-
-    if (!isLongEnough(body.bairroComprador, 3)) {
-        return 'Bairro invalido.';
-    }
-
-    if (!isLongEnough(body.cidadeComprador, 3)) {
-        return 'Cidade invalida.';
-    }
-
-    if (!isValidState(body.estadoComprador)) {
-        return 'Estado invalido. Use a sigla de 2 letras maiusculas.';
-    }
-
-    if (!['cartao', 'pix', 'boleto'].includes(body.metodoPagamento)) {
-        return 'Selecione um metodo de pagamento valido.';
-    }
-
-    return null;
-};
-
 const validateContactMessage = (body) => {
     if (!hasTwoWords(body.name)) {
         return 'Informe seu nome completo.';
@@ -191,7 +143,6 @@ const validateContactMessage = (body) => {
 
 module.exports = {
     validateDonation,
-    validatePlanSubscription,
     validateContactMessage,
     normalizeText,
     digitsOnly,

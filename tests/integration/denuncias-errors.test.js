@@ -63,79 +63,13 @@ describe('tratamento de erros das denúncias', () => {
     expect(res.redirect).toHaveBeenCalledWith('/denuncias/nova?error=Erro ao validar denúncia');
   });
 
-  test('POST /denuncias/99999/responder retorna JSON 404 quando a denúncia não existe', async () => {
+  test('rotas de resposta e atualizacao de status por ONG foram removidas', async () => {
     const app = require('../../app');
     const agent = request.agent(app);
-
     await signInOng(agent);
-
-    const response = await agent
-      .post('/denuncias/99999/responder')
-      .type('form')
-      .send({
-        response: 'Qualquer texto',
-        newStatus: 'em_andamento'
-      });
-
+    const response = await agent.post('/denuncias/1/responder').type('form').send({ response: 'texto' });
+    const status = await agent.post('/denuncias/1/status').type('form').send({ status: 'resolvida' });
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'Denúncia não encontrada' });
-  });
-
-  test('POST /denuncias/99999/status retorna JSON 404 quando a denúncia não existe', async () => {
-    const app = require('../../app');
-    const agent = request.agent(app);
-
-    await signInOng(agent);
-
-    const response = await agent
-      .post('/denuncias/99999/status')
-      .type('form')
-      .send({ status: 'resolvida' });
-
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'Denúncia não encontrada' });
-  });
-
-  test('POST /denuncias/1/status redireciona com erro quando updateDenuncia lança exceção', async () => {
-    const database = require('../../data/mockDatabase');
-    jest.spyOn(database, 'updateDenuncia').mockImplementation(() => {
-      throw new Error('forced failure');
-    });
-
-    const app = require('../../app');
-    const agent = request.agent(app);
-
-    await signInOng(agent);
-
-    const response = await agent
-      .post('/denuncias/1/status')
-      .type('form')
-      .send({ status: 'resolvida' });
-
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toContain('/denuncias/1?error=Erro%20ao%20atualizar%20status');
-  });
-
-  test('POST /denuncias/1/responder redireciona com erro quando updateDenuncia lança exceção', async () => {
-    const database = require('../../data/mockDatabase');
-    jest.spyOn(database, 'updateDenuncia').mockImplementation(() => {
-      throw new Error('forced failure');
-    });
-
-    const app = require('../../app');
-    const agent = request.agent(app);
-
-    await signInOng(agent);
-
-    const response = await agent
-      .post('/denuncias/1/responder')
-      .type('form')
-      .send({
-        response: 'Estamos verificando a situação.',
-        newStatus: 'em_andamento'
-      });
-
-    expect(response.status).toBe(302);
-    expect(response.headers.location).toContain('/denuncias/1?error=Erro%20ao%20adicionar%20resposta');
+    expect(status.status).toBe(404);
   });
 });

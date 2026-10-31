@@ -8,10 +8,8 @@ describe('bootstrap da camada de dados em teste', () => {
     test('carrega a massa de dados inicial para os principais contextos', () => {
         expect(database.getUsers()).toHaveLength(12);
         expect(database.getOngs()).toHaveLength(10);
-        expect(database.getPlanos()).toHaveLength(3);
-        expect(database.getNoticias()).toHaveLength(6);
+        expect(database.getNoticias()).toHaveLength(5);
         expect(database.getDoacoes()).toHaveLength(3);
-        expect(database.getAssinaturasPlano()).toHaveLength(3);
         expect(database.getMensagensContato()).toHaveLength(3);
         expect(database.getDenuncias()).toHaveLength(16);
     });
@@ -28,7 +26,6 @@ describe('bootstrap da camada de dados em teste', () => {
         expect(database.getUserById(11)).toEqual(expect.objectContaining({ id: 11 }));
         expect(database.getOngById(1)).toEqual(expect.objectContaining({ id: 1 }));
         expect(database.getOngByUserId(1)).toEqual(expect.objectContaining({ id: 1 }));
-        expect(database.getPlanoById(1)).toEqual(expect.objectContaining({ id: 1 }));
         expect(database.getNoticiaById(1)).toEqual(expect.objectContaining({ id: 1 }));
         expect(database.getDenunciaById(1)).toEqual(expect.objectContaining({ id: 1 }));
     });
@@ -50,17 +47,8 @@ describe('bootstrap da camada de dados em teste', () => {
         expect(database.getDenuncias()).toHaveLength(16);
     });
 
-    test('getDenuncias filtra denúncias associadas a uma ONG', () => {
-        const denuncias = database.getDenuncias(2);
-
-        expect(denuncias).toHaveLength(1);
-        expect(denuncias[0]).toMatchObject({
-            id: 2,
-            status: 'em_andamento'
-        });
-        expect(denuncias[0].responses[0]).toMatchObject({
-            ongId: 2,
-            ongName: 'Saneamento para Todos'
-        });
+    test('denuncias demonstrativas nao contem respostas de ONGs', () => {
+        expect(database.getDenuncias()).toHaveLength(16);
+        expect(database.getDenuncias().every((denuncia) => denuncia.responses.length === 0)).toBe(true);
     });
 });

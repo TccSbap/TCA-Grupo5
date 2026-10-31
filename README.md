@@ -13,11 +13,8 @@ para instalar as dependências.
 
 # - 2 Para ONGs (Administradores)
 -  Cadastro como organização
--  Painel administrativo completo
--  Resposta às denúncias dos usuários
--  Atualização de status das denúncias
--  Estatísticas de desempenho
--  Gerenciamento de casos
+-  Oferta de orienta&ccedil;&atilde;o e apoio &agrave;s comunidades
+-  Encaminhamento de relatos aos &oacute;rg&atilde;os competentes
 
 # - 3 Funcionalidades Gerais
 -  Sistema de autenticação seguro
@@ -25,3 +22,6 @@ para instalar as dependências.
 -  Páginas informativas (Sobre, Contato)
 -  Sistema de filtros para denúncias
 -  Dados de demonstração pré-carregados
+
+
+Planos e respostas antigas permanecem apenas nos dados legados do banco. A aplica&ccedil;&atilde;o n&atilde;o oferece contrata&ccedil;&atilde;o de assinaturas nem grava novas respostas de ONGs.

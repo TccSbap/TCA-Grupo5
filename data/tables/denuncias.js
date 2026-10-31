@@ -20,15 +20,7 @@ module.exports = () => [
         status: 'em_andamento',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Estamos em contato com a concessionária local para resolver o problema. Previsão de normalização em 48h.',
-                ongName: 'Saneamento para Todos',
-                ongId: 2,
-                createdAt: new Date('2024-09-17').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-16').toISOString()
     },
     {
@@ -40,15 +32,7 @@ module.exports = () => [
         status: 'resolvida',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Fiscalização realizada. Empresa responsável foi autuada e iniciou processo de despoluição.',
-                ongName: 'Rios Vivos',
-                ongId: 3,
-                createdAt: new Date('2024-09-10').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-05').toISOString()
     },
     {
@@ -72,15 +56,7 @@ module.exports = () => [
         status: 'em_andamento',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Equipe técnica agendada para avaliação amanhã às 9h. Providenciaremos solução emergencial.',
-                ongName: 'Cidadania e Saneamento',
-                ongId: 5,
-                createdAt: new Date('2024-09-19').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-18').toISOString()
     },
     {
@@ -104,15 +80,7 @@ module.exports = () => [
         status: 'em_andamento',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Denúncia encaminhada aos órgãos ambientais. Interdição da área solicitada até resolução.',
-                ongName: 'Esgoto Zero',
-                ongId: 7,
-                createdAt: new Date('2024-09-20').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-19').toISOString()
     },
     {
@@ -148,15 +116,7 @@ module.exports = () => [
         status: 'resolvida',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Mutirão de limpeza realizado. Córrego desobstruído e sistema de drenagem restaurado.',
-                ongName: 'Comunidade Sustentável',
-                ongId: 10,
-                createdAt: new Date('2024-09-15').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-10').toISOString()
     },
     {
@@ -168,15 +128,7 @@ module.exports = () => [
         status: 'em_andamento',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Providenciando tratamento emergencial e busca por fonte alternativa de água potável.',
-                ongName: 'Água para a Vida',
-                ongId: 4,
-                createdAt: new Date('2024-09-22').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-21').toISOString()
     },
     {
@@ -212,15 +164,7 @@ module.exports = () => [
         status: 'em_andamento',
         userId: 11,
         userName: 'João Silva',
-        responses: [
-            {
-                id: 1,
-                text: 'Solicitamos análise da qualidade da água. Aguardando resultado dos testes laboratoriais.',
-                ongName: 'Saúde Hídrica',
-                ongId: 8,
-                createdAt: new Date('2024-09-24').toISOString()
-            }
-        ],
+        responses: [],
         createdAt: new Date('2024-09-23').toISOString()
     },
     {

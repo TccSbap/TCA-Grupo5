@@ -11,18 +11,8 @@ describe('camada de dados em memória', () => {
     expect(database.getDenuncias()).toHaveLength(16);
   });
 
-  test('getDenuncias filtra as denuncias pela ONG informada', () => {
-    const denuncias = database.getDenuncias(2);
-
-    expect(denuncias).toHaveLength(1);
-    expect(denuncias[0]).toMatchObject({
-      id: 2,
-      status: 'em_andamento'
-    });
-    expect(denuncias[0].responses[0]).toMatchObject({
-      ongId: 2,
-      ongName: 'Saneamento para Todos'
-    });
+  test('getDenuncias retorna a colecao sem filtro por respostas de ONG', () => {
+    expect(database.getDenuncias()).toHaveLength(16);
   });
 
   test('getOngs filtra a ONG pelo id informado', () => {
@@ -83,28 +73,6 @@ describe('camada de dados em memória', () => {
       id: 1,
       title: 'Esgoto a céu aberto na Rua das Flores'
     });
-  });
-
-  test('updateDenuncia mescla campos e mantém os dados existentes', () => {
-    const updated = database.updateDenuncia(1, {
-      status: 'resolvida',
-      title: 'Esgoto resolvido na Rua das Flores'
-    });
-
-    expect(updated).toMatchObject({
-      id: 1,
-      status: 'resolvida',
-      title: 'Esgoto resolvido na Rua das Flores'
-    });
-    expect(updated.responses).toEqual([]);
-  });
-
-  test('updateDenuncia retorna null quando o registro não existe', () => {
-    const updated = database.updateDenuncia(99999, {
-      status: 'resolvida'
-    });
-
-    expect(updated).toBeNull();
   });
 
   test('createOng cria um novo id incremental', () => {

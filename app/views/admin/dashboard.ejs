@@ -72,15 +72,7 @@
                 <nav class="stat-value"><%= denunciasPendentes %></nav>
             </article>
 
-            <article class="stat-card">
-                <header class="stat-header">
-                    <i class="fas fa-comments"></i>
-                    <h3>Respostas</h3>
-                </header>
-                <nav class="stat-value"><%= totalResponses %></nav>
-            </article>
-
-            <article class="stat-card">
+<article class="stat-card">
                 <header class="stat-header">
                     <i class="fas fa-envelope"></i>
                     <h3>Mensagens</h3>
@@ -141,30 +133,14 @@
                 </div>
             </article>
 
-            <article class="analytics-card analytics-card--half">
-                <header class="analytics-card__header">
-                    <div>
-                        <div class="analytics-card__title">
-                            <i class="fas fa-hands-helping"></i>
-                            Respostas por ONG
-                        </div>
-                        <p class="analytics-card__subtitle">Quem mais respondeu denúncias na plataforma</p>
-                    </div>
-                    <span class="analytics-pill"><%= analytics.resolution.total %> denúncias</span>
-                </header>
-                <div class="analytics-card__body">
-                    <canvas id="adminResponsesChart" class="analytics-canvas" aria-label="Respostas por ONG" role="img"></canvas>
-                </div>
-            </article>
-
-            <article class="analytics-card analytics-card--half">
+    <article class="analytics-card analytics-card--half">
                 <header class="analytics-card__header">
                     <div>
                         <div class="analytics-card__title">
                             <i class="fas fa-calendar-alt"></i>
                             Atividade mensal
                         </div>
-                        <p class="analytics-card__subtitle">Mensagens, doações e assinaturas por mês</p>
+                        <p class="analytics-card__subtitle">Mensagens e doa&ccedil;&otilde;es por m&ecirc;s
                     </div>
                 </header>
                 <div class="analytics-card__body">

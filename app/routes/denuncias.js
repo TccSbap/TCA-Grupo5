@@ -1,6 +1,6 @@
-const express = require('express');
+﻿const express = require('express');
 const defaultData = require('../../data/database');
-const { requireUser, requireOng } = require('../middleware/auth');
+const { requireUser } = require('../middleware/auth');
 const { createDenunciasController } = require('../controllers/denunciasController');
 const { lookupViaCep } = require('../utils/cep');
 
@@ -39,8 +39,6 @@ const createDenunciasRouter = (data = defaultData, dependencies = {}) => {
         }
     });
     router.get('/:id', controller.details);
-    router.post('/:id/responder', requireOng, controller.responder);
-    router.post('/:id/status', requireOng, controller.updateStatus);
 
     return router;
 };

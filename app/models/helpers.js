@@ -76,15 +76,6 @@ const normalizeDenunciaRow = (row) => ({
     createdAt: toIsoString(row.created_at)
 });
 
-const normalizePlanoRow = (row) => ({
-    id: row.id,
-    title: row.title,
-    price: row.price,
-    subtitle: row.subtitle,
-    features: parseJsonArray(row.features_json),
-    createdAt: toIsoString(row.created_at)
-});
-
 const normalizeNoticiaRow = (row) => ({
     id: row.id,
     title: row.title,
@@ -118,27 +109,6 @@ const normalizeDoacaoRow = (row) => ({
     createdAt: toIsoString(row.created_at)
 });
 
-const normalizeAssinaturaPlanoRow = (row) => ({
-    id: row.id,
-    planId: row.plan_id,
-    userId: row.user_id,
-    planName: row.plan_name,
-    planPrice: row.plan_price,
-    subscriberName: row.subscriber_name,
-    subscriberEmail: row.subscriber_email,
-    subscriberPhone: row.subscriber_phone,
-    subscriberDocument: row.subscriber_document,
-    subscriberCep: row.subscriber_cep,
-    subscriberStreet: row.subscriber_street,
-    subscriberNumber: row.subscriber_number,
-    subscriberNeighborhood: row.subscriber_neighborhood,
-    subscriberCity: row.subscriber_city,
-    subscriberState: row.subscriber_state,
-    paymentMethod: row.payment_method,
-    status: row.status,
-    createdAt: toIsoString(row.created_at)
-});
-
 const normalizeMensagemContatoRow = (row) => ({
     id: row.id,
     userId: row.user_id,
@@ -160,9 +130,7 @@ module.exports = {
     normalizeUserRow,
     normalizeOngRow,
     normalizeDenunciaRow,
-    normalizePlanoRow,
     normalizeNoticiaRow,
     normalizeDoacaoRow,
-    normalizeAssinaturaPlanoRow,
     normalizeMensagemContatoRow
 };

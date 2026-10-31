@@ -4,7 +4,7 @@
     <section class="container">
         <header class="section-header">
             <h1>ONGs Parceiras</h1>
-            <p>Conheça as organizações que trabalham conosco para resolver problemas de saneamento básico</p>
+            <p>Conheça as organizações que trabalham conosco para ajudar a comunidade</p>
         </header>
         
         <% if (ongs.length > 0) { %>
@@ -83,7 +83,7 @@
                 <h2 class="h2-oferta-ong">Sua ONG quer fazer parte?</h2>
                 <p class="p-oferta-ong">
                     Junte-se a nós na missão de garantir água limpa e saneamento básico para todos. 
-                    Cadastre sua organização e comece a responder denúncias hoje mesmo.
+                    Cadastre sua organiza&ccedil;&atilde;o para oferecer orienta&ccedil;&atilde;o e apoio &agrave;s comunidades.
                 </p>
                 <% if (!isLoggedIn) { %>
                 <a href="/auth/cadastro" class="btn btn-primary btn-large">
@@ -104,7 +104,7 @@
                 <% } else { %>
                 <nav class="info-box success">
                     <i class="fas fa-check-circle"></i>
-                    <p>Sua ONG já está cadastrada! Acesse o painel da ONG para gerenciar denúncias e acompanhar respostas.</p>
+                    <p>Sua ONG já está cadastrada! Acesse o painel da ONG para consultar as informa&ccedil;&otilde;es cadastrais da organiza&ccedil;&atilde;o.</p>
                     <a href="/ongs/admin/dashboard" class="btn btn-primary">Acessar painel da ONG</a>
                 </nav>
                 <% } %>

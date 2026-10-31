@@ -12,7 +12,7 @@ const buildModel = (canUseDatabaseValue = true) => {
 };
 
 describe('models/denuncias.model', () => {
-    test('loads denuncias with responses and supports filtered results', async () => {
+    test('loads denunciations and preserves historical response records without ONG filtering', async () => {
         const iso = '2024-01-02T03:04:05.000Z';
         const { model, pool } = buildModel();
 
@@ -53,12 +53,10 @@ describe('models/denuncias.model', () => {
             id: 1,
             responses: [expect.objectContaining({ id: 9, ongId: 2, text: 'Response' })]
         })]);
-        await expect(model.getDenuncias(2)).resolves.toHaveLength(1);
-        await expect(model.getDenuncias(99)).resolves.toEqual([]);
         await expect(model.getDenunciaById('1')).resolves.toMatchObject({ id: 1, title: 'Leak' });
     });
 
-    test('creates a denuncia and persists nested responses', async () => {
+    test('creates a denuncia without accepting responses', async () => {
         const connection = {
             beginTransaction: jest.fn().mockResolvedValue(undefined),
             execute: jest.fn()
@@ -93,55 +91,9 @@ describe('models/denuncias.model', () => {
         expect(connection.commit).toHaveBeenCalled();
         expect(connection.release).toHaveBeenCalled();
         expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncias'))).toBe(true);
-        expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncia_responses'))).toBe(true);
+        expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncia_responses'))).toBe(false);
     });
 
-    test('updates an existing denuncia and preserves responses when omitted', async () => {
-        const iso = '2024-01-02T03:04:05.000Z';
-        const connection = {
-            beginTransaction: jest.fn().mockResolvedValue(undefined),
-            execute: jest.fn().mockResolvedValue([{ insertId: 1 }, []]),
-            commit: jest.fn().mockResolvedValue(undefined),
-            rollback: jest.fn().mockResolvedValue(undefined),
-            release: jest.fn()
-        };
-        const { model, pool } = buildModel();
-        pool.getConnection.mockResolvedValue(connection);
-        pool.execute.mockImplementation((query) => {
-            if (query.includes('FROM denuncias')) {
-                return Promise.resolve([[
-                    {
-                        id: 1,
-                        title: 'Leak',
-                        description: 'Long description',
-                        location: 'Center',
-                        category: 'water',
-                        status: 'pendente',
-                        user_id: 11,
-                        user_name: 'Reporter',
-                        created_at: iso
-                    }
-                ], []]);
-            }
-
-            if (query.includes('FROM denuncia_responses')) {
-                return Promise.resolve([[], []]);
-            }
-
-            return Promise.resolve([[], []]);
-        });
-
-        await expect(model.updateDenuncia(1, {
-            status: 'resolvida'
-        })).resolves.toMatchObject({
-            id: 1,
-            status: 'resolvida'
-        });
-
-        expect(connection.beginTransaction).toHaveBeenCalled();
-        expect(connection.commit).toHaveBeenCalled();
-        expect(connection.release).toHaveBeenCalled();
-    });
 
     test('rejects when the database is unavailable', async () => {
         const { model } = buildModel(false);

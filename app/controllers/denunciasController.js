@@ -149,7 +149,7 @@ const createDenunciasController = (data) => {
             }
 
             const pageUrl = `/denuncias/${denuncia.id}`;
-            const description = `${denuncia.description} Acompanhe a localização, o status e as respostas enviadas pelas ONGs parceiras.`;
+            const description = `${denuncia.description}`;
             const structuredData = [
                 buildBreadcrumbStructuredData([
                     { name: 'Denúncias', url: '/denuncias' },
@@ -170,68 +170,7 @@ const createDenunciasController = (data) => {
             });
         },
 
-        async responder(req, res) {
-            const denunciaId = req.params.id;
-            const { response, newStatus } = req.body;
-            const user = req.session.user;
 
-            try {
-                const denuncia = await data.getDenunciaById(denunciaId);
-                const userOng = await findUserOng(user.id);
-
-                if (!denuncia) {
-                    return res.status(404).json({ error: 'Denúncia não encontrada' });
-                }
-
-                if (!userOng) {
-                    return res.status(404).render('404', { title: 'ONG não encontrada' });
-                }
-
-                const newResponse = {
-                    id: denuncia.responses.length + 1,
-                    text: response,
-                    ongName: userOng.name || user.ongName || user.name,
-                    ongId: userOng.id,
-                    createdAt: new Date().toISOString()
-                };
-
-                const updatedDenuncia = {
-                    ...denuncia,
-                    responses: [...denuncia.responses, newResponse]
-                };
-
-                if (newStatus) {
-                    updatedDenuncia.status = newStatus;
-                }
-
-                await data.updateDenuncia(denunciaId, updatedDenuncia);
-
-                res.redirect(`/denuncias/${denunciaId}?success=Resposta adicionada com sucesso!`);
-            } catch (error) {
-                console.error('Erro ao responder denúncia:', error);
-                res.redirect(`/denuncias/${denunciaId}?error=Erro ao adicionar resposta`);
-            }
-        },
-
-        async updateStatus(req, res) {
-            const denunciaId = req.params.id;
-            const { status } = req.body;
-
-            try {
-                const denuncia = await data.getDenunciaById(denunciaId);
-
-                if (!denuncia) {
-                    return res.status(404).json({ error: 'Denúncia não encontrada' });
-                }
-
-                await data.updateDenuncia(denunciaId, { status });
-
-                res.redirect(`/denuncias/${denunciaId}?success=Status atualizado com sucesso!`);
-            } catch (error) {
-                console.error('Erro ao atualizar status:', error);
-                res.redirect(`/denuncias/${denunciaId}?error=Erro ao atualizar status`);
-            }
-        }
     };
 };
 

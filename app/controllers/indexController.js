@@ -1,6 +1,5 @@
 const {
     validateDonation,
-    validatePlanSubscription,
     validateContactMessage
 } = require('../utils/validation');
 const {
@@ -52,27 +51,17 @@ const findOngById = async (data, id) => {
     return (await data.getOngs()).find((item) => item.id == id);
 };
 
-const findPlanoById = async (data, id) => {
-    if (typeof data.getPlanoById === 'function') {
-        return data.getPlanoById(id);
-    }
-
-    return (await data.getPlanos()).find((item) => item.id == id);
-};
-
 const createIndexController = (data) => ({
     async home(req, res) {
         const allDenuncias = await data.getDenuncias();
         const allOngs = await data.getOngs();
         const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
         const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
-        const assinaturasPlano = typeof data.getAssinaturasPlano === 'function' ? await data.getAssinaturasPlano() : [];
         const mensagensContato = typeof data.getMensagensContato === 'function' ? await data.getMensagensContato() : [];
         const impacto = buildPublicImpactAnalytics({
             denuncias: allDenuncias,
             mensagensContato,
-            doacoes,
-            assinaturasPlano
+            doacoes
         });
         const description = 'Conheça ONGs parceiras, acompanhe denúncias recentes e descubra como apoiar água limpa e saneamento básico.';
 
@@ -95,7 +84,6 @@ const createIndexController = (data) => ({
         const denuncias = await data.getDenuncias();
         const ongs = await data.getOngs();
         const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
-        const assinaturasPlano = typeof data.getAssinaturasPlano === 'function' ? await data.getAssinaturasPlano() : [];
 
         const userDenuncias = denuncias
             .filter((denuncia) => denuncia.userId === user.id)
@@ -103,20 +91,14 @@ const createIndexController = (data) => ({
         const userDoacoes = doacoes
             .filter((doacao) => doacao.userId === user.id)
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        const userAssinaturas = assinaturasPlano
-            .filter((assinatura) => assinatura.userId === user.id)
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
         res.render('dashboard', {
             title: 'Meu Dashboard',
             user,
             ongs,
             denuncias: userDenuncias.slice(0, 5),
             doacoes: userDoacoes.slice(0, 5),
-            assinaturasPlano: userAssinaturas.slice(0, 5),
             totalDenuncias: userDenuncias.length,
             totalDoacoes: userDoacoes.length,
-            totalAssinaturas: userAssinaturas.length,
             totalOngs: ongs.length
         });
     },
@@ -240,82 +222,6 @@ const createIndexController = (data) => ({
         });
     },
 
-    async planForm(req, res) {
-        const plano = await findPlanoById(data, req.params.planoId);
-
-        if (!plano) {
-            return res.redirect('/planos');
-        }
-
-        res.render('plano_form', {
-            ...buildSeoPayload(
-                res,
-                `/planos/${plano.id}/assinar`,
-                `Assinar ${plano.title}`,
-                `Assine o plano ${plano.title} para apoiar as ações da plataforma Água Consciente.`
-            ),
-            plano,
-            error: req.query.error,
-            success: req.query.success
-        });
-    },
-
-    async subscribePlan(req, res) {
-        const plano = await findPlanoById(data, req.body.planoId);
-
-        if (!plano) {
-            return res.redirect('/planos');
-        }
-
-        const error = validatePlanSubscription(req.body);
-        if (error) {
-            return res.render('plano_form', {
-                ...buildSeoPayload(
-                    res,
-                    `/planos/${plano.id}/assinar`,
-                    `Assinar ${plano.title}`,
-                    `Assine o plano ${plano.title} para apoiar as ações da plataforma Água Consciente.`
-                ),
-                plano,
-                error
-            });
-        }
-
-        await data.createAssinaturaPlano({
-            planId: plano.id,
-            userId: req.session.user ? req.session.user.id : null,
-            planName: req.body.planoNome || plano.title,
-            planPrice: req.body.planoPreco || plano.price,
-            subscriberName: req.body.nomeCompleto,
-            subscriberEmail: req.body.emailComprador,
-            subscriberPhone: req.body.telefoneComprador,
-            subscriberDocument: req.body.documentoComprador,
-            subscriberCep: req.body.cepComprador,
-            subscriberStreet: req.body.ruaComprador,
-            subscriberNumber: req.body.numeroComprador,
-            subscriberNeighborhood: req.body.bairroComprador,
-            subscriberCity: req.body.cidadeComprador,
-            subscriberState: req.body.estadoComprador,
-            paymentMethod: req.body.metodoPagamento,
-            status: 'pendente'
-        });
-
-        return res.redirect('/planos?success=' + encodeURIComponent('Assinatura registrada com sucesso.'));
-    },
-
-    async planos(req, res) {
-        res.render('planos', {
-            ...buildSeoPayload(
-                res,
-                '/planos',
-                'Planos de apoio',
-                'Conheça os planos de apoio e escolha a melhor forma de contribuir com a plataforma.'
-            ),
-            planos: await data.getPlanos(),
-            success: req.query.success
-        });
-    },
-
     async noticias(req, res) {
         const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
         const noticiasPageUrl = '/noticias';
@@ -361,23 +267,21 @@ const createIndexController = (data) => ({
     },
 
     async impacto(req, res) {
-        const [denuncias, ongs, mensagensContato, doacoes, assinaturasPlano] = await Promise.all([
+        const [denuncias, ongs, mensagensContato, doacoes] = await Promise.all([
             data.getDenuncias(),
             data.getOngs(),
             typeof data.getMensagensContato === 'function' ? data.getMensagensContato() : [],
             typeof data.getDoacoes === 'function' ? data.getDoacoes() : [],
-            typeof data.getAssinaturasPlano === 'function' ? data.getAssinaturasPlano() : []
         ]);
 
         const impacto = buildPublicImpactAnalytics({
             denuncias,
             mensagensContato,
-            doacoes,
-            assinaturasPlano
+            doacoes
         });
 
         const impactPageUrl = '/impacto';
-        const impactDescription = 'Acompanhe o impacto social da plataforma com indicadores de denúncias, respostas, doações e assinaturas em um só lugar.';
+        const impactDescription = 'Acompanhe indicadores de denuncias, doacoes e participacao comunitaria.';
 
         res.render('impacto', {
             ...buildSeoPayload(res, impactPageUrl, 'Painel de impacto da plataforma', impactDescription, {
@@ -400,27 +304,23 @@ const createIndexController = (data) => ({
     },
 
     async impactoCsv(req, res) {
-        const [denuncias, mensagensContato, doacoes, assinaturasPlano] = await Promise.all([
+        const [denuncias, mensagensContato, doacoes] = await Promise.all([
             data.getDenuncias(),
             typeof data.getMensagensContato === 'function' ? data.getMensagensContato() : [],
             typeof data.getDoacoes === 'function' ? data.getDoacoes() : [],
-            typeof data.getAssinaturasPlano === 'function' ? data.getAssinaturasPlano() : []
         ]);
 
         const impacto = buildPublicImpactAnalytics({
             denuncias,
             mensagensContato,
-            doacoes,
-            assinaturasPlano
+            doacoes
         });
 
         const rows = [
             ['Seção', 'Indicador', 'Valor'],
-            ['Resumo', 'Casos abertos no mês', impacto.casesOpenedThisMonth],
-            ['Resumo', 'Casos respondidos', impacto.casesResponded],
+            ['Resumo', 'Casos abertos no m\u00eas', impacto.casesOpenedThisMonth],
             ['Resumo', 'Casos resolvidos', impacto.casesResolved],
-            ['Resumo', 'Doações recebidas', impacto.totalDonations],
-            ['Resumo', 'Planos assinados', impacto.activeSubscriptions]
+            ['Resumo', 'Doações recebidas', impacto.totalDonations]
         ];
 
         impacto.monthlyActivity.labels.forEach((label, index) => {
@@ -470,6 +370,5 @@ module.exports = {
     createIndexController,
     formatOngForDonation,
     validateContactMessage,
-    validateDonation,
-    validatePlanSubscription
+    validateDonation
 };

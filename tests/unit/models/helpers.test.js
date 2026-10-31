@@ -7,10 +7,8 @@ const {
     normalizeUserRow,
     normalizeOngRow,
     normalizeDenunciaRow,
-    normalizePlanoRow,
     normalizeNoticiaRow,
     normalizeDoacaoRow,
-    normalizeAssinaturaPlanoRow,
     normalizeMensagemContatoRow
 } = require('../../../app/models/helpers');
 
@@ -104,22 +102,6 @@ describe('models/helpers', () => {
             createdAt: iso
         });
 
-        expect(normalizePlanoRow({
-            id: 4,
-            title: 'Basic',
-            price: '9.90',
-            subtitle: 'Subtitle',
-            features_json: '["a","b"]',
-            created_at: iso
-        })).toEqual({
-            id: 4,
-            title: 'Basic',
-            price: '9.90',
-            subtitle: 'Subtitle',
-            features: ['a', 'b'],
-            createdAt: iso
-        });
-
         expect(normalizeNoticiaRow({
             id: 5,
             title: 'News',
@@ -179,46 +161,6 @@ describe('models/helpers', () => {
             message: 'Hello',
             paymentMethod: 'pix',
             status: 'confirmada',
-            createdAt: iso
-        });
-
-        expect(normalizeAssinaturaPlanoRow({
-            id: 7,
-            plan_id: 1,
-            user_id: 2,
-            plan_name: 'Plan',
-            plan_price: '19.90',
-            subscriber_name: 'Subscriber',
-            subscriber_email: 'subscriber@example.com',
-            subscriber_phone: '11999999999',
-            subscriber_document: '12345678901',
-            subscriber_cep: '12345678',
-            subscriber_street: 'Street',
-            subscriber_number: '2',
-            subscriber_neighborhood: 'Neighborhood',
-            subscriber_city: 'City',
-            subscriber_state: 'SP',
-            payment_method: 'cartao',
-            status: 'pendente',
-            created_at: iso
-        })).toEqual({
-            id: 7,
-            planId: 1,
-            userId: 2,
-            planName: 'Plan',
-            planPrice: '19.90',
-            subscriberName: 'Subscriber',
-            subscriberEmail: 'subscriber@example.com',
-            subscriberPhone: '11999999999',
-            subscriberDocument: '12345678901',
-            subscriberCep: '12345678',
-            subscriberStreet: 'Street',
-            subscriberNumber: '2',
-            subscriberNeighborhood: 'Neighborhood',
-            subscriberCity: 'City',
-            subscriberState: 'SP',
-            paymentMethod: 'cartao',
-            status: 'pendente',
             createdAt: iso
         });
 

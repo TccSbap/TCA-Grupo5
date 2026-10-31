@@ -90,22 +90,6 @@ module.exports = ({ pool, canUseDatabase }) => {
             const [result] = await connection.execute(query, values);
 
             const denunciaId = hasExplicitId ? denuncia.id : result.insertId;
-            await connection.execute('DELETE FROM denuncia_responses WHERE denuncia_id = ?', [denunciaId]);
-
-            const responses = Array.isArray(denuncia.responses) ? denuncia.responses : [];
-            for (const response of responses) {
-                await connection.execute(
-                    `INSERT INTO denuncia_responses (denuncia_id, ong_id, ong_name, response_text, created_at)
-                     VALUES (?, ?, ?, ?, ?)`,
-                    [
-                        denunciaId,
-                        response.ongId || response.ong_id || null,
-                        response.ongName || response.ong_name || null,
-                        response.text || response.response_text || '',
-                        toSqlDateTime(response.createdAt)
-                    ]
-                );
-            }
 
             await connection.commit();
             return {
@@ -120,58 +104,22 @@ module.exports = ({ pool, canUseDatabase }) => {
         }
     };
 
-    const getDenuncias = async (ongId = null) => {
-        const denuncias = await loadDenuncias();
-        const normalizedOngId = normalizeFilterId(ongId);
-
-        if (normalizedOngId === null) {
-            return denuncias;
-        }
-
-        return denuncias.filter((denuncia) =>
-            denuncia.responses.some((response) => response.ongId === normalizedOngId)
-        );
-    };
+    const getDenuncias = async () => loadDenuncias();
 
     const getDenunciaById = async (id) => {
         const denuncias = await loadDenuncias();
         return denuncias.find((denuncia) => denuncia.id === parseInt(id, 10)) || null;
     };
 
-    const createDenuncia = async (denunciaData) => {
-        const newDenuncia = await persistDenuncia({
-            ...denunciaData,
-            status: denunciaData.status || 'pendente',
-            responses: Array.isArray(denunciaData.responses) ? denunciaData.responses : []
-        });
-
-        return {
-            ...newDenuncia,
-            responses: Array.isArray(denunciaData.responses) ? denunciaData.responses : []
-        };
-    };
-
-    const updateDenuncia = async (id, updateData) => {
-        const existingDenuncia = await getDenunciaById(id);
-        if (!existingDenuncia) {
-            return null;
-        }
-
-        const mergedDenuncia = {
-            ...existingDenuncia,
-            ...updateData,
-            id: existingDenuncia.id,
-            responses: Array.isArray(updateData.responses) ? updateData.responses : existingDenuncia.responses
-        };
-
-        await persistDenuncia(mergedDenuncia);
-        return mergedDenuncia;
-    };
+    const createDenuncia = async (denunciaData) => persistDenuncia({
+        ...denunciaData,
+        status: denunciaData.status || 'pendente',
+        responses: []
+    });
 
     return {
         createDenuncia,
         getDenunciaById,
-        getDenuncias,
-        updateDenuncia
+        getDenuncias
     };
 };

@@ -14,7 +14,7 @@ const env = {
     ...process.env,
     DOTENV_CONFIG_PATH: '.env',
     NODE_ENV: 'development',
-    USE_MOCK_DB: 'false',
+    USE_MOCK_DB: process.env.USE_MOCK_DB || 'true',
     WATCH_RELOAD: 'true'
 };
 

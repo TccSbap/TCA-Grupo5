@@ -14,9 +14,9 @@ module.exports = () => [
     },
     {
         id: 2,
-        title: 'Plataforma reduz tempo medio de resposta das denuncias',
+        title: 'Plataforma facilita o encaminhamento de denuncias',
         date: '28 de Fevereiro de 2025',
-        description: 'Com triagem automatica e repasse por regiao, as denuncias passaram a chegar mais rapido as organizacoes responsaveis.',
+        description: 'A plataforma organiza os registros para facilitar o encaminhamento aos orgaos publicos responsaveis.',
         image: '/images/saneamento.webp',
         url: '/noticias?destaque=2',
         iconClass: 'fas fa-chart-line',
@@ -43,17 +43,6 @@ module.exports = () => [
         url: '/noticias?destaque=4',
         iconClass: 'fas fa-water',
         sortOrder: 4,
-        createdAt: createTimestamp()
-    },
-    {
-        id: 5,
-        title: 'Novos planos solidarios ampliam apoio as ONGs locais',
-        date: '20 de Maio de 2025',
-        description: 'A adesao aos planos ajudou a financiar campanhas, materiais educativos e pequenas melhorias de infraestrutura.',
-        image: '/images/WSlJfDPMch2v.png',
-        url: '/noticias?destaque=5',
-        iconClass: 'fas fa-heart',
-        sortOrder: 5,
         createdAt: createTimestamp()
     },
     {

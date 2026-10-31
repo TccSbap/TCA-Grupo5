@@ -90,40 +90,6 @@
         });
     }
 
-    const responsesCanvas = makeCanvas('adminResponsesChart');
-    if (responsesCanvas) {
-        new Chart(responsesCanvas, {
-            type: 'bar',
-            data: {
-                labels: data.responsesByOng.labels,
-                datasets: [{
-                    label: 'Respostas',
-                    data: data.responsesByOng.values,
-                    backgroundColor: colors.blueLight,
-                    borderColor: colors.blue,
-                    borderWidth: 1,
-                    borderRadius: 10,
-                    borderSkipped: false
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: { precision: 0 }
-                    }
-                }
-            }
-        });
-    }
 
     const monthlyCanvas = makeCanvas('adminMonthlyActivityChart');
     if (monthlyCanvas) {

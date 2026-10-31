@@ -21,9 +21,6 @@ const createIndexRouter = (data = defaultData) => {
     router.get('/doacoes/:ongId/doar', controller.donateForm);
     router.post('/doar', controller.donate);
     router.get('/doacoes', controller.doacoes);
-    router.get('/planos/:planoId/assinar', controller.planForm);
-    router.post('/assinar-plano', controller.subscribePlan);
-    router.get('/planos', controller.planos);
     router.get('/noticias', controller.noticias);
     router.get('/impacto', controller.impacto);
     router.get('/impacto/relatorio.csv', controller.impactoCsv);

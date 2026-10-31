@@ -61,7 +61,6 @@ test('a pagina inicial carrega e mostra os atalhos principais', async ({ page })
   await expect(page.getByRole('heading', { name: /Consciente para Todos/i })).toBeVisible();
   await expect(page.locator('a[href="/denuncias/nova"]').first()).toBeVisible();
   await expect(page.locator('a[href="/ongs"]').first()).toBeVisible();
-  await expect(page.locator('a[href="/planos"]').first()).toBeVisible();
 });
 
 test('rota desconhecida exibe a pagina 404', async ({ page }) => {
@@ -100,11 +99,11 @@ test('usuario cadastra uma ONG e consegue entrar no painel da ONG', async ({ pag
 
   await loginUser(page, 'nova-ong-teste@exemplo.com', 'SenhaForte123');
   await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
-  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Perfil da ONG/i })).toBeVisible();
 
   await page.goto('/admin');
   await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
-  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Perfil da ONG/i })).toBeVisible();
 
   await page.goto('/admin/denuncias');
   await expect(page).toHaveURL(/\/ongs\/admin\/dashboard$/);
@@ -127,8 +126,8 @@ test('usuario autenticado envia uma denuncia e acompanha os detalhes', async ({ 
 
   await page.goto('/denuncias/15');
   await expect(page.getByRole('heading', { name: /Lagoa contaminada por esgoto/i })).toBeVisible();
-  await expect(page.getByText(/Ainda não há respostas/i)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Meu Dashboard' })).toBeVisible();
+  await expect(page.locator('form[action*="responder"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Enviar Resposta/i })).toHaveCount(0);
 });
 
 test('usuario faz uma doacao completa para uma ONG', async ({ page }) => {
@@ -154,28 +153,10 @@ test('usuario faz uma doacao completa para uma ONG', async ({ page }) => {
   await expect(page.getByText(/registrada com sucesso/i)).toBeVisible();
 });
 
-test('usuario assina um plano da plataforma', async ({ page }) => {
-  await page.goto('/planos/1/assinar');
-
-  await page.locator('#nomeCompleto').fill('Maria da Silva');
-  await page.locator('#emailComprador').fill('maria@exemplo.com');
-  await page.locator('#telefoneComprador').fill('(11) 98888-7777');
-  await page.locator('#documentoComprador').fill('52998224725');
-  await page.locator('#cepComprador').fill('01001000');
-  await page.locator('#ruaComprador').fill('Rua das Flores');
-  await page.locator('#numeroComprador').fill('123');
-  await page.locator('#bairroComprador').fill('Bairro Central');
-  await page.locator('#cidadeComprador').fill('Sao Paulo');
-  await page.locator('#estadoComprador').fill('SP');
-  await page.locator('input[name="metodoPagamento"][value="pix"]').check();
-  await page.locator('#confirmacao').check();
-  await Promise.all([
-    page.waitForNavigation(),
-    page.locator('#planoForm').evaluate((form) => form.submit())
-  ]);
-
-  await expect(page).toHaveURL(/\/planos\?success=/);
-  await expect(page.getByText(/registrada com sucesso/i)).toBeVisible();
+test('rotas de planos e assinaturas nao estao disponiveis', async ({ page }) => {
+  const response = await page.goto('/planos');
+  expect(response.status()).toBe(404);
+  await expect(page.locator('a[href^="/planos"]')).toHaveCount(0);
 });
 
 test('usuario envia mensagem pelo formulario de contato', async ({ page }) => {
@@ -192,27 +173,16 @@ test('usuario envia mensagem pelo formulario de contato', async ({ page }) => {
   await expect(page.getByText(/Mensagem enviada com sucesso/i)).toBeVisible();
 });
 
-test('ONG responde uma denuncia e acompanha o painel da ONG', async ({ page }) => {
+test('ONG nao recebe controles para responder e pode consultar apenas seu perfil', async ({ page }) => {
   await loginOng(page, 'admin@agualimpa.org', '123456');
-
   await page.goto('/denuncias/15');
   await expect(page.getByRole('heading', { name: /Lagoa contaminada por esgoto/i })).toBeVisible();
-  await page.getByLabel('Sua Resposta').fill('Nossa ONG vai vistoriar o local e acionar a prefeitura hoje.');
-  await page.getByLabel('Atualizar Status').selectOption('em_andamento');
-  await page.getByRole('button', { name: 'Enviar Resposta' }).click();
-
-  await expect(page).toHaveURL(/\/denuncias\/15\?success=/);
-  await expect(page.getByText(/Resposta adicionada com sucesso/i)).toBeVisible();
-  await expect(page.getByText(/Nossa ONG vai vistoriar o local/i)).toBeVisible();
-
-  await page.goto('/ongs/admin/dashboard');
-  await expect(page.getByRole('heading', { name: /Painel da ONG/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Den[úu]ncias Pendentes/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Minhas Respostas/i })).toBeVisible();
-
-  await page.goto('/ongs/admin/stats');
-  await expect(page.getByRole('heading', { name: /Estat/i })).toBeVisible();
-  await expect(page.getByText(/Total de Denúncias/i)).toBeVisible();
+  await expect(page.locator('form[action*="responder"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Enviar Resposta/i })).toHaveCount(0);
+  await expect(page.getByText(/Respostas das ONGs/i)).toHaveCount(0);
+  await page.goto('/ongs/1');
+  await expect(page.getByRole('heading', { name: /ONG.*Limpa/i })).toBeVisible();
+  await expect(page.getByText(/denuncias respondidas/i)).toHaveCount(0);
 });
 
 test('administrador acessa o painel administrativo separado', async ({ page }) => {
