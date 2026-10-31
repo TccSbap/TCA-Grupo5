@@ -23,7 +23,7 @@ const getCookieOptions = (req) => ({
 });
 
 const shouldSkipCsrf = (req) => {
-    if (req.path.startsWith(TEST_PATH_PREFIX)) {
+    if (process.env.NODE_ENV === 'test' && req.path.startsWith(TEST_PATH_PREFIX)) {
         return true;
     }
 

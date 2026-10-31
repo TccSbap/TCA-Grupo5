@@ -138,6 +138,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    const bottomNavigationToggle = document.querySelector('[data-bottom-navigation-toggle]');
+    const bottomNavigationMenu = document.getElementById('bottom-navigation-menu');
+
+    if (bottomNavigationToggle && bottomNavigationMenu) {
+        const setBottomNavigationMenuOpen = (isOpen, returnFocus = false) => {
+            bottomNavigationToggle.setAttribute('aria-expanded', String(isOpen));
+            bottomNavigationMenu.hidden = !isOpen;
+
+            if (returnFocus) {
+                bottomNavigationToggle.focus();
+            }
+        };
+
+        bottomNavigationToggle.addEventListener('click', () => {
+            const isOpen = bottomNavigationToggle.getAttribute('aria-expanded') === 'true';
+            setBottomNavigationMenuOpen(!isOpen);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!bottomNavigationMenu.contains(event.target) && !bottomNavigationToggle.contains(event.target)) {
+                setBottomNavigationMenuOpen(false);
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && bottomNavigationToggle.getAttribute('aria-expanded') === 'true') {
+                setBottomNavigationMenuOpen(false, true);
+            }
+        });
+    }
+
     initPasswordToggles();
     
     // Smooth scroll para links internos

@@ -160,7 +160,7 @@ describe('rotas de denúncias', () => {
       });
 
     expect(response.status).toBe(302);
-    expect(response.headers.location).toContain('success=Valida%C3%A7%C3%A3o%20conclu%C3%ADda');
+    expect(decodeURIComponent(response.headers.location)).toContain('success=Denúncia registrada com sucesso.');
   });
 
   test('GET /denuncias/:id retorna 404 quando a denúncia não existe', async () => {

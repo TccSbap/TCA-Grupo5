@@ -6,6 +6,7 @@ const createOngsModel = require('../app/models/ongs.model');
 const createNoticiasModel = require('../app/models/noticias.model');
 const createDoacoesModel = require('../app/models/doacoes.model');
 const createMensagensContatoModel = require('../app/models/mensagensContato.model');
+const createCadastroModel = require('../app/models/cadastro.model');
 
 const defaultPasswordHash = process.env.NODE_ENV === 'production'
     ? null
@@ -53,6 +54,7 @@ const mensagensContato = createMensagensContatoModel({
 const resetData = async () => false;
 
 module.exports = {
+    ...createCadastroModel({ pool, canUseDatabase, defaultPasswordHash }),
     ensureDataLoaded,
     ...users,
     ...denuncias,

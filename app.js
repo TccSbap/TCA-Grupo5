@@ -117,6 +117,7 @@ const createApp = (data = defaultData) => {
     app.use(session(sessionOptions));
 
     app.use((req, res, next) => {
+        res.set('Cache-Control', 'no-store');
         const user = req.session.user || null;
         const cookieConsent = getCookieConsent(req);
         const seo = getSeoMetadataForPath(req.path, siteUrl);
@@ -203,6 +204,18 @@ const createApp = (data = defaultData) => {
             seoOgType: 'website',
             seoOgDescription: 'A página solicitada não foi encontrada.'
         });
+    });
+
+    app.use((error, req, res, next) => {
+        if (res.headersSent) return next(error);
+        console.error('Erro ao atender solicitação:', error);
+        const status = Number.isInteger(error.status) && error.status >= 400 && error.status < 600 ? error.status : 500;
+        res.set('Cache-Control', 'no-store');
+        res.set('X-Robots-Tag', 'noindex, nofollow');
+        if (!res.locals.cspNonce || typeof res.locals.isLoggedIn === 'undefined') {
+            return res.status(status).type('text/plain').send('Não foi possível concluir a solicitação. Tente novamente.');
+        }
+        return res.status(status).render('500', { title: 'Não foi possível concluir a solicitação', seoRobots: 'noindex, nofollow' });
     });
 
     return app;

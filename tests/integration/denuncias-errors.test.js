@@ -31,12 +31,9 @@ describe('tratamento de erros das denúncias', () => {
     expect(response.headers.location).toBe('/auth/login');
   });
 
-  test('POST /denuncias/nova redireciona com erro quando a validação lança exceção', () => {
-    const router = require('../../app/routes/denuncias.js');
-    const layer = router.stack.find(
-      (entry) => entry.route && entry.route.path === '/nova' && entry.route.methods.post
-    );
-    const handler = layer.route.stack[1].handle;
+  test('POST /denuncias/nova informa falha de persistencia sem indicar sucesso', async () => {
+    const { createDenunciasController } = require('../../app/controllers/denunciasController');
+    const handler = createDenunciasController({ createDenuncia: jest.fn().mockRejectedValue(new Error('database unavailable')) }).create;
     const req = createMockReq({
       session: {
         user: {
@@ -46,11 +43,7 @@ describe('tratamento de erros das denúncias', () => {
         }
       },
       body: {
-        title: {
-          get length() {
-            throw new Error('forced failure');
-          }
-        },
+        title: 'Denuncia valida para teste',
         description: 'Descricao longa o suficiente para passar na validacao.',
         location: 'Centro - SP',
         category: 'agua'
@@ -58,9 +51,9 @@ describe('tratamento de erros das denúncias', () => {
     });
     const res = createMockRes();
 
-    handler(req, res);
+    await handler(req, res);
 
-    expect(res.redirect).toHaveBeenCalledWith('/denuncias/nova?error=Erro ao validar denúncia');
+    expect(res.redirect).toHaveBeenCalledWith('/denuncias/nova?error=' + encodeURIComponent('Não foi possível registrar a denúncia. Tente novamente.'));
   });
 
   test('rotas de resposta e atualizacao de status por ONG foram removidas', async () => {

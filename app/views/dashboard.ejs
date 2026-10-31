@@ -7,7 +7,7 @@
             <p>Olá, <%= user.name %>. Aqui estão suas últimas atividades na plataforma.</p>
         </header>
 
-        <section class="dashboard-stats">
+        <section class="dashboard-stats dashboard-user-stats">
             <article class="stat-card">
                 <nav class="stat-icon">
                     <i class="fas fa-exclamation-circle"></i>
@@ -24,7 +24,7 @@
                 </nav>
                 <nav class="stat-content">
                     <h3><%= totalDoacoes %></h3>
-                    <p>Doações realizadas</p>
+                    <p>Doações registradas</p>
                 </nav>
             </article>
 
@@ -68,6 +68,7 @@
                     <li class="dashboard-list-item">
                         <strong>Doação</strong>
                         <span>R$ <%= Number(doacao.amount || 0).toFixed(2) %></span>
+                        <small><%= doacao.status === 'confirmada' ? 'Confirmada' : doacao.status === 'cancelada' ? 'Cancelada' : 'Intenção de apoio pendente' %></small>
                     </li>
                     <% }) %>
                 </ul>

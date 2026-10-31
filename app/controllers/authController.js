@@ -119,7 +119,7 @@ const createAuthController = (data) => ({
             return res.redirect('/ongs/admin/dashboard');
         }
 
-        return res.redirect('/');
+        return res.redirect('/dashboard');
     },
 
     async changePassword(req, res) {
@@ -243,25 +243,26 @@ const createAuthController = (data) => ({
         const normalizedUserType = isOngSignup ? 'ong' : 'user';
 
         try {
-            const newUser = await data.createUser({
+            const userData = {
                 name: req.body.name,
                 email: req.body.email,
                 password: passwordHash,
                 type: normalizedUserType,
                 ongName: isOngSignup ? ongName : null
-            });
+            };
 
-            if (isOngSignup && typeof data.createOng === 'function') {
-                await data.createOng({
+            if (isOngSignup) {
+                await data.createUserWithOng(userData, {
                     name: String(ongName || '').trim(),
                     description: String(ongDescription || '').trim(),
                     contact: String(ongContact || '').trim(),
                     cnpj: String(ongCnpj || '').trim(),
                     rg: String(ongRg || '').trim(),
                     phone: String(ongPhone || '').trim() || null,
-                    address: String(ongAddress || '').trim() || null,
-                    userId: newUser.id
+                    address: String(ongAddress || '').trim() || null
                 });
+            } else {
+                await data.createUser(userData);
             }
 
             return res.redirect('/auth/login?success=' + encodeURIComponent('Cadastro realizado com sucesso. Faça login para continuar.'));

@@ -44,10 +44,47 @@
             </nav>
             
             <nav class="footer-bottom">
-                <p>&copy; 2025 ODS 6 - Todos os direitos reservados.</p>
+                <p>&copy; 2026 Água Consciente - Todos os direitos reservados.</p>
             </nav>
         </nav>
     </footer>
+
+    <% {
+        const navPath = typeof currentPath === 'string' ? currentPath : '/';
+        const navIsActive = (path) => path === '/' ? navPath === '/' : navPath === path || navPath.startsWith(path + '/');
+        const otherRoutes = ['/noticias', '/ongs', '/sobre', '/contato', '/impacto'];
+        const isOngProfileRoute = navPath === '/ongs/admin' || navPath.startsWith('/ongs/admin/');
+        const otherIsActive = !isOngProfileRoute && otherRoutes.some((path) => navIsActive(path));
+        const profilePath = isLoggedIn ? (dashboardPath || '/dashboard') : '/auth/login';
+        const profileIsActive = isLoggedIn && (navPath === profilePath || navPath.startsWith(profilePath + '/'));
+    %>
+    <nav class="bottom-navigation" aria-label="Navegação móvel">
+        <a class="bottom-navigation-item <%- navIsActive('/') ? 'is-active' : '' %>" href="/" <%- navIsActive('/') ? 'aria-current="page"' : '' %>>
+            <i class="fas fa-house" aria-hidden="true"></i><span>Home</span>
+        </a>
+        <a class="bottom-navigation-item <%- navIsActive('/doacoes') ? 'is-active' : '' %>" href="/doacoes" <%- navIsActive('/doacoes') ? 'aria-current="page"' : '' %>>
+            <i class="fas fa-hand-holding-heart" aria-hidden="true"></i><span>Doação</span>
+        </a>
+        <a class="bottom-navigation-item bottom-navigation-report <%- navIsActive('/denuncias') ? 'is-active' : '' %>" href="/denuncias" <%- navIsActive('/denuncias') ? 'aria-current="page"' : '' %>>
+            <i class="fas fa-triangle-exclamation" aria-hidden="true"></i><span>Denúncias</span>
+        </a>
+        <div class="bottom-navigation-more">
+            <button class="bottom-navigation-item bottom-navigation-more-toggle <%- otherIsActive ? 'is-active' : '' %>" type="button" aria-expanded="false" aria-controls="bottom-navigation-menu" data-bottom-navigation-toggle <%- otherIsActive ? 'aria-current="page"' : '' %>>
+                <i class="fas fa-ellipsis" aria-hidden="true"></i><span>Outros</span>
+            </button>
+            <nav class="bottom-navigation-menu" id="bottom-navigation-menu" aria-label="Outras páginas" hidden>
+                <a href="/noticias" <%- navIsActive('/noticias') ? 'aria-current="page"' : '' %>><i class="fas fa-newspaper" aria-hidden="true"></i>Notícias</a>
+                <a href="/ongs" <%- navIsActive('/ongs') ? 'aria-current="page"' : '' %>><i class="fas fa-hands-helping" aria-hidden="true"></i>ONGs</a>
+                <a href="/sobre" <%- navIsActive('/sobre') ? 'aria-current="page"' : '' %>><i class="fas fa-circle-info" aria-hidden="true"></i>Sobre</a>
+                <a href="/contato" <%- navIsActive('/contato') ? 'aria-current="page"' : '' %>><i class="fas fa-envelope" aria-hidden="true"></i>Contato</a>
+                <a href="/impacto" <%- navIsActive('/impacto') ? 'aria-current="page"' : '' %>><i class="fas fa-chart-line" aria-hidden="true"></i>Impacto</a>
+            </nav>
+        </div>
+        <a class="bottom-navigation-item <%- profileIsActive ? 'is-active' : '' %>" href="<%= profilePath %>" <%- profileIsActive ? 'aria-current="page"' : '' %>>
+            <i class="fas fa-user" aria-hidden="true"></i><span>Perfil</span>
+        </a>
+    </nav>
+    <% } %>
 
     <% if (typeof showCookieBanner !== 'undefined' && showCookieBanner) { %>
     <aside class="cookie-banner" role="dialog" aria-modal="false" aria-labelledby="cookie-banner-title" aria-describedby="cookie-banner-description">

@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Plataforma de denúncias e mobilização para água limpa e saneamento básico da ODS 6.">
     <meta name="theme-color" content="#2563eb">
     <meta name="application-name" content="ODS 6">
     <meta name="apple-mobile-web-app-title" content="ODS 6">
@@ -43,6 +42,7 @@
     <meta name="robots" content="<%= seoRobotsValue %>">
     <link rel="canonical" href="<%= seoCanonicalValue %>">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
+    <link rel="stylesheet" href="/css/bottom-navigation.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
     <%
         const extraStylesheets =
             typeof extraStyles !== 'undefined' && Array.isArray(extraStyles)
@@ -97,14 +97,14 @@
 
                 <nav class="nav-menu" id="primary-navigation" aria-label="Menu principal">
                     <ul class="nav-links">
-                        <li><a href="/" class="<%= isActiveRoute('/') ? 'active' : '' %>" <%= isActiveRoute('/') ? 'aria-current=\"page\"' : '' %>>Início</a></li>
-                        <li><a href="/noticias" class="<%= isActiveRoute('/noticias') ? 'active' : '' %>" <%= isActiveRoute('/noticias') ? 'aria-current=\"page\"' : '' %>>Notícias</a></li>
-                        <li><a href="/ongs" class="<%= isActiveRoute('/ongs') ? 'active' : '' %>" <%= isActiveRoute('/ongs') ? 'aria-current=\"page\"' : '' %>>ONGs</a></li>
-                        <li><a href="/denuncias" class="<%= isActiveRoute('/denuncias') ? 'active' : '' %>" <%= isActiveRoute('/denuncias') ? 'aria-current=\"page\"' : '' %>>Denúncias</a></li>
-                        <li><a href="/sobre" class="<%= isActiveRoute('/sobre') ? 'active' : '' %>" <%= isActiveRoute('/sobre') ? 'aria-current=\"page\"' : '' %>>Sobre</a></li>
-                        <li><a href="/contato" class="<%= isActiveRoute('/contato') ? 'active' : '' %>" <%= isActiveRoute('/contato') ? 'aria-current=\"page\"' : '' %>>Contato</a></li>
-                        <li><a href="/doacoes" class="<%= isActiveRoute('/doacoes') ? 'active' : '' %>" <%= isActiveRoute('/doacoes') ? 'aria-current=\"page\"' : '' %>>Doações</a></li>
-                        <li><a href="/impacto" class="<%= isActiveRoute('/impacto') ? 'active' : '' %>" <%= isActiveRoute('/impacto') ? 'aria-current=\"page\"' : '' %>>Impacto</a></li>
+                        <li><a href="/" class="<%- isActiveRoute('/') ? 'active' : '' %>" <%- isActiveRoute('/') ? 'aria-current=\"page\"' : '' %>>Início</a></li>
+                        <li><a href="/noticias" class="<%- isActiveRoute('/noticias') ? 'active' : '' %>" <%- isActiveRoute('/noticias') ? 'aria-current=\"page\"' : '' %>>Notícias</a></li>
+                        <li><a href="/ongs" class="<%- isActiveRoute('/ongs') ? 'active' : '' %>" <%- isActiveRoute('/ongs') ? 'aria-current=\"page\"' : '' %>>ONGs</a></li>
+                        <li><a href="/denuncias" class="<%- isActiveRoute('/denuncias') ? 'active' : '' %>" <%- isActiveRoute('/denuncias') ? 'aria-current=\"page\"' : '' %>>Denúncias</a></li>
+                        <li><a href="/sobre" class="<%- isActiveRoute('/sobre') ? 'active' : '' %>" <%- isActiveRoute('/sobre') ? 'aria-current=\"page\"' : '' %>>Sobre</a></li>
+                        <li><a href="/contato" class="<%- isActiveRoute('/contato') ? 'active' : '' %>" <%- isActiveRoute('/contato') ? 'aria-current=\"page\"' : '' %>>Contato</a></li>
+                        <li><a href="/doacoes" class="<%- isActiveRoute('/doacoes') ? 'active' : '' %>" <%- isActiveRoute('/doacoes') ? 'aria-current=\"page\"' : '' %>>Doações</a></li>
+                        <li><a href="/impacto" class="<%- isActiveRoute('/impacto') ? 'active' : '' %>" <%- isActiveRoute('/impacto') ? 'aria-current=\"page\"' : '' %>>Impacto</a></li>
                     </ul>
                 </nav>
 
@@ -122,7 +122,7 @@
                                     <% } %>
                                 </summary>
                                 <nav class="dropdown" aria-label="Menu do usuário">
-                                    <a href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
+                                    <a class="header-dashboard-link" href="<%= dashboardPath || '/dashboard' %>"><%= dashboardLabel || 'Dashboard' %></a>
                                     <a href="<%= changePasswordPath || '/auth/alterar-senha' %>"><%= changePasswordLabel || 'Alterar senha' %></a>
                                     <form action="/auth/logout" method="POST" class="logout-form">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">

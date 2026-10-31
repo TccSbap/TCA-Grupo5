@@ -9,19 +9,6 @@ const {
 } = require('../utils/seo');
 
 const createDenunciasController = (data) => {
-    const findUserOng = async (userId) => {
-        if (typeof data.getOngByUserId === 'function') {
-            return data.getOngByUserId(userId);
-        }
-
-        if (typeof data.getOngs !== 'function') {
-            return null;
-        }
-
-        const ongs = await data.getOngs();
-        return ongs.find((ong) => ong.userId === userId) || null;
-    };
-
     const buildSeoPayload = (res, pathname, title, description, options = {}) => ({
         title,
         seoCanonical: buildAbsoluteUrl(pathname, getSiteUrl()),
@@ -104,7 +91,12 @@ const createDenunciasController = (data) => {
         },
 
         async create(req, res) {
-            const { title, description, location, category } = req.body;
+            const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
+            const description = typeof req.body.description === 'string' ? req.body.description.trim() : '';
+            const location = typeof req.body.location === 'string' ? req.body.location.trim() : '';
+            const aliases = { lixo: 'poluicao', drenagem: 'geral', outros: 'geral' };
+            const rawCategory = req.body.category || 'geral';
+            const category = typeof rawCategory === 'string' && Object.hasOwn(aliases, rawCategory) ? aliases[rawCategory] : rawCategory;
 
             try {
                 if (!title || !description || !location) {
@@ -123,6 +115,13 @@ const createDenunciasController = (data) => {
                     return res.redirect('/denuncias/nova?error=Informe uma localização válida');
                 }
 
+                if (title.length > 200 || location.length > 255 || description.length > 10000) {
+                    return res.redirect('/denuncias/nova?error=' + encodeURIComponent('Título, localização ou descrição excedem o tamanho permitido.'));
+                }
+                if (!['agua', 'esgoto', 'poluicao', 'geral'].includes(category)) {
+                    return res.redirect('/denuncias/nova?error=' + encodeURIComponent('Selecione uma categoria válida.'));
+                }
+
                 const user = req.session.user;
                 await data.createDenuncia({
                     title,
@@ -133,10 +132,10 @@ const createDenunciasController = (data) => {
                     userName: user.name || user.ongName || 'Usuário'
                 });
 
-                return res.redirect('/denuncias/nova?success=Validação concluída!');
+                return res.redirect('/denuncias/nova?success=' + encodeURIComponent('Denúncia registrada com sucesso.'));
             } catch (error) {
-                console.error('Erro ao validar denúncia:', error);
-                res.redirect('/denuncias/nova?error=Erro ao validar denúncia');
+                console.error('Erro ao registrar denúncia:', error);
+                res.redirect('/denuncias/nova?error=' + encodeURIComponent('Não foi possível registrar a denúncia. Tente novamente.'));
             }
         },
 

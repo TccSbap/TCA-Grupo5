@@ -122,7 +122,7 @@ test('usuario autenticado envia uma denuncia e acompanha os detalhes', async ({ 
   await page.getByRole('button', { name: /Enviar Den[úu]ncia/i }).click();
 
   await expect(page).toHaveURL(/\/denuncias\/nova\?success=/);
-  await expect(page.getByText(/Valida/i)).toBeVisible();
+  await expect(page.getByText(/Denúncia registrada com sucesso/i)).toBeVisible();
 
   await page.goto('/denuncias/15');
   await expect(page.getByRole('heading', { name: /Lagoa contaminada por esgoto/i })).toBeVisible();

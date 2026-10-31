@@ -1,35 +1,72 @@
-<%- include('partials/header') %>
+<%
+    const articles = typeof noticias !== 'undefined' && Array.isArray(noticias) ? noticias : [];
+    const query = typeof newsQuery === 'string' ? newsQuery : '';
+    const selectedTopic = typeof newsTopic === 'string' ? newsTopic : '';
+    const topicLabels = typeof newsTopics === 'object' && newsTopics ? newsTopics : {};
+    const total = typeof newsTotal === 'number' ? newsTotal : articles.length;
+    const reviewedAt = typeof newsReviewedAt === 'string' && Number.isFinite(new Date(newsReviewedAt).getTime()) ? newsReviewedAt : null;
+%>
+<%- include('partials/header', { extraStyles: ['/css/noticias.css'] }) %>
 
 <section class="noticias-hero">
-    <article class="noticias-hero-content">
+    <article class="noticias-hero-content container">
         <h1>Notícias sobre Saneamento Básico</h1>
         <p>Acompanhe as últimas notícias e atualizações sobre saneamento básico e água potável no Brasil</p>
+        <% if (reviewedAt) { %>
+        <p class="noticias-review">Seleção de fontes públicas · Revisada em <time datetime="<%= reviewedAt %>"><%= new Date(reviewedAt).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) %></time></p>
+        <% } %>
     </article>
 </section>
 
 <section class="noticias-container">
-    <article class="noticias-grid">
-        <% noticias.forEach(noticia => { %>
+    <div class="container">
+    <form class="noticias-filters" action="/noticias" method="GET" role="search" aria-label="Buscar notícias">
+        <div class="form-group">
+            <label for="news-search">Buscar notícia</label>
+            <input id="news-search" name="q" type="search" maxlength="120" value="<%= query %>" placeholder="Assunto, região ou fonte">
+        </div>
+        <div class="form-group">
+            <label for="news-topic">Tema</label>
+            <select id="news-topic" name="tema">
+                <option value="">Todos os temas</option>
+                <% Object.entries(topicLabels).forEach(([key, label]) => { %>
+                <option value="<%= key %>" <%= selectedTopic === key ? 'selected' : '' %>><%= label %></option>
+                <% }) %>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Filtrar notícias</button>
+        <% if (query || selectedTopic) { %><a class="btn btn-outline" href="/noticias">Limpar filtros</a><% } %>
+    </form>
+    <p class="noticias-summary" role="status"><%= articles.length %> de <%= total %> notícias · Mais recentes primeiro</p>
+    <p class="noticias-editorial">Resumos da plataforma com links para as publicações originais. As imagens são ilustrativas.</p>
+    <% if (articles.length === 0) { %>
+    <section class="empty-state"><h2>Nenhuma notícia encontrada</h2><p>Tente outro termo ou remova os filtros.</p><a href="/noticias" class="btn btn-outline">Ver todas as notícias</a></section>
+    <% } %>
+    <section class="noticias-grid" aria-label="Notícias selecionadas">
+        <% articles.forEach(noticia => { %>
             <article class="noticia-card">
                 <figure class="noticia-image">
-                    <img src="<%= noticia.image %>" alt="<%= noticia.title %>">
+                    <img src="<%= noticia.image %>" alt="<%= noticia.imageAlt || noticia.title %>" loading="lazy" decoding="async" width="640" height="400">
                 </figure>
                 
                 <header class="noticia-header">
-                    <time datetime="<%= noticia.date %>"><%= noticia.date %></time>
+                    <span class="noticia-topic"><%= topicLabels[noticia.topic] || 'Água e saneamento' %></span>
+                    <time <% if (noticia.publishedAt) { %>datetime="<%= noticia.publishedAt %>"<% } %>><%= noticia.date %></time>
                     <h2><%= noticia.title %></h2>
                 </header>
                 
                 <section class="noticia-content">
                     <p><%= noticia.description %></p>
+                    <p class="noticia-source">Fonte: <strong><%= noticia.sourceName || 'Publicação original' %></strong></p>
                 </section>
                 
                 <footer class="noticia-footer">
-                    <a href="<%= noticia.url %>" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Ler notícia completa</a>
+                    <a href="<%= noticia.url %>" class="btn btn-primary" target="_blank" rel="noopener noreferrer" aria-label="Ler na fonte: <%= noticia.title %> (abre em nova aba)">Ler notícia completa <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
                 </footer>
             </article>
         <% }) %>
-    </article>
+    </section>
+    </div>
 </section>
 
 <%- include('partials/footer') %>

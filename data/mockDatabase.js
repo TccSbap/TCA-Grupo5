@@ -56,6 +56,7 @@ const getUsers = () => users;
 const getUserByEmail = (email) => users.find((user) => user.email === email);
 const getUserById = (id) => users.find((user) => user.id === parseInt(id, 10));
 const authenticateUser = (email, password) => {
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) return null;
     const user = getUserByEmail(email);
     if (!user) {
         return null;
@@ -137,6 +138,11 @@ const createOng = (ongData) => {
 };
 
 const createOngAndPersist = (ongData) => createOng(ongData);
+const createUserWithOng = (userData, ongData) => {
+    const user = createUser(userData);
+    createOng({ ...ongData, userId: user.id });
+    return user;
+};
 const getOngs = (ongId = null) => {
     const normalizedOngId = normalizeFilterId(ongId);
 
@@ -187,6 +193,7 @@ const ensureDataLoaded = async () => true;
 initializeData();
 
 module.exports = {
+    createUserWithOng,
     ensureDataLoaded,
     authenticateUser,
     buildSessionUser,

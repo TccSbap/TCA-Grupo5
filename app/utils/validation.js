@@ -27,7 +27,7 @@ const isValidCpf = (value) => {
 
 const isValidDonationAmount = (value) => {
     const amount = Number(String(value || '').replace(',', '.'));
-    return Number.isFinite(amount) && amount >= 5;
+    return /^\d{1,8}([.,]\d{1,2})?$/.test(String(value || '').trim()) && Number.isFinite(amount) && amount >= 5 && amount <= 99999999.99;
 };
 
 const isValidCardNumber = (value) => {
@@ -60,7 +60,7 @@ const validateDonation = (body) => {
         return 'E-mail do doador invalido.';
     }
 
-    if (digitsOnly(body.telefoneDoador).length < 10) {
+    if (![10, 11].includes(digitsOnly(body.telefoneDoador).length)) {
         return 'Telefone invalido.';
     }
 
@@ -100,18 +100,8 @@ const validateDonation = (body) => {
         return 'Selecione um metodo de pagamento valido.';
     }
 
-    if (body.metodoPagamento === 'cartao') {
-        if (!isValidCardNumber(body.numeroCartao)) {
-            return 'Numero do cartao invalido.';
-        }
-
-        if (!isValidCardExpiry(body.validadeCartao)) {
-            return 'Validade do cartao invalida.';
-        }
-
-        if (!isValidCvv(body.cvvCartao)) {
-            return 'CVV invalido.';
-        }
+    if (body.numeroCartao || body.validadeCartao || body.cvvCartao) {
+        return 'Não envie dados de cartão. Este formulário registra somente a intenção de doar.';
     }
 
     if (!isChecked(body.confirmacao)) {

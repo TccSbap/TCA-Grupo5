@@ -8,7 +8,7 @@ describe('bootstrap da camada de dados em teste', () => {
     test('carrega a massa de dados inicial para os principais contextos', () => {
         expect(database.getUsers()).toHaveLength(12);
         expect(database.getOngs()).toHaveLength(10);
-        expect(database.getNoticias()).toHaveLength(5);
+        expect(database.getNoticias()).toHaveLength(6);
         expect(database.getDoacoes()).toHaveLength(3);
         expect(database.getMensagensContato()).toHaveLength(3);
         expect(database.getDenuncias()).toHaveLength(16);

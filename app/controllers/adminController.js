@@ -51,9 +51,9 @@ const createAdminController = (data) => {
             denunciasResolvidas: denuncias.filter((denuncia) => denuncia.status === 'resolvida').length,
             totalMensagensContato: mensagensContato.length,
             totalDoacoes: doacoes.length,
-            recentDenuncias: denuncias.slice(0, 5),
-            recentOngs: ongs.slice(0, 5),
-            recentMensagensContato: mensagensContato.slice(0, 5)
+            recentDenuncias: [...denuncias].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5),
+            recentOngs: [...ongs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5),
+            recentMensagensContato: [...mensagensContato].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5)
         };
     };
 
@@ -64,6 +64,10 @@ const createAdminController = (data) => {
 
         async login(req, res) {
             const { email, password } = req.body;
+
+            if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
+                return res.status(400).render('admin/login', { title: 'Login do Administrador', error: 'Informe e-mail e senha.' });
+            }
 
             const user = await data.authenticateUser(email, password);
             if (!user || user.type !== 'admin') {

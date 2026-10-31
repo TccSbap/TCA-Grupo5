@@ -14,6 +14,7 @@ const {
     buildPublicImpactAnalytics,
     buildCsv
 } = require('../utils/analytics');
+const { loadNoticias, searchNoticias, NEWS_TOPICS, NEWS_REVIEWED_AT } = require('../utils/noticias');
 const {
     COOKIE_CONSENT_ACCEPTED,
     COOKIE_CONSENT_COOKIE_NAME,
@@ -55,7 +56,7 @@ const createIndexController = (data) => ({
     async home(req, res) {
         const allDenuncias = await data.getDenuncias();
         const allOngs = await data.getOngs();
-        const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
+        const noticias = await loadNoticias(data);
         const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
         const mensagensContato = typeof data.getMensagensContato === 'function' ? await data.getMensagensContato() : [];
         const impacto = buildPublicImpactAnalytics({
@@ -70,7 +71,7 @@ const createIndexController = (data) => ({
                 seoOgTitle: 'Água limpa e saneamento básico | Água Consciente'
             }),
             extraStyles: ['/css/analytics.css'],
-            denuncias: allDenuncias.slice(0, 3),
+            denuncias: [...allDenuncias].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3),
             ongs: allOngs.slice(0, 3).map(formatOngForDonation),
             noticias: noticias.slice(0, 4),
             totalDenuncias: allDenuncias.length,
@@ -202,10 +203,10 @@ const createIndexController = (data) => ({
             amount: Number(String(req.body.valorDoacao).replace(',', '.')),
             message: req.body.mensagemOpcional || null,
             paymentMethod: req.body.metodoPagamento,
-            status: 'confirmada'
+            status: 'pendente'
         });
 
-        return res.redirect('/doacoes?success=' + encodeURIComponent('Doação registrada com sucesso.'));
+        return res.redirect('/doacoes?success=' + encodeURIComponent('Intenção de doação registrada com sucesso. Nenhum pagamento foi processado.'));
     },
 
     async doacoes(req, res) {
@@ -223,7 +224,10 @@ const createIndexController = (data) => ({
     },
 
     async noticias(req, res) {
-        const noticias = typeof data.getNoticias === 'function' ? await data.getNoticias() : [];
+        const allNoticias = await loadNoticias(data);
+        const newsQuery = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 120) : '';
+        const newsTopic = typeof req.query.tema === 'string' && Object.hasOwn(NEWS_TOPICS, req.query.tema) ? req.query.tema : '';
+        const noticias = searchNoticias(allNoticias, newsQuery, newsTopic);
         const noticiasPageUrl = '/noticias';
         const noticiasStructuredData = [
             buildCollectionPageStructuredData({
@@ -237,7 +241,7 @@ const createIndexController = (data) => ({
                         url: noticia.url,
                         description: noticia.description,
                         image: noticia.image,
-                        datePublished: noticia.createdAt
+                        datePublished: noticia.publishedAt
                     })),
                     getSiteUrl(),
                     {
@@ -262,7 +266,13 @@ const createIndexController = (data) => ({
                     structuredData: noticiasStructuredData
                 }
             ),
-            noticias
+            extraStyles: ['/css/noticias.css'],
+            noticias,
+            newsQuery,
+            newsTopic,
+            newsTopics: NEWS_TOPICS,
+            newsTotal: allNoticias.length,
+            newsReviewedAt: NEWS_REVIEWED_AT
         });
     },
 

@@ -49,6 +49,7 @@ module.exports = ({ pool, canUseDatabase, defaultPasswordHash }) => {
     };
 
     const authenticateUser = async (email, password) => {
+        if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) return null;
         const user = await getUserByEmail(email);
         if (!user) {
             return null;

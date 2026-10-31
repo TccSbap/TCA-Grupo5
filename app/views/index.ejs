@@ -33,7 +33,7 @@
     <section class="container">
         <nav class="stats-grid">
             <article class="stat-item">
-                <nav class="stat-icon2">
+                <nav class="stat-icon">
                     <i class="fas fa-tint"></i>
                 </nav>
                 <nav class="stat-content">
@@ -43,7 +43,7 @@
             </article>
 
             <article class="stat-item">
-                <nav class="stat-icon1">
+                <nav class="stat-icon">
                     <i class="fas fa-toilet"></i>
                 </nav>
                 <nav class="stat-content">
@@ -180,7 +180,8 @@
                     <i class="<%= noticia.iconClass || 'fas fa-newspaper' %>"></i>
                 </nav>
                 <nav class="news-content">
-                    <span class="news-date"><%= noticia.date %></span>
+                    <time class="news-date" datetime="<%= noticia.publishedAt %>"><%= noticia.date %></time>
+                    <p class="news-source">Fonte: <%= noticia.sourceName %></p>
                     <h3><%= noticia.title %></h3>
                     <p><%= noticia.description %></p>
                     <a href="<%= noticia.url %>" target="_blank" rel="noopener noreferrer" class="news-link">

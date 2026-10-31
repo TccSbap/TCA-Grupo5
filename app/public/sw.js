@@ -1,9 +1,10 @@
-const CACHE_NAME = 'ods6-pwa-v1';
+const CACHE_NAME = 'ods6-pwa-v2';
 const APP_SHELL = [
-  '/',
   '/offline.html',
   '/manifest.webmanifest',
   '/css/style.css',
+  '/css/bottom-navigation.css',
+  '/css/noticias.css',
   '/js/main.js',
   '/images/logo.png',
   '/images/logo.webp',
@@ -26,7 +27,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) =>
       Promise.all(
         cacheNames
-          .filter((cacheName) => cacheName !== CACHE_NAME)
+          .filter((cacheName) => cacheName.startsWith('ods6-pwa-') && cacheName !== CACHE_NAME)
           .map((cacheName) => caches.delete(cacheName))
       )
     )
@@ -35,34 +36,23 @@ self.addEventListener('activate', (event) => {
 });
 
 async function cacheFirst(request) {
-  const cachedResponse = await caches.match(request);
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-
-  const networkResponse = await fetch(request);
-  if (networkResponse && networkResponse.ok) {
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(request, networkResponse.clone());
-  }
-
-  return networkResponse;
-}
-
-async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request);
     if (networkResponse && networkResponse.ok) {
       const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      await cache.put(request, networkResponse.clone());
     }
     return networkResponse;
-  } catch (error) {
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
+  } catch {
+    return (await caches.match(request)) || Response.error();
+  }
+}
 
+async function networkFirst(request) {
+  try {
+    // HTML contém dados da sessão e tokens CSRF. Nunca deve ficar no cache offline.
+    return await fetch(request, { cache: 'no-store' });
+  } catch (error) {
     const offlinePage = await caches.match('/offline.html');
     return offlinePage || Response.error();
   }

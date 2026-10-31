@@ -211,16 +211,16 @@ const buildNewsArticleStructuredData = (noticia, siteUrl = getSiteUrl(), pageUrl
     description: noticia?.description,
     image: buildUrl(noticia?.image, siteUrl),
     url: buildUrl(pageUrl || noticia?.url, siteUrl),
-    datePublished: toIsoDate(noticia?.createdAt) || undefined,
-    dateModified: toIsoDate(noticia?.createdAt) || undefined,
+    datePublished: toIsoDate(noticia?.publishedAt || noticia?.createdAt) || undefined,
+    dateModified: toIsoDate(noticia?.publishedAt || noticia?.createdAt) || undefined,
     author: {
         '@type': 'Organization',
-        name: DEFAULT_SITE_NAME
+        name: noticia?.sourceName || DEFAULT_SITE_NAME
     },
     publisher: {
         '@type': 'Organization',
-        name: DEFAULT_SITE_NAME,
-        logo: {
+        name: noticia?.sourceName || DEFAULT_SITE_NAME,
+        logo: noticia?.sourceName ? undefined : {
             '@type': 'ImageObject',
             url: buildAbsoluteUrl(DEFAULT_OG_IMAGE_PATH, siteUrl)
         }

@@ -44,11 +44,11 @@ describe('validacao compartilhada de doacao', () => {
         })).toBe('Confirme os dados para continuar.');
     });
 
-    test('exige dados de cartao quando pagamento for cartao', () => {
+    test('registra preferencia por cartao sem coletar dados financeiros', () => {
         expect(validateDonation({
             ...validDonation,
             metodoPagamento: 'cartao'
-        })).toBe('Numero do cartao invalido.');
+        })).toBeNull();
 
         expect(validateDonation({
             ...validDonation,
@@ -56,6 +56,6 @@ describe('validacao compartilhada de doacao', () => {
             numeroCartao: '4111111111111111',
             validadeCartao: '12/99',
             cvvCartao: '123'
-        })).toBeNull();
+        })).toBe('Não envie dados de cartão. Este formulário registra somente a intenção de doar.');
     });
 });

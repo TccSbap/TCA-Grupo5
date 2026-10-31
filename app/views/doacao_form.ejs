@@ -6,6 +6,7 @@
             <h1>Doar para <%= ong.name %></h1>
             <p>Sua contribuição é muito importante para <%= ong.name %>!</p>
         </header>
+        <p class="alert alert-info">Este formulário registra sua intenção de apoiar a ONG. Nenhum pagamento é processado pelo site. Combine a contribuição diretamente com a organização pelos canais do seu perfil.</p>
 
         <% if (typeof error !== 'undefined' && error) { %>
             <section class="alert alert-error" role="alert">
@@ -96,9 +97,9 @@
                 <textarea id="mensagemOpcional" name="mensagemOpcional" rows="4" placeholder="Quer deixar uma mensagem para a ONG?"></textarea>
             </nav>
 
-            <h2>3. Forma de Pagamento</h2>
+            <h2>3. Forma de apoio preferida</h2>
             <nav class="form-group">
-                <label>Método de Pagamento</label>
+                <label>Método preferido para combinar com a ONG</label>
                 <nav class="payment-methods">
                     <label><input type="radio" name="metodoPagamento" value="cartao"> Cartão de Crédito</label>
                     <label><input type="radio" name="metodoPagamento" value="pix"> Pix</label>
@@ -107,44 +108,17 @@
                 <nav class="error-message" id="metodoPagamento-error"></nav>
             </nav>
 
-            <nav id="cartao-fields" class="payment-fields" hidden>
-                <nav class="form-group">
-                    <label for="numeroCartao">Número do Cartão</label>
-                    <input type="text" id="numeroCartao" name="numeroCartao" placeholder="XXXX XXXX XXXX XXXX">
-                    <nav class="error-message" id="numeroCartao-error"></nav>
-                </nav>
-                <nav class="form-group-inline">
-                    <nav class="form-group">
-                        <label for="validadeCartao">Validade</label>
-                        <input type="text" id="validadeCartao" name="validadeCartao" placeholder="MM/AA">
-                        <nav class="error-message" id="validadeCartao-error"></nav>
-                    </nav>
-                    <nav class="form-group">
-                        <label for="cvvCartao">CVV</label>
-                        <input type="text" id="cvvCartao" name="cvvCartao" placeholder="XXX">
-                        <nav class="error-message" id="cvvCartao-error"></nav>
-                    </nav>
-                </nav>
-            </nav>
-
-            <nav id="pix-fields" class="payment-fields" hidden>
-                <p>Ao finalizar, um QR Code Pix será gerado para o pagamento.</p>
-            </nav>
-
-            <nav id="boleto-fields" class="payment-fields" hidden>
-                <p>Ao finalizar, um link ou PDF do boleto será gerado para o pagamento.</p>
-            </nav>
-
             <h2>4. Confirmação</h2>
             <nav class="form-group">
                 <label>
                     <input type="checkbox" id="confirmacao" name="confirmacao" required>
-                    Confirmo que os dados estão corretos e autorizo o processamento da doação.
+                    Confirmo os dados e entendo que este registro não realiza pagamento.
                 </label>
                 <nav class="error-message" id="confirmacao-error"></nav>
             </nav>
 
             <button type="submit" class="btn btn-primary">Finalizar Doação</button>
+            <a class="btn btn-outline" href="/ongs/<%= ong.id %>">Ver contato da ONG</a>
         </form>
     </section>
 </section>

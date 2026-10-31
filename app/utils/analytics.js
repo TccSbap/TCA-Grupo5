@@ -225,6 +225,7 @@ const buildMonthlyComparisonSeries = (seriesMap) => {
 
 const sumDonationAmounts = (doacoes) => {
     return (Array.isArray(doacoes) ? doacoes : []).reduce((sum, doacao) => {
+        if (doacao.status !== 'confirmada') return sum;
         const amount = Number(doacao.amount || 0);
         return sum + (Number.isFinite(amount) ? amount : 0);
     }, 0);

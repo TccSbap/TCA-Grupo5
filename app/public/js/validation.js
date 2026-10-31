@@ -132,9 +132,8 @@ function validateRG(rg) {
 }
 
 function validateBairro(bairro) {
-    const bairroRegex = /^[A-Za-zÀ-ú\s]{10,40}$/;
     const normalized = String(bairro || '').trim();
-    return normalized.length >= 10 && normalized.length <= 40 && bairroRegex.test(normalized);
+    return normalized.length >= 3 && normalized.length <= 120;
 }
 
 function validateRua(rua) {
@@ -144,9 +143,8 @@ function validateRua(rua) {
 }
 
 function validateCidade(cidade) {
-    const cidadeRegex = /^[A-Za-zÀ-ú\s]{5,}$/;
     const normalized = String(cidade || '').trim();
-    return normalized.length >= 5 && cidadeRegex.test(normalized);
+    return normalized.length >= 3 && normalized.length <= 120;
 }
 
 function validateEstado(estado) {
@@ -160,7 +158,7 @@ function validateCEP(cep) {
 
 function validateDonationAmount(value) {
     const amount = Number(String(value || '').replace(',', '.'));
-    return Number.isFinite(amount) && amount >= 5;
+    return /^\d{1,8}([.,]\d{1,2})?$/.test(String(value || '').trim()) && Number.isFinite(amount) && amount >= 5 && amount <= 99999999.99;
 }
 
 function validateCardNumber(value) {
@@ -346,6 +344,24 @@ function validateCadastroForm() {
 function validateDoacaoForm() {
     let isValid = true;
 
+    const amount = document.getElementById('valorDoacao');
+    if (!validateDonationAmount(amount.value)) {
+        document.getElementById('valorDoacao-error').textContent = 'Informe um valor a partir de R$ 5,00, com até duas casas decimais.';
+        isValid = false;
+    }
+    if (!document.querySelector('input[name="metodoPagamento"]:checked')) {
+        document.getElementById('metodoPagamento-error').textContent = 'Selecione a forma de apoio preferida.';
+        isValid = false;
+    }
+    if (!validateCEP(document.getElementById('cepDoador').value)) {
+        document.getElementById('cepDoador-error').textContent = 'Informe um CEP com 8 dígitos.';
+        isValid = false;
+    }
+    if (!document.getElementById('numeroDoador').value.trim()) {
+        document.getElementById('numeroDoador-error').textContent = 'Informe o número.';
+        isValid = false;
+    }
+
     const nomeCompletoInput = document.getElementById('nomeCompleto');
     if (!validateNomeCompletoPagamento(nomeCompletoInput.value)) {
         document.getElementById('nomeCompleto-error').textContent = 'Nome completo deve ter pelo menos 2 palavras e conter apenas letras e espaços.';
@@ -360,7 +376,7 @@ function validateDoacaoForm() {
 
     const bairroDoadorInput = document.getElementById('bairroDoador');
     if (!validateBairro(bairroDoadorInput.value)) {
-        document.getElementById('bairroDoador-error').textContent = 'Bairro deve ter entre 10 e 40 caracteres e conter apenas letras e espaços.';
+        document.getElementById('bairroDoador-error').textContent = 'Bairro deve ter entre 3 e 120 caracteres.';
         isValid = false;
     }
 
@@ -372,7 +388,7 @@ function validateDoacaoForm() {
 
     const cidadeDoadorInput = document.getElementById('cidadeDoador');
     if (!validateCidade(cidadeDoadorInput.value)) {
-        document.getElementById('cidadeDoador-error').textContent = 'Cidade deve ter no mínimo 5 caracteres e conter apenas letras e espaços.';
+        document.getElementById('cidadeDoador-error').textContent = 'Cidade deve ter entre 3 e 120 caracteres.';
         isValid = false;
     }
 
@@ -424,4 +440,4 @@ window.validateCardExpiry = validateCardExpiry;
 window.validateCVV = validateCVV;
 window.validateNomeCompletoPagamento = validateNomeCompletoPagamento;
 window.validateCadastroForm = validateCadastroForm;
-window.validateDoacaoForm = validateDoacaoFormStrict;
+window.validateDoacaoForm = validateDoacaoForm;

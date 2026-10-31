@@ -1,4 +1,6 @@
 const { defineConfig } = require('@playwright/test');
+const baseURL = process.env.BASE_URL || 'http://127.0.0.1:3000';
+const serverPort = new URL(baseURL).port || '3000';
 
 module.exports = defineConfig({
   testDir: './tests/e2e',
@@ -6,7 +8,8 @@ module.exports = defineConfig({
   workers: 1,
   retries: process.env.CI ? 2 : 0,
   use: {
-    baseURL: process.env.BASE_URL || 'http://127.0.0.1:3000',
+    baseURL,
+    channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || undefined,
     trace: 'on-first-retry'
   },
   ...(process.env.PLAYWRIGHT_EXTERNAL_SERVER === 'true'
@@ -14,10 +17,11 @@ module.exports = defineConfig({
     : {
         webServer: {
           command: 'node app.js',
-          port: 3000,
+          url: baseURL,
           reuseExistingServer: false,
           env: {
-            NODE_ENV: 'test'
+            NODE_ENV: 'test',
+            PORT: serverPort
           }
         }
       })

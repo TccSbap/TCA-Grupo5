@@ -431,6 +431,7 @@ form[aria-busy="true"] input[type="submit"] {
 }
 
 .stat-icon {
+    flex-shrink: 0;
     background: var(--primary-blue);
     color: var(--white);
     width: 60px;
@@ -442,29 +443,6 @@ form[aria-busy="true"] input[type="submit"] {
     font-size: var(--font-size-xl);
 }
 
-.stat-icon1 {
-    background: var(--primary-blue);
-    color: var(--white);
-    width: 105px;
-    height: 65px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xl);
-}
-
-.stat-icon2{
-    background: var(--primary-blue);
-    color: var(--white);
-    width: 105px;
-    height: 65px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xl);
-}
 .stat-number {
     font-size: var(--font-size-3xl);
     font-weight: 700;
@@ -887,6 +865,70 @@ form[aria-busy="true"] input[type="submit"] {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--spacing-6);
     margin-bottom: var(--spacing-12);
+}
+
+.dashboard-user-stats {
+    justify-items: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 760px;
+    margin-right: auto;
+    margin-left: auto;
+    justify-content: center;
+}
+
+.dashboard-user-stats .stat-card {
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-3);
+    text-align: center;
+}
+
+.dashboard-user-stats .stat-icon {
+    flex: 0 0 auto;
+}
+
+.dashboard-user-stats .stat-content {
+    text-align: center;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .dashboard .dashboard-user-stats {
+        width: 100%;
+        max-width: 672px;
+        grid-template-columns: repeat(2, minmax(220px, 320px));
+        justify-content: center;
+        gap: clamp(1rem, 2.5vw, 1.5rem);
+    }
+
+    .dashboard .dashboard-user-stats .stat-card {
+        width: 100%;
+        min-width: 220px;
+        max-width: 320px;
+        height: clamp(9rem, 25vh, 11rem);
+        min-height: 9rem;
+        max-height: 11rem;
+        padding: clamp(1rem, 2vw, 1.5rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard .dashboard-user-stats {
+        width: 100%;
+        max-width: 34rem;
+        grid-template-columns: repeat(2, minmax(min(7rem, calc((100% - 0.5rem) / 2)), 1fr));
+        justify-content: center;
+        gap: clamp(0.5rem, 2.5vw, 1rem);
+    }
+
+    .dashboard .dashboard-user-stats .stat-card {
+        width: 100%;
+        min-width: 0;
+        max-width: 16rem;
+        height: clamp(8.5rem, 26vh, 10rem);
+        min-height: 8.5rem;
+        max-height: 10rem;
+        padding: clamp(0.75rem, 3vw, 1rem);
+    }
 }
 
 .stat-card {
@@ -1523,16 +1565,6 @@ form[aria-busy="true"] input[type="submit"] {
     
     .stat-item {
         padding: var(--spacing-3);
-    }
-    .stat-icon1 {
-        width: 50px;
-        height: 50px;
-        font-size: var(--font-size-lg);
-    }
-    .stat-icon2 {
-        width: 50px;
-        height: 50px;
-        font-size: var(--font-size-lg);
     }
     /* Cards menores */
     .denuncia-card,

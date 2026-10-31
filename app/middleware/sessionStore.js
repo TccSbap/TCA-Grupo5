@@ -30,7 +30,10 @@ class MySqlSessionStore extends session.Store {
                     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     INDEX idx_${this.tableName}_expires_at (expires_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-            `);
+            `).catch((error) => {
+                this.createTablePromise = null;
+                throw error;
+            });
         }
 
         await this.createTablePromise;

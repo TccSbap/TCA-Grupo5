@@ -26,6 +26,7 @@ describe('dependency injection for routes', () => {
       getUserByEmail: jest.fn().mockReturnValue(null),
       createUser: jest.fn().mockReturnValue({ id: 99 }),
       createOng: jest.fn(),
+      createUserWithOng: jest.fn().mockReturnValue({ id: 99 }),
       getUserById: jest.fn()
     };
 
@@ -60,12 +61,11 @@ describe('dependency injection for routes', () => {
       });
 
     expect(data.getUserByEmail).toHaveBeenCalledWith('maria@exemplo.com');
-    expect(data.createUser).toHaveBeenCalled();
-    expect(data.createOng).toHaveBeenCalledWith(expect.objectContaining({
+    expect(data.createUser).not.toHaveBeenCalled();
+    expect(data.createUserWithOng).toHaveBeenCalledWith(expect.objectContaining({ type: 'ong' }), expect.objectContaining({
       name: 'ONG Exemplo',
       cnpj: '04.252.011/0001-10',
-      rg: '12.345.678-9',
-      userId: 99
+      rg: '12.345.678-9'
     }));
     expect(signupResponse.status).toBe(302);
     expect(signupResponse.headers.location).toContain('/auth/login?success=');
@@ -287,7 +287,8 @@ describe('dependency injection for routes', () => {
           date: '01 de Janeiro de 2025',
           description: 'Conteudo ficticio para a home.',
           image: '/images/agua-potavel.webp',
-          url: '/noticias'
+          url: 'https://example.org/noticia-de-teste',
+          publishedAt: '2026-10-30'
         }
       ]),
       createMensagemContato: jest.fn(),

@@ -134,7 +134,7 @@ describe('rotas principais', () => {
       });
 
     expect(response.status).toBe(302);
-    expect(response.headers.location).toContain('success=Valida%C3%A7%C3%A3o%20conclu%C3%ADda');
+    expect(decodeURIComponent(response.headers.location)).toContain('success=Denúncia registrada com sucesso.');
   });
 
   test('GET /dashboard redireciona usuários anônimos para o login', async () => {
