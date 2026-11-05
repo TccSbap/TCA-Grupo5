@@ -1300,6 +1300,10 @@ form[aria-busy="true"] input[type="submit"] {
     .ods-content {
         grid-template-columns: 1fr;
         gap: var(--spacing-8);
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding-left: 0;
         text-align: center;
     }
     

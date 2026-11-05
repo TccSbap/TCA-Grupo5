@@ -1,5 +1,6 @@
 :root {
-    --bottom-navigation-content-height: 4.25rem;
+    --bottom-navigation-content-height: 4.8rem;
+    --bottom-navigation-item-height: 4.25rem;
     --bottom-navigation-safe-area: env(safe-area-inset-bottom, 0px);
 }
 
@@ -9,8 +10,7 @@
 
 @media (max-width: 1024px) {
     .nav-menu,
-    .mobile-menu-toggle,
-    .header-dashboard-link {
+    .mobile-menu-toggle {
         display: none !important;
     }
 
@@ -38,7 +38,7 @@
     .bottom-navigation-item {
         display: flex;
         min-width: 0;
-        min-height: var(--bottom-navigation-content-height);
+        min-height: var(--bottom-navigation-item-height);
         align-items: center;
         justify-content: center;
         flex-direction: column;
@@ -195,6 +195,7 @@
 @media (max-width: 1024px) and (orientation: landscape) {
     :root {
         --bottom-navigation-content-height: 3.75rem;
+        --bottom-navigation-item-height: 3.75rem;
     }
 
     .bottom-navigation-item {

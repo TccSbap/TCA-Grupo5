@@ -81,6 +81,27 @@ test('link Perfil aponta ao dashboard de usuário autenticado', async ({ page })
     .toHaveAttribute('href', '/dashboard');
 });
 
+test('menu de perfil do cabeÃ§alho oferece o dashboard em celular e tablet', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page, 'joao@email.com', '123456');
+
+  const userMenu = page.locator('.user-menu');
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1024, height: 768 }
+  ]) {
+    await page.setViewportSize(viewport);
+    await userMenu.evaluate((element) => { element.open = false; });
+    await userMenu.locator('summary').click();
+
+    const dashboardLink = userMenu.getByRole('link', { name: 'Meu Dashboard' });
+    await expect(dashboardLink).toBeVisible();
+    await expect(dashboardLink).toHaveAttribute('href', '/dashboard');
+    await expect(userMenu.getByRole('link', { name: 'Alterar senha' })).toBeVisible();
+  }
+});
+
 test('link Perfil aponta ao perfil da ONG autenticada', async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 1024 });
   await login(page, 'admin@agualimpa.org', '123456');
