@@ -349,10 +349,6 @@ function validateDoacaoForm() {
         document.getElementById('valorDoacao-error').textContent = 'Informe um valor a partir de R$ 5,00, com até duas casas decimais.';
         isValid = false;
     }
-    if (!document.querySelector('input[name="metodoPagamento"]:checked')) {
-        document.getElementById('metodoPagamento-error').textContent = 'Selecione a forma de apoio preferida.';
-        isValid = false;
-    }
     if (!validateCEP(document.getElementById('cepDoador').value)) {
         document.getElementById('cepDoador-error').textContent = 'Informe um CEP com 8 dígitos.';
         isValid = false;

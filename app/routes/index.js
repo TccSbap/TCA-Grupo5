@@ -18,8 +18,11 @@ const createIndexRouter = (data = defaultData) => {
     router.get('/lgpd', controller.privacidade);
     router.post('/cookies/consent', controller.setCookieConsent);
     router.post('/cookies/consent/reset', controller.resetCookieConsent);
+    router.get('/doacoes/projeto/doar', controller.donateProjectForm);
     router.get('/doacoes/:ongId/doar', controller.donateForm);
-    router.post('/doar', controller.donate);
+    router.post('/doar', (req, res) => req.body.recipientType === 'projeto'
+        ? controller.donateProject(req, res)
+        : controller.donate(req, res));
     router.get('/doacoes', controller.doacoes);
     router.get('/noticias', controller.noticias);
     router.get('/impacto', controller.impacto);

@@ -4,7 +4,7 @@
     <section class="container">
         <header class="page-header">
             <h1>Faça sua Doação</h1>
-            <p>Escolha uma ONG parceira para apoiar e faça a diferença!</p>
+            <p>Escolha uma ONG parceira ou contribua para o funcionamento da plataforma.</p>
         </header>
 
         <% if (typeof success !== 'undefined' && success) { %>
@@ -14,6 +14,13 @@
         <% } %>
 
         <nav class="ongs-list-grid">
+            <article class="ong-card">
+                <nav class="ong-card-body">
+                    <h3>Água Consciente</h3>
+                    <p>Ajude a manter o funcionamento e o desenvolvimento da plataforma.</p>
+                    <a href="/doacoes/projeto/doar" class="btn btn-primary">Doar para o projeto</a>
+                </nav>
+            </article>
             <% if (ongs && ongs.length > 0) { %>
                 <% ongs.forEach(function(ong) { %>
                     <article class="ong-card">

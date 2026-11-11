@@ -91,6 +91,7 @@ const normalizeNoticiaRow = (row) => ({
 const normalizeDoacaoRow = (row) => ({
     id: row.id,
     ongId: row.ong_id,
+    recipientType: row.recipient_type || 'ong',
     userId: row.user_id,
     donorName: row.donor_name,
     donorEmail: row.donor_email,
@@ -106,6 +107,9 @@ const normalizeDoacaoRow = (row) => ({
     message: row.message,
     paymentMethod: row.payment_method,
     status: row.status,
+    mercadoPagoOrderId: row.mercadopago_order_id || null,
+    mercadoPagoPaymentId: row.mercadopago_payment_id || null,
+    mercadoPagoStatus: row.mercadopago_status || null,
     createdAt: toIsoString(row.created_at)
 });
 

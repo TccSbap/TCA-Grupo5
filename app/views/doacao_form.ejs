@@ -1,12 +1,13 @@
 <%- include("./partials/header", { extraStyles: ["/stylesheets/form.css"] }) %>
 
+<% const projectDonation = typeof isProjectDonation !== 'undefined' && isProjectDonation; %>
 <section class="form-page">
     <section class="container">
         <header class="page-header">
-            <h1>Doar para <%= ong.name %></h1>
-            <p>Sua contribuição é muito importante para <%= ong.name %>!</p>
+            <h1>Doar para <%= projectDonation ? projectRecipientName : ong.name %></h1>
+            <p>Sua contribui&ccedil;&atilde;o &eacute; muito importante para <%= projectDonation ? 'manter o funcionamento da plataforma' : ong.name %>!</p>
         </header>
-        <p class="alert alert-info">Este formulário registra sua intenção de apoiar a ONG. Nenhum pagamento é processado pelo site. Combine a contribuição diretamente com a organização pelos canais do seu perfil.</p>
+        <p class="alert alert-info">Voc&ecirc; ser&aacute; direcionado ao checkout seguro do Mercado Pago para concluir a doa&ccedil;&atilde;o. O valor ser&aacute; recebido pela <%= projectDonation ? 'conta geral do projeto' : 'conta Mercado Pago conectada da ONG' %>.</p>
 
         <% if (typeof error !== 'undefined' && error) { %>
             <section class="alert alert-error" role="alert">
@@ -16,7 +17,8 @@
 
         <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate data-submit-lock-mode="manual">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <input type="hidden" name="ongId" value="<%= ong.id %>">
+            <input type="hidden" name="recipientType" value="<%= projectDonation ? 'projeto' : 'ong' %>">
+            <% if (!projectDonation) { %><input type="hidden" name="ongId" value="<%= ong.id %>"><% } %>
 
             <h2>1. Informações do Doador</h2>
             <nav class="form-group">
@@ -93,32 +95,23 @@
             </nav>
 
             <nav class="form-group">
-                <label for="mensagemOpcional">Mensagem para a ONG (opcional)</label>
-                <textarea id="mensagemOpcional" name="mensagemOpcional" rows="4" placeholder="Quer deixar uma mensagem para a ONG?"></textarea>
+                <label for="mensagemOpcional"><%= projectDonation ? 'Mensagem (opcional)' : 'Mensagem para a ONG (opcional)' %></label>
+                <textarea id="mensagemOpcional" name="mensagemOpcional" rows="4" placeholder="<%= projectDonation ? 'Deixe uma mensagem, se desejar.' : 'Quer deixar uma mensagem para a ONG?' %>"></textarea>
             </nav>
 
-            <h2>3. Forma de apoio preferida</h2>
-            <nav class="form-group">
-                <label>Método preferido para combinar com a ONG</label>
-                <nav class="payment-methods">
-                    <label><input type="radio" name="metodoPagamento" value="cartao"> Cartão de Crédito</label>
-                    <label><input type="radio" name="metodoPagamento" value="pix"> Pix</label>
-                    <label><input type="radio" name="metodoPagamento" value="boleto"> Boleto</label>
-                </nav>
-                <nav class="error-message" id="metodoPagamento-error"></nav>
-            </nav>
+            <p>As formas de pagamento disponíveis aparecerão no checkout do Mercado Pago.</p>
 
-            <h2>4. Confirmação</h2>
+            <h2>3. Confirmação</h2>
             <nav class="form-group">
                 <label>
                     <input type="checkbox" id="confirmacao" name="confirmacao" required>
-                    Confirmo os dados e entendo que este registro não realiza pagamento.
+                    Confirmo os dados e entendo que serei redirecionado ao Mercado Pago para concluir o pagamento.
                 </label>
                 <nav class="error-message" id="confirmacao-error"></nav>
             </nav>
 
-            <button type="submit" class="btn btn-primary">Finalizar Doação</button>
-            <a class="btn btn-outline" href="/ongs/<%= ong.id %>">Ver contato da ONG</a>
+            <button type="submit" class="btn btn-primary" data-mp-checkout-cta="checkout-pro">Continuar para pagamento no Mercado Pago</button>
+            <% if (!projectDonation) { %><a class="btn btn-outline" href="/ongs/<%= ong.id %>">Ver contato da ONG</a><% } %>
         </form>
     </section>
 </section>

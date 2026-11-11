@@ -3,6 +3,10 @@ const crypto = require('crypto');
 const COOKIE_NAME = 'csrfToken';
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const TEST_PATH_PREFIX = '/__test/';
+const MERCADO_PAGO_WEBHOOK_PATHS = new Set([
+    '/mercadopago/webhook',
+    '/mercadopago/webhook/projeto'
+]);
 
 const createToken = () => crypto.randomBytes(32).toString('hex');
 
@@ -33,6 +37,10 @@ const shouldSkipCsrf = (req) => {
 };
 
 const csrfProtection = (req, res, next) => {
+    if (req.method === 'POST' && MERCADO_PAGO_WEBHOOK_PATHS.has(req.path)) {
+        return next();
+    }
+
     const cookieToken = req.cookies?.[COOKIE_NAME];
     const responseToken = cookieToken || createToken();
 

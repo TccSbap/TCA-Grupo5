@@ -4,6 +4,7 @@ test-results/
 dist/
 .env
 .env.prod
+.env.*.local
 tmp/
 .mp-integrate-progress.md
 

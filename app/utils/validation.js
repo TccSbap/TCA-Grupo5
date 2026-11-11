@@ -96,10 +96,6 @@ const validateDonation = (body) => {
         return 'O valor da doacao deve ser de pelo menos R$ 5,00.';
     }
 
-    if (!['cartao', 'pix', 'boleto'].includes(body.metodoPagamento)) {
-        return 'Selecione um metodo de pagamento valido.';
-    }
-
     if (body.numeroCartao || body.validadeCartao || body.cvvCartao) {
         return 'Não envie dados de cartão. Este formulário registra somente a intenção de doar.';
     }

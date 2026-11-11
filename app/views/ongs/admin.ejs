@@ -1,6 +1,22 @@
 <%- include('../partials/header') %>
 <section class="ong-details-section"><section class="container">
     <header class="section-header"><h1>Perfil da ONG</h1><p>Dados cadastrais de <%= ong.name %>. As ONGs oferecem orienta&ccedil;&atilde;o e apoio &agrave;s comunidades; a resolu&ccedil;&atilde;o das den&uacute;ncias cabe aos &oacute;rg&atilde;os p&uacute;blicos competentes.</p></header>
+    <section class="ong-info-card card" aria-labelledby="mercado-pago-title">
+        <h2 id="mercado-pago-title">Recebimentos pelo Mercado Pago</h2>
+        <% if (mercadoPagoMessage) { %>
+            <p class="alert <%= mercadoPagoMessage.includes('sucesso') ? 'alert-success' : 'alert-error' %>" role="<%= mercadoPagoMessage.includes('sucesso') ? 'status' : 'alert' %>"><%= mercadoPagoMessage %></p>
+        <% } %>
+        <% if (!mercadoPagoMigrationReady) { %>
+            <p>A estrutura da conexão ainda não está instalada no banco de dados.</p>
+        <% } else if (mercadoPagoAccount) { %>
+            <p>Conta Mercado Pago vinculada.</p>
+        <% } else if (!mercadoPagoOAuthReady) { %>
+            <p>A conexão estará disponível após a configuração das credenciais do Mercado Pago no servidor.</p>
+        <% } else { %>
+            <p>Vincule a conta Mercado Pago da ONG para habilitar o recebimento de doações diretamente nela.</p>
+            <a class="btn btn-primary" href="/mercadopago/ongs/conectar">Conectar conta Mercado Pago</a>
+        <% } %>
+    </section>
     <address class="ong-info-card card"><h2>Informa&ccedil;&otilde;es da organiza&ccedil;&atilde;o</h2>
         <div class="info-item"><strong>Nome:</strong> <span><%= ong.name %></span></div><div class="info-item"><strong>Descri&ccedil;&atilde;o:</strong> <span><%= ong.description %></span></div><div class="info-item"><strong>Email:</strong> <span><%= ong.contact %></span></div>
         <% if (ong.cnpj) { %><div class="info-item"><strong>CNPJ:</strong> <span><%= ong.cnpj %></span></div><% } %><% if (ong.phone) { %><div class="info-item"><strong>Telefone:</strong> <span><%= ong.phone %></span></div><% } %><% if (ong.address) { %><div class="info-item"><strong>Endere&ccedil;o:</strong> <span><%= ong.address %></span></div><% } %>

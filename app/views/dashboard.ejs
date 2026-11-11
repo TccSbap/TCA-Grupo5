@@ -66,9 +66,9 @@
                 <ul class="dashboard-list">
                     <% doacoes.forEach((doacao) => { %>
                     <li class="dashboard-list-item">
-                        <strong>Doação</strong>
+                        <strong><%= doacao.recipientType === 'projeto' ? 'Doação para o projeto' : 'Doação para ONG' %></strong>
                         <span>R$ <%= Number(doacao.amount || 0).toFixed(2) %></span>
-                        <small><%= doacao.status === 'confirmada' ? 'Confirmada' : doacao.status === 'cancelada' ? 'Cancelada' : 'Intenção de apoio pendente' %></small>
+                        <small><%= doacao.status === 'confirmada' ? 'Confirmada' : doacao.status === 'reembolsada' ? 'Reembolsada' : doacao.status === 'parcialmente_reembolsada' ? 'Parcialmente reembolsada' : doacao.status === 'contestada' ? 'Contestada' : doacao.status === 'cancelada' ? 'Cancelada' : 'Aguardando pagamento' %></small>
                     </li>
                     <% }) %>
                 </ul>

@@ -3,6 +3,14 @@ const {
     validateContactMessage
 } = require('../utils/validation');
 const {
+    createOngDonationOrder,
+    isMarketplaceCheckoutConfigured
+} = require('../services/mercadoPagoMarketplace');
+const {
+    createProjectDonationOrder,
+    isProjectCheckoutConfigured
+} = require('../services/mercadoPagoProject');
+const {
     buildAbsoluteUrl,
     buildCollectionPageStructuredData,
     buildItemListStructuredData,
@@ -166,6 +174,88 @@ const createIndexController = (data) => ({
         });
     },
 
+    donateProjectForm(req, res) {
+        res.render('doacao_form', {
+            ...buildSeoPayload(
+                res,
+                '/doacoes/projeto/doar',
+                'Doar para a Água Consciente',
+                'Apoie o funcionamento e o desenvolvimento da plataforma Água Consciente.'
+            ),
+            ong: null,
+            isProjectDonation: true,
+            projectRecipientName: 'Água Consciente',
+            error: req.query.error,
+            success: req.query.success
+        });
+    },
+
+    async donateProject(req, res) {
+        const renderProjectDonationError = (message) => res.render('doacao_form', {
+            ...buildSeoPayload(
+                res,
+                '/doacoes/projeto/doar',
+                'Doar para a Água Consciente',
+                'Apoie o funcionamento e o desenvolvimento da plataforma Água Consciente.'
+            ),
+            ong: null,
+            isProjectDonation: true,
+            projectRecipientName: 'Água Consciente',
+            error: message
+        });
+
+        const error = validateDonation(req.body);
+        if (error) return renderProjectDonationError(error);
+        if (!isProjectCheckoutConfigured()) {
+            return renderProjectDonationError('O checkout da conta geral ainda está sendo configurado. Tente novamente mais tarde.');
+        }
+        if (
+            typeof data.setDoacaoMercadoPagoOrder !== 'function' ||
+            typeof data.updateProjectDoacaoMercadoPagoOrderStatus !== 'function'
+        ) {
+            return renderProjectDonationError('A conexão de pagamentos não está disponível neste ambiente.');
+        }
+
+        const donation = await data.createDoacao({
+            ongId: null,
+            recipientType: 'projeto',
+            userId: req.session.user ? req.session.user.id : null,
+            donorName: req.body.nomeCompleto,
+            donorEmail: req.body.emailDoador,
+            donorPhone: req.body.telefoneDoador,
+            donorDocument: req.body.documentoDoador,
+            donorCep: req.body.cepDoador,
+            donorStreet: req.body.ruaDoador,
+            donorNumber: req.body.numeroDoador,
+            donorNeighborhood: req.body.bairroDoador,
+            donorCity: req.body.cidadeDoador,
+            donorState: req.body.estadoDoador,
+            amount: Number(String(req.body.valorDoacao).replace(',', '.')),
+            message: req.body.mensagemOpcional || null,
+            paymentMethod: null,
+            status: 'pendente'
+        });
+
+        let createdOrder = null;
+        try {
+            createdOrder = await createProjectDonationOrder({ donation });
+            const orderStored = await data.setDoacaoMercadoPagoOrder({
+                donationId: donation.id,
+                orderId: createdOrder.orderId,
+                providerStatus: createdOrder.status,
+                recipientType: 'projeto'
+            });
+            if (!orderStored) throw new Error('PROJECT_DONATION_ORDER_LINK_FAILED');
+            return res.redirect(createdOrder.checkoutUrl);
+        } catch (checkoutError) {
+            console.error('Não foi possível preparar o checkout da doação ao projeto.', checkoutError.code || checkoutError.name || 'Erro');
+            if (typeof data.updateProjectDoacaoMercadoPagoOrderFailure === 'function') {
+                await data.updateProjectDoacaoMercadoPagoOrderFailure(donation.id).catch(() => {});
+            }
+            return renderProjectDonationError('Não foi possível iniciar o pagamento agora. Seus dados não foram cobrados; tente novamente.');
+        }
+    },
+
     async donate(req, res) {
         const ong = await findOngById(data, req.body.ongId);
 
@@ -187,7 +277,36 @@ const createIndexController = (data) => ({
             });
         }
 
-        await data.createDoacao({
+        const renderDonationError = (message) => res.render('doacao_form', {
+            ...buildSeoPayload(
+                res,
+                `/doacoes/${ong.id}/doar`,
+                `Doar para ${ong.name}`,
+                `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
+            ),
+            ong: formatOngForDonation(ong),
+            error: message
+        });
+
+        if (!isMarketplaceCheckoutConfigured()) {
+            return renderDonationError('O checkout Mercado Pago ainda está sendo configurado. Tente novamente mais tarde.');
+        }
+        if (typeof data.getOngPaymentAccount !== 'function' || typeof data.getOngPaymentCredentials !== 'function') {
+            return renderDonationError('A conexão de pagamentos não está disponível neste ambiente.');
+        }
+
+        let paymentAccount;
+        try {
+            paymentAccount = await data.getOngPaymentAccount(ong.id);
+        } catch (accountError) {
+            console.error('Não foi possível consultar a conta Mercado Pago da ONG.');
+            return renderDonationError('Não foi possível verificar a conta de recebimento da ONG.');
+        }
+        if (!paymentAccount) {
+            return renderDonationError('Esta ONG ainda não conectou sua conta Mercado Pago para receber doações.');
+        }
+
+        const donation = await data.createDoacao({
             ongId: ong.id,
             userId: req.session.user ? req.session.user.id : null,
             donorName: req.body.nomeCompleto,
@@ -202,11 +321,27 @@ const createIndexController = (data) => ({
             donorState: req.body.estadoDoador,
             amount: Number(String(req.body.valorDoacao).replace(',', '.')),
             message: req.body.mensagemOpcional || null,
-            paymentMethod: req.body.metodoPagamento,
+            paymentMethod: null,
             status: 'pendente'
         });
 
-        return res.redirect('/doacoes?success=' + encodeURIComponent('Intenção de doação registrada com sucesso. Nenhum pagamento foi processado.'));
+        let createdOrder = null;
+        try {
+            createdOrder = await createOngDonationOrder({ data, ong, donation });
+            const orderStored = await data.setDoacaoMercadoPagoOrder({
+                donationId: donation.id,
+                orderId: createdOrder.orderId,
+                providerStatus: createdOrder.status
+            });
+            if (!orderStored) throw new Error('DONATION_ORDER_LINK_FAILED');
+            return res.redirect(createdOrder.checkoutUrl);
+        } catch (checkoutError) {
+            console.error('Não foi possível preparar o checkout da doação.', checkoutError.code || checkoutError.name || 'Erro');
+            if (typeof data.updateDoacaoMercadoPagoOrderFailure === 'function') {
+                await data.updateDoacaoMercadoPagoOrderFailure(donation.id).catch(() => {});
+            }
+            return renderDonationError('Não foi possível iniciar o pagamento agora. Seus dados não foram cobrados; tente novamente.');
+        }
     },
 
     async doacoes(req, res) {
@@ -219,7 +354,9 @@ const createIndexController = (data) => ({
                 'Conheça as ONGs parceiras e escolha uma organização para apoiar projetos de água limpa e saneamento.'
             ),
             ongs,
-            success: req.query.success
+            success: req.query.retorno === 'mp'
+                ? 'Você voltou do Mercado Pago. A confirmação será atualizada após a notificação segura do pagamento.'
+                : req.query.success
         });
     },
 

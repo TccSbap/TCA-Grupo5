@@ -22,6 +22,7 @@ const { createAuthRouter } = require('./app/routes/auth');
 const { createDenunciasRouter } = require('./app/routes/denuncias.js');
 const { createOngsRouter } = require('./app/routes/ongs');
 const { createAdminRouter } = require('./app/routes/admin');
+const { createMercadoPagoRouter } = require('./app/routes/mercadoPago');
 const { getDashboardLabelForUser, getDashboardPathForUser } = require('./app/middleware/auth');
 const { csrfProtection } = require('./app/middleware/csrf');
 const { createSessionStore } = require('./app/middleware/sessionStore');
@@ -193,6 +194,7 @@ const createApp = (data = defaultData) => {
     app.use('/denuncias', createDenunciasRouter(data));
     app.use('/ongs', createOngsRouter(data));
     app.use('/admin', createAdminRouter(data));
+    app.use('/mercadopago', createMercadoPagoRouter(data));
 
     app.use((req, res) => {
         res.set('X-Robots-Tag', 'noindex, nofollow');

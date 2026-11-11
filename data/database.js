@@ -5,6 +5,7 @@ const createDenunciasModel = require('../app/models/denuncias.model');
 const createOngsModel = require('../app/models/ongs.model');
 const createNoticiasModel = require('../app/models/noticias.model');
 const createDoacoesModel = require('../app/models/doacoes.model');
+const createMercadoPagoAccountsModel = require('../app/models/mercadoPagoAccounts.model');
 const createMensagensContatoModel = require('../app/models/mensagensContato.model');
 const createCadastroModel = require('../app/models/cadastro.model');
 
@@ -46,6 +47,11 @@ const doacoes = createDoacoesModel({
     canUseDatabase
 });
 
+const mercadoPagoAccounts = createMercadoPagoAccountsModel({
+    pool,
+    canUseDatabase
+});
+
 const mensagensContato = createMensagensContatoModel({
     pool,
     canUseDatabase
@@ -61,6 +67,7 @@ module.exports = {
     ...ongs,
     ...noticias,
     ...doacoes,
+    ...mercadoPagoAccounts,
     ...mensagensContato,
     resetData,
     canUseDatabase

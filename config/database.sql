@@ -125,7 +125,8 @@ CREATE TABLE news (
 
 CREATE TABLE donations (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  ong_id INT UNSIGNED NOT NULL,
+  ong_id INT UNSIGNED NULL,
+  recipient_type ENUM('ong', 'projeto') NOT NULL DEFAULT 'ong',
   user_id INT UNSIGNED NULL,
   donor_name VARCHAR(150) NOT NULL,
   donor_email VARCHAR(255) NOT NULL,
@@ -139,13 +140,17 @@ CREATE TABLE donations (
   donor_state CHAR(2) NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
   message TEXT NULL,
-  payment_method ENUM('cartao', 'pix', 'boleto') NOT NULL,
-  status ENUM('pendente', 'confirmada', 'cancelada') NOT NULL DEFAULT 'pendente',
+  payment_method ENUM('cartao', 'pix', 'boleto') NULL DEFAULT NULL,
+  status ENUM('pendente', 'confirmada', 'cancelada', 'reembolsada', 'parcialmente_reembolsada', 'contestada') NOT NULL DEFAULT 'pendente',
+  mercadopago_order_id VARCHAR(64) NULL,
+  mercadopago_payment_id VARCHAR(64) NULL,
+  mercadopago_status VARCHAR(40) NULL,
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (id),
   KEY idx_donations_ong_id (ong_id),
   KEY idx_donations_user_id (user_id),
   KEY idx_donations_status (status),
+  UNIQUE KEY uq_donations_mercadopago_order_id (mercadopago_order_id),
   CONSTRAINT fk_donations_ong
     FOREIGN KEY (ong_id) REFERENCES ongs (id),
   CONSTRAINT fk_donations_user

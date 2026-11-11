@@ -27,7 +27,38 @@ const createOngsController = (data) => {
         async adminDashboard(req, res) {
             const ong = await findUserOng(req.session.user.id);
             if (!ong) return res.status(404).render('404', { title: 'ONG n\u00e3o encontrada' });
-            res.render('ongs/admin', { title: 'Perfil da ONG', ong });
+
+            let mercadoPagoAccount = null;
+            let mercadoPagoMigrationReady = typeof data.getOngPaymentAccount === 'function';
+            if (typeof data.getOngPaymentAccount === 'function') {
+                try {
+                    mercadoPagoAccount = await data.getOngPaymentAccount(ong.id);
+                } catch (error) {
+                    mercadoPagoMigrationReady = false;
+                    console.error('Não foi possível consultar a conexão Mercado Pago da ONG. Verifique as migrações.');
+                }
+            }
+
+            const mercadoPagoMessages = {
+                conectado: 'Conta Mercado Pago conectada com sucesso.',
+                'config-pendente': 'A conexão ainda não foi configurada no servidor.',
+                indisponivel: 'A conexão não está disponível neste ambiente.',
+                'ong-nao-encontrada': 'Não foi possível localizar o perfil da ONG.',
+                'autorizacao-cancelada': 'A autorização foi cancelada no Mercado Pago.',
+                'oauth-invalido': 'A autorização expirou ou não pôde ser validada. Inicie a conexão novamente.',
+                erro: 'Não foi possível concluir a conexão. Tente novamente.'
+            };
+            const mercadoPagoMessage = mercadoPagoMessages[req.query.mercadopago] || null;
+
+            res.render('ongs/admin', {
+                title: 'Perfil da ONG',
+                ong,
+                mercadoPagoAccount,
+                mercadoPagoMigrationReady,
+                mercadoPagoOAuthReady: require('../routes/mercadoPago').isOAuthConfigured()
+                    && typeof data.saveOngPaymentAccount === 'function',
+                mercadoPagoMessage
+            });
         },
         async details(req, res) {
             const ongId = parseInt(req.params.id, 10);
