@@ -153,7 +153,9 @@ const createMercadoPagoRouter = (data) => {
 
         const signature = req.get('x-signature') || '';
         const requestId = req.get('x-request-id') || '';
-        const dataId = String(req.body?.data?.id || req.query['data.id'] || '');
+        // The Mercado Pago signature manifest uses the data.id query parameter.
+        // Use that signed ID for both validation and order synchronization.
+        const dataId = String(req.query['data.id'] || '');
         const signatureParts = Object.fromEntries(signature.split(',').map((part) => {
             const [key, ...valueParts] = part.trim().split('=');
             return [key, valueParts.join('=')];
