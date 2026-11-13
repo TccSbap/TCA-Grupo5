@@ -23,7 +23,19 @@ import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-
 
     const map = new maplibregl.Map({
         container: mapElement,
-        style: '/map-data/styles/bright',
+        style: {
+            version: 8,
+            sources: {
+                openstreetmap: {
+                    type: 'raster',
+                    tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                    tileSize: 256,
+                    maxzoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }
+            },
+            layers: [{ id: 'openstreetmap', type: 'raster', source: 'openstreetmap' }]
+        },
         center: [-51.925, -14.235],
         zoom: 5.5,
         scrollZoom: true
