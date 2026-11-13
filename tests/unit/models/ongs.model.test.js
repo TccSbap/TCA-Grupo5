@@ -61,6 +61,36 @@ describe('models/ongs.model', () => {
         await expect(model.getOngByUserId(20)).resolves.toMatchObject({ id: 2, userId: 20 });
     });
 
+    test('public lookups select only the public profile fields', async () => {
+        const { model, pool } = buildModel();
+        pool.execute.mockResolvedValue([[
+            {
+                id: 1,
+                name: 'Org One',
+                description: 'Private description',
+                contact_email: 'one@example.com',
+                phone: '111',
+                address: 'Address One',
+                created_at: '2024-01-02T03:04:05.000Z',
+                cnpj: 'CNPJ-PRIVATE',
+                rg: 'RG-PRIVATE'
+            }
+        ], []]);
+
+        const ongs = await model.getPublicOngs();
+        const profile = await model.getPublicOngById(1);
+
+        expect(ongs[0]).toMatchObject({ id: 1, contact: 'one@example.com', phone: '111' });
+        expect(ongs[0]).not.toHaveProperty('cnpj');
+        expect(ongs[0]).not.toHaveProperty('rg');
+        expect(profile).not.toHaveProperty('cnpj');
+        expect(profile).not.toHaveProperty('rg');
+        expect(profile).not.toHaveProperty('description');
+        for (const [query] of pool.execute.mock.calls) {
+            expect(query).not.toMatch(/cnpj|\brg\b/i);
+        }
+    });
+
     test('creates ongs using the extended schema', async () => {
         const { model, pool } = buildModel();
         pool.execute.mockResolvedValueOnce([{ insertId: 11 }, []]);

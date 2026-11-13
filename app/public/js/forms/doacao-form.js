@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const donationFieldIds = [
+        'nomeCompleto', 'emailDoador', 'telefoneDoador', 'documentoDoador',
+        'cepDoador', 'ruaDoador', 'numeroDoador', 'bairroDoador',
+        'cidadeDoador', 'estadoDoador', 'valorDoacao', 'confirmacao'
+    ];
+    donationFieldIds.forEach((fieldId) => {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        field.addEventListener('blur', () => window.validateDoacaoField(field));
+        field.addEventListener('input', () => {
+            if (field.getAttribute('aria-invalid') === 'true') window.validateDoacaoField(field);
+        });
+        field.addEventListener('change', () => {
+            if (field.getAttribute('aria-invalid') === 'true') window.validateDoacaoField(field);
+        });
+    });
+
     if (valorDoacaoInput && donationAmountOptions && valorDoacaoInput.value) {
         const initialButton = donationAmountOptions.querySelector(`button[data-value="${valorDoacaoInput.value}"]`);
         if (initialButton) {
@@ -32,16 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        document.querySelectorAll('.error-message').forEach((element) => {
-            element.textContent = '';
-        });
-
         if (window.validateDoacaoForm()) {
             if (window.submitOnce) {
                 window.submitOnce.lock(doacaoForm);
             }
 
             doacaoForm.submit();
+        } else {
+            doacaoForm.querySelector('[aria-invalid="true"]')?.focus();
         }
     });
 });

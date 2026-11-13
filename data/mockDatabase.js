@@ -159,6 +159,21 @@ const getOngs = (ongId = null) => {
 };
 const getOngById = (id) => ongs.find((ong) => ong.id === parseInt(id, 10));
 const getOngByUserId = (userId) => ongs.find((ong) => ong.userId === parseInt(userId, 10));
+const toPublicOng = (ong) => ({
+    id: ong.id,
+    name: ong.name,
+    description: ong.description,
+    focus: ong.focus || ong.description,
+    contact: ong.contact || ong.contact_email || null,
+    phone: ong.phone || null,
+    address: ong.address || null,
+    createdAt: ong.createdAt || ong.created_at || null
+});
+const getPublicOngs = () => ongs.map(toPublicOng);
+const getPublicOngById = (id) => {
+    const ong = getOngById(id);
+    return ong ? toPublicOng(ong) : null;
+};
 const saveOngs = (newOngs) => {
     ongs = newOngs;
 };
@@ -218,6 +233,8 @@ module.exports = {
     getOngById,
     getOngByUserId,
     getOngs,
+    getPublicOngById,
+    getPublicOngs,
     getUserByEmail,
     getUserById,
     getUsers,

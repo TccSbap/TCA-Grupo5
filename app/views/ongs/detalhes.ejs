@@ -4,17 +4,14 @@
     <section class="container">
         <header class="section-header">
             <h1><%= ong.name %></h1>
-            <p><%= ong.description %></p>
         </header>
 
         <address class="ong-info-card card">
             <h2>Informa&ccedil;&otilde;es da organiza&ccedil;&atilde;o</h2>
-            <div class="info-item"><i class="fas fa-envelope"></i><span><%= ong.contact %></span></div>
-            <% if (ong.cnpj) { %><div class="info-item"><i class="fas fa-id-card"></i><span>CNPJ: <%= ong.cnpj %></span></div><% } %>
-            <% if (ong.rg) { %><div class="info-item"><i class="fas fa-id-badge"></i><span>RG do respons&aacute;vel: <%= ong.rg %></span></div><% } %>
+            <% if (ong.contact) { %><div class="info-item"><i class="fas fa-envelope"></i><span><%= ong.contact %></span></div><% } %>
             <% if (ong.phone) { %><div class="info-item"><i class="fas fa-phone"></i><span><%= ong.phone %></span></div><% } %>
             <% if (ong.address) { %><div class="info-item"><i class="fas fa-map-marker-alt"></i><span><%= ong.address %></span></div><% } %>
-            <div class="info-item"><i class="fas fa-calendar"></i><span>Parceira desde <%= new Date(ong.createdAt).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) %></span></div>
+            <% if (ong.createdAt) { %><div class="info-item"><i class="fas fa-calendar"></i><span>Parceira desde <%= new Date(ong.createdAt).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) %></span></div><% } %>
         </address>
     </section>
 </section>

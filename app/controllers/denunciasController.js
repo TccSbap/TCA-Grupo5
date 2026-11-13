@@ -25,7 +25,11 @@ const createDenunciasController = (data) => {
 
     return {
         async index(req, res) {
-            const denuncias = await data.getDenuncias();
+            const denuncias = [...await data.getDenuncias()].sort((first, second) => {
+                const firstCreatedAt = new Date(first.createdAt).getTime() || 0;
+                const secondCreatedAt = new Date(second.createdAt).getTime() || 0;
+                return secondCreatedAt - firstCreatedAt || Number(second.id) - Number(first.id);
+            });
             const status = req.query.status;
 
             let filteredDenuncias = denuncias;

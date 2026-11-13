@@ -808,6 +808,18 @@ form[aria-busy="true"] input[type="submit"] {
     font-size: var(--font-size-sm);
 }
 
+.form-group .error-message:not(:empty) {
+    color: var(--error, #b42318);
+}
+
+.form-group .error-message:empty {
+    display: none;
+}
+
+.form-group [aria-invalid="true"] {
+    border-color: var(--error, #b42318);
+}
+
 .form-actions {
     display: flex;
     gap: var(--spacing-3);

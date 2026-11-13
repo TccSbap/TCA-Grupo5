@@ -2,6 +2,7 @@ const {
     buildAbsoluteUrl, buildBreadcrumbStructuredData, buildCollectionPageStructuredData,
     buildItemListStructuredData, buildOrganizationProfileStructuredData, buildPageStructuredData, getSiteUrl
 } = require('../utils/seo');
+const { loadPublicOngById, loadPublicOngs, toPublicOngProfile } = require('../utils/publicOngs');
 
 const createOngsController = (data) => {
     const findUserOng = async (userId) => {
@@ -15,14 +16,14 @@ const createOngsController = (data) => {
     });
     return {
         async index(req, res) {
-            const ongs = await data.getOngs();
+            const ongs = await loadPublicOngs(data);
             const pageUrl = '/ongs';
             const description = 'Conhe\u00e7a as ONGs parceiras e veja como apoiam e orientam as comunidades em saneamento e \u00e1gua limpa.';
             const structuredData = [buildCollectionPageStructuredData({
                 name: 'ONGs parceiras', description, url: pageUrl,
                 mainEntity: buildItemListStructuredData(ongs.map((ong) => ({ type: 'Organization', name: ong.name, url: '/ongs/' + ong.id, description: ong.description })), getSiteUrl(), { name: 'ONGs parceiras', description, url: pageUrl, itemType: 'Organization' })
             })];
-            res.render('ongs/index', { ...buildSeoPayload(res, pageUrl, 'ONGs parceiras', description, structuredData), ongs: ongs.map((ong) => ({ ...ong, focus: ong.focus || ong.description })) });
+            res.render('ongs/index', { ...buildSeoPayload(res, pageUrl, 'ONGs parceiras', description, structuredData), ongs });
         },
         async adminDashboard(req, res) {
             const ong = await findUserOng(req.session.user.id);
@@ -62,18 +63,18 @@ const createOngsController = (data) => {
         },
         async details(req, res) {
             const ongId = parseInt(req.params.id, 10);
-            const ong = (await data.getOngs()).find((item) => item.id === ongId);
+            const ong = await loadPublicOngById(data, ongId);
             if (!ong) return res.status(404).render('404', { title: 'ONG n\u00e3o encontrada' });
             const pageUrl = '/ongs/' + ong.id;
-            const description = ong.description + ' Conhe\u00e7a o perfil e os dados de contato da organiza\u00e7\u00e3o.';
+            const description = `Consulte o e-mail, telefone de contato, localiza\u00e7\u00e3o e data de parceria da ONG ${ong.name}.`;
             const structuredData = [
-                buildOrganizationProfileStructuredData({ ...ong, focus: ong.focus || ong.description }, getSiteUrl(), pageUrl),
+                buildOrganizationProfileStructuredData(ong, getSiteUrl(), pageUrl),
                 buildBreadcrumbStructuredData([{ name: 'ONGs parceiras', url: '/ongs' }, { name: ong.name, url: pageUrl }], getSiteUrl())
             ];
             res.render('ongs/detalhes', {
                 ...buildSeoPayload(res, pageUrl, ong.name, description, structuredData),
                 seoOgType: 'article',
-                ong: { ...ong, focus: ong.focus || ong.description }
+                ong: toPublicOngProfile(ong)
             });
         }
     };

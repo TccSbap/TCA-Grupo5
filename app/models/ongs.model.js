@@ -23,6 +23,44 @@ module.exports = ({ pool, canUseDatabase }) => {
         return ongs.filter((ong) => ong.id === normalizedOngId);
     };
 
+    const normalizePublicOngRow = (row) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        contact: row.contact_email,
+        phone: row.phone || null,
+        address: row.address || null,
+        createdAt: new Date(row.created_at).toISOString()
+    });
+
+    const normalizePublicOngProfileRow = (row) => ({
+        id: row.id,
+        name: row.name,
+        contact: row.contact_email,
+        phone: row.phone || null,
+        address: row.address || null,
+        createdAt: new Date(row.created_at).toISOString()
+    });
+
+    const getPublicOngs = async () => {
+        await ensureDatabase();
+        const [rows] = await pool.execute(
+            'SELECT id, name, description, contact_email, phone, address, created_at FROM ongs ORDER BY id'
+        );
+
+        return rows.map(normalizePublicOngRow);
+    };
+
+    const getPublicOngById = async (id) => {
+        await ensureDatabase();
+        const [rows] = await pool.execute(
+            'SELECT id, name, contact_email, phone, address, created_at FROM ongs WHERE id = ? LIMIT 1',
+            [parseInt(id, 10)]
+        );
+
+        return rows.length > 0 ? normalizePublicOngProfileRow(rows[0]) : null;
+    };
+
     const getOngById = async (id) => {
         await ensureDatabase();
         const [rows] = await pool.execute(
@@ -124,6 +162,8 @@ module.exports = ({ pool, canUseDatabase }) => {
         createOngAndPersist,
         getOngById,
         getOngByUserId,
-        getOngs
+        getOngs,
+        getPublicOngById,
+        getPublicOngs
     };
 };

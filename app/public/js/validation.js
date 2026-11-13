@@ -341,80 +341,60 @@ function validateCadastroForm() {
     return isValid;
 }
 
+function getDoacaoFieldError(field) {
+    const value = field.type === 'checkbox' ? field.checked : field.value;
+
+    switch (field.id) {
+        case 'nomeCompleto':
+            return validateNomeCompletoPagamento(value) ? '' : 'Informe seu nome completo, com pelo menos duas palavras.';
+        case 'emailDoador':
+            return validateEmail(value) ? '' : 'Informe um e-mail válido.';
+        case 'telefoneDoador':
+            return validateTelefone(value) ? '' : 'Informe um telefone com 10 ou 11 dígitos.';
+        case 'documentoDoador':
+            return validateCPF(value) ? '' : 'Informe um CPF válido com 11 dígitos.';
+        case 'cepDoador':
+            return validateCEP(value) ? '' : 'Informe um CEP com 8 dígitos.';
+        case 'ruaDoador':
+            return validateRua(value) ? '' : 'Informe uma rua com pelo menos 3 caracteres válidos.';
+        case 'numeroDoador':
+            return String(value || '').trim() ? '' : 'Informe o número.';
+        case 'bairroDoador':
+            return validateBairro(value) ? '' : 'Bairro deve ter entre 3 e 120 caracteres.';
+        case 'cidadeDoador':
+            return validateCidade(value) ? '' : 'Cidade deve ter entre 3 e 120 caracteres.';
+        case 'estadoDoador':
+            return validateEstado(value) ? '' : 'Informe a sigla do estado com 2 letras maiúsculas (ex.: SP).';
+        case 'valorDoacao':
+            return validateDonationAmount(value) ? '' : 'Informe um valor a partir de R$ 5,00, com até duas casas decimais.';
+        case 'confirmacao':
+            return value ? '' : 'Confirme os dados para continuar.';
+        default:
+            return '';
+    }
+}
+
+function validateDoacaoField(fieldOrId) {
+    const field = typeof fieldOrId === 'string'
+        ? document.getElementById(fieldOrId)
+        : fieldOrId;
+    if (!field) return false;
+
+    const errorMessage = getDoacaoFieldError(field);
+    const errorElement = document.getElementById(`${field.id}-error`);
+    if (errorElement) errorElement.textContent = errorMessage;
+    field.style.borderColor = errorMessage ? 'red' : '';
+    field.setAttribute('aria-invalid', String(Boolean(errorMessage)));
+    return !errorMessage;
+}
+
 function validateDoacaoForm() {
-    let isValid = true;
-
-    const amount = document.getElementById('valorDoacao');
-    if (!validateDonationAmount(amount.value)) {
-        document.getElementById('valorDoacao-error').textContent = 'Informe um valor a partir de R$ 5,00, com até duas casas decimais.';
-        isValid = false;
-    }
-    if (!validateCEP(document.getElementById('cepDoador').value)) {
-        document.getElementById('cepDoador-error').textContent = 'Informe um CEP com 8 dígitos.';
-        isValid = false;
-    }
-    if (!document.getElementById('numeroDoador').value.trim()) {
-        document.getElementById('numeroDoador-error').textContent = 'Informe o número.';
-        isValid = false;
-    }
-
-    const nomeCompletoInput = document.getElementById('nomeCompleto');
-    if (!validateNomeCompletoPagamento(nomeCompletoInput.value)) {
-        document.getElementById('nomeCompleto-error').textContent = 'Nome completo deve ter pelo menos 2 palavras e conter apenas letras e espaços.';
-        isValid = false;
-    }
-
-    const emailDoadorInput = document.getElementById('emailDoador');
-    if (!validateEmail(emailDoadorInput.value)) {
-        document.getElementById('emailDoador-error').textContent = 'O e-mail deve ser válido.';
-        isValid = false;
-    }
-
-    const bairroDoadorInput = document.getElementById('bairroDoador');
-    if (!validateBairro(bairroDoadorInput.value)) {
-        document.getElementById('bairroDoador-error').textContent = 'Bairro deve ter entre 3 e 120 caracteres.';
-        isValid = false;
-    }
-
-    const ruaDoadorInput = document.getElementById('ruaDoador');
-    if (!validateRua(ruaDoadorInput.value)) {
-        document.getElementById('ruaDoador-error').textContent = 'Rua deve ter no mínimo 3 caracteres e conter apenas letras, números, espaços e os símbolos .,ºª-.';
-        isValid = false;
-    }
-
-    const cidadeDoadorInput = document.getElementById('cidadeDoador');
-    if (!validateCidade(cidadeDoadorInput.value)) {
-        document.getElementById('cidadeDoador-error').textContent = 'Cidade deve ter entre 3 e 120 caracteres.';
-        isValid = false;
-    }
-
-    const estadoDoadorInput = document.getElementById('estadoDoador');
-    if (!validateEstado(estadoDoadorInput.value)) {
-        document.getElementById('estadoDoador-error').textContent = 'Estado deve ser uma sigla de 2 letras maiúsculas (ex: SP, RJ, BA).';
-        isValid = false;
-    }
-
-    const documentoDoadorInput = document.getElementById('documentoDoador');
-    if (!validateCPF(documentoDoadorInput.value)) {
-        document.getElementById('documentoDoador-error').textContent = 'CPF inválido. Deve ter 11 dígitos numéricos.';
-        isValid = false;
-    }
-
-    const telefoneDoadorInput = document.getElementById('telefoneDoador');
-    if (!validateTelefone(telefoneDoadorInput.value)) {
-        document.getElementById('telefoneDoador-error').textContent = 'Telefone inválido. Use 10 ou 11 dígitos numéricos.';
-        isValid = false;
-    }
-
-    const confirmacaoInput = document.getElementById('confirmacao');
-    if (confirmacaoInput && !confirmacaoInput.checked) {
-        document.getElementById('confirmacao-error').textContent = 'Confirme os dados para continuar.';
-        isValid = false;
-    } else if (confirmacaoInput) {
-        document.getElementById('confirmacao-error').textContent = '';
-    }
-
-    return isValid;
+    const fieldIds = [
+        'nomeCompleto', 'emailDoador', 'telefoneDoador', 'documentoDoador',
+        'cepDoador', 'ruaDoador', 'numeroDoador', 'bairroDoador',
+        'cidadeDoador', 'estadoDoador', 'valorDoacao', 'confirmacao'
+    ];
+    return fieldIds.map(validateDoacaoField).every(Boolean);
 }
 
 window.validateEmail = validateEmail;
@@ -437,3 +417,4 @@ window.validateCVV = validateCVV;
 window.validateNomeCompletoPagamento = validateNomeCompletoPagamento;
 window.validateCadastroForm = validateCadastroForm;
 window.validateDoacaoForm = validateDoacaoForm;
+window.validateDoacaoField = validateDoacaoField;

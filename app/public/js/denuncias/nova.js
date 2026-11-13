@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const cep = this.value.replace(/\D/g, '');
 
         if (cep.length !== 8) {
-            locationInput.value = '';
             return;
         }
 

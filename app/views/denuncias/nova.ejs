@@ -22,7 +22,7 @@
             </nav>
             <% } %>
             
-            <form class="denuncia-form" method="POST" action="/denuncias/nova">
+            <form class="denuncia-form" method="POST" action="/denuncias/nova" novalidate>
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <nav class="form-group">
                     <label for="title">Título da Denúncia *</label>
@@ -83,6 +83,7 @@
                 </footer>
             </form>
 
+<script src="/js/forms/denuncia-form.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 <script type="module" src="/js/denuncias/nova.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 
             <aside class="form-info">

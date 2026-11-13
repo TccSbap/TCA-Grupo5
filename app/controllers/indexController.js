@@ -32,11 +32,12 @@ const {
     getCookieConsentOptions,
     normalizeReturnTo
 } = require('../utils/cookieConsent');
+const { loadPublicOngById, loadPublicOngs, toPublicOngSummary } = require('../utils/publicOngs');
 
 const pickOngFocus = (ong) => ong.focus || ong.description || 'Projeto socioambiental';
 
 const formatOngForDonation = (ong) => ({
-    ...ong,
+    ...toPublicOngSummary(ong),
     focus: pickOngFocus(ong)
 });
 
@@ -78,18 +79,12 @@ const buildSeoPayload = (res, pathname, title, description, options = {}) => ({
     )
 });
 
-const findOngById = async (data, id) => {
-    if (typeof data.getOngById === 'function') {
-        return data.getOngById(id);
-    }
-
-    return (await data.getOngs()).find((item) => item.id == id);
-};
+const findOngById = async (data, id) => loadPublicOngById(data, id);
 
 const createIndexController = (data) => ({
     async home(req, res) {
         const allDenuncias = await data.getDenuncias();
-        const allOngs = await data.getOngs();
+        const allOngs = await loadPublicOngs(data);
         const noticias = await loadNoticias(data);
         const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
         const mensagensContato = typeof data.getMensagensContato === 'function' ? await data.getMensagensContato() : [];
@@ -117,7 +112,7 @@ const createIndexController = (data) => ({
     async dashboard(req, res) {
         const user = req.session.user;
         const denuncias = await data.getDenuncias();
-        const ongs = await data.getOngs();
+        const ongs = await loadPublicOngs(data);
         const doacoes = typeof data.getDoacoes === 'function' ? await data.getDoacoes() : [];
 
         const userDenuncias = denuncias
@@ -371,7 +366,7 @@ const createIndexController = (data) => ({
     },
 
     async doacoes(req, res) {
-        const ongs = (await data.getOngs()).map(formatOngForDonation);
+        const ongs = (await loadPublicOngs(data)).map(formatOngForDonation);
         res.render('doacoes', {
             ...buildSeoPayload(
                 res,
@@ -442,7 +437,7 @@ const createIndexController = (data) => ({
     async impacto(req, res) {
         const [denuncias, ongs, mensagensContato, doacoes] = await Promise.all([
             data.getDenuncias(),
-            data.getOngs(),
+            loadPublicOngs(data),
             typeof data.getMensagensContato === 'function' ? data.getMensagensContato() : [],
             typeof data.getDoacoes === 'function' ? data.getDoacoes() : [],
         ]);

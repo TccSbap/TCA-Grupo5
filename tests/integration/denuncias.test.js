@@ -1,9 +1,29 @@
 const request = require('supertest');
 const app = require('../../app');
-const { resetData } = require('../../data/mockDatabase');
+const { resetData, saveDenuncias } = require('../../data/mockDatabase');
 
 beforeEach(() => {
   resetData();
+});
+
+describe('ordenacao da pagina de denuncias', () => {
+  test('exibe primeiro as denuncias mais recentes', async () => {
+    saveDenuncias([
+      { id: 1, title: 'Denuncia mais antiga', description: 'Descricao suficientemente longa para a listagem.', location: 'Centro SP', category: 'agua', status: 'pendente', userName: 'Pessoa', createdAt: '2024-01-01T00:00:00.000Z' },
+      { id: 2, title: 'Denuncia intermediaria', description: 'Descricao suficientemente longa para a listagem.', location: 'Centro SP', category: 'agua', status: 'pendente', userName: 'Pessoa', createdAt: '2025-01-01T00:00:00.000Z' },
+      { id: 3, title: 'Denuncia mais recente', description: 'Descricao suficientemente longa para a listagem.', location: 'Centro SP', category: 'agua', status: 'pendente', userName: 'Pessoa', createdAt: '2026-01-01T00:00:00.000Z' }
+    ]);
+
+    const response = await request(app).get('/denuncias');
+    const newestPosition = response.text.indexOf('Denuncia mais recente');
+    const middlePosition = response.text.indexOf('Denuncia intermediaria');
+    const oldestPosition = response.text.indexOf('Denuncia mais antiga');
+
+    expect(response.status).toBe(200);
+    expect(newestPosition).toBeGreaterThan(-1);
+    expect(newestPosition).toBeLessThan(middlePosition);
+    expect(middlePosition).toBeLessThan(oldestPosition);
+  });
 });
 
 const signInUser = async (agent) => {
