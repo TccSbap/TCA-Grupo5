@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const reportMap = new maplibregl.Map({
             container: reportMapElement,
-            style: 'https://tiles.openfreemap.org/styles/liberty',
+            style: 'https://tiles.openfreemap.org/styles/bright',
             center: [-46.876, -23.510],
             zoom: 12,
-            scrollZoom: false
+            scrollZoom: true
         });
         reportMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
         reportMap.on('load', () => reportMap.resize());

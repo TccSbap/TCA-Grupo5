@@ -23,10 +23,10 @@ import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-
 
     const map = new maplibregl.Map({
         container: mapElement,
-        style: 'https://tiles.openfreemap.org/styles/liberty',
+        style: 'https://tiles.openfreemap.org/styles/bright',
         center: [-51.925, -14.235],
-        zoom: 4,
-        scrollZoom: false
+        zoom: 5.5,
+        scrollZoom: true
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
