@@ -23,6 +23,7 @@ const { createDenunciasRouter } = require('./app/routes/denuncias.js');
 const { createOngsRouter } = require('./app/routes/ongs');
 const { createAdminRouter } = require('./app/routes/admin');
 const { createMercadoPagoRouter } = require('./app/routes/mercadoPago');
+const { createMapTilesRouter } = require('./app/routes/mapTiles');
 const { getDashboardLabelForUser, getDashboardPathForUser } = require('./app/middleware/auth');
 const { csrfProtection } = require('./app/middleware/csrf');
 const { createSessionStore } = require('./app/middleware/sessionStore');
@@ -85,7 +86,7 @@ const createApp = (data = defaultData) => {
             "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com 'unsafe-inline'",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com data:",
             `script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com 'nonce-${res.locals.cspNonce}'`,
-            "connect-src 'self' https://tiles.openfreemap.org",
+            "connect-src 'self'",
             "worker-src 'self' blob:"
         ];
 
@@ -154,6 +155,8 @@ const createApp = (data = defaultData) => {
     });
 
     app.use(csrfProtection);
+
+    app.use('/map-data', createMapTilesRouter());
 
     app.get('/robots.txt', (req, res) => {
         res.type('text/plain').send(buildRobotsTxt(siteUrl));

@@ -23,7 +23,7 @@ import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-
 
     const map = new maplibregl.Map({
         container: mapElement,
-        style: 'https://tiles.openfreemap.org/styles/bright',
+        style: '/map-data/styles/bright',
         center: [-51.925, -14.235],
         zoom: 5.5,
         scrollZoom: true
@@ -75,9 +75,10 @@ import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-
         map.resize();
     });
 
-    map.on('error', () => {
-        if (statusElement && !map.isStyleLoaded()) {
-            statusElement.textContent = 'Não foi possível carregar o mapa agora. Tente atualizar a página.';
+    map.on('error', (event) => {
+        console.error('Erro ao carregar o mapa de denúncias:', event.error);
+        if (statusElement && !statusElement.textContent.includes('erro ao carregar o mapa')) {
+            statusElement.textContent = 'O mapa encontrou um erro ao carregar dados de fundo. Atualize a página ou tente novamente mais tarde.';
         }
     });
 }());

@@ -14,13 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const reportMap = new maplibregl.Map({
             container: reportMapElement,
-            style: 'https://tiles.openfreemap.org/styles/bright',
+            style: '/map-data/styles/bright',
             center: [-46.876, -23.510],
             zoom: 12,
             scrollZoom: true
         });
         reportMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
         reportMap.on('load', () => reportMap.resize());
+        reportMap.on('error', (event) => {
+            console.error('Erro ao carregar o mapa da denúncia:', event.error);
+            status.textContent = 'O mapa encontrou um erro ao carregar dados de fundo. Você ainda pode registrar a denúncia sem marcar um ponto.';
+        });
 
         let selectedMarker = null;
         const setSelectedPoint = (point) => {
