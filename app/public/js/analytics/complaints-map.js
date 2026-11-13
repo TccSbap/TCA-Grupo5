@@ -1,3 +1,5 @@
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.mjs';
+
 (function () {
     const mapElement = document.getElementById('public-complaints-map');
     if (!mapElement) return;
@@ -6,45 +8,76 @@
     const emptyElement = document.getElementById('complaint-map-empty');
     const payload = window.__PUBLIC_IMPACT__ || {};
     const points = Array.isArray(payload.complaintMapPoints) ? payload.complaintMapPoints : [];
-
-    if (typeof L === 'undefined') {
-        if (statusElement) statusElement.textContent = 'Não foi possível carregar o mapa. Tente atualizar a página.';
-        return;
-    }
-
-    const map = L.map(mapElement, { scrollWheelZoom: false }).setView([-14.235, -51.925], 4);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    const circles = [];
-    points.forEach((point) => {
+    const features = points.reduce((all, point) => {
         const latitude = Number(point.latitude);
         const longitude = Number(point.longitude);
         const count = Number(point.count);
-        if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isInteger(count) || count < 1) return;
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !Number.isInteger(count) || count < 1) return all;
+        all.push({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [longitude, latitude] },
+            properties: { count }
+        });
+        return all;
+    }, []);
 
-        const circle = L.circleMarker([latitude, longitude], {
-            radius: Math.min(30, 10 + Math.sqrt(count) * 5),
-            color: '#1d4ed8',
-            fillColor: '#2563eb',
-            fillOpacity: 0.68,
-            weight: 2
-        }).bindPopup(`${count} ${count === 1 ? 'denúncia' : 'denúncias'} nesta área aproximada.`);
+    const map = new maplibregl.Map({
+        container: mapElement,
+        style: 'https://tiles.openfreemap.org/styles/liberty',
+        center: [-51.925, -14.235],
+        zoom: 4,
+        scrollZoom: false
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
-        circle.addTo(map);
-        circles.push(circle);
+    map.on('load', () => {
+        map.addSource('complaint-areas', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features }
+        });
+        map.addLayer({
+            id: 'complaint-area-circles',
+            type: 'circle',
+            source: 'complaint-areas',
+            paint: {
+                'circle-radius': ['interpolate', ['linear'], ['get', 'count'], 1, 12, 4, 19, 10, 28],
+                'circle-color': '#2563eb',
+                'circle-opacity': 0.68,
+                'circle-stroke-color': '#1d4ed8',
+                'circle-stroke-width': 2
+            }
+        });
+
+        map.on('click', 'complaint-area-circles', (event) => {
+            const feature = event.features && event.features[0];
+            if (!feature) return;
+            const count = Number(feature.properties.count);
+            const popupText = document.createElement('p');
+            popupText.textContent = `${count} ${count === 1 ? 'denúncia' : 'denúncias'} nesta área aproximada.`;
+            new maplibregl.Popup().setLngLat(event.lngLat).setDOMContent(popupText).addTo(map);
+        });
+        map.on('mouseenter', 'complaint-area-circles', () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', 'complaint-area-circles', () => { map.getCanvas().style.cursor = ''; });
+
+        if (features.length) {
+            if (emptyElement) emptyElement.hidden = true;
+            const bounds = new maplibregl.LngLatBounds();
+            features.forEach((feature) => bounds.extend(feature.geometry.coordinates));
+            if (features.length === 1) {
+                map.jumpTo({ center: features[0].geometry.coordinates, zoom: 12 });
+            } else {
+                map.fitBounds(bounds, { padding: 48, maxZoom: 12 });
+            }
+        } else if (emptyElement) {
+            emptyElement.hidden = false;
+        }
+
+        map.resize();
     });
 
-    if (circles.length) {
-        emptyElement?.setAttribute('hidden', 'hidden');
-        if (circles.length === 1) {
-            map.setView(circles[0].getLatLng(), 12);
-        } else {
-            map.fitBounds(L.featureGroup(circles).getBounds().pad(0.16), { maxZoom: 12 });
+    map.on('error', () => {
+        if (statusElement && !map.isStyleLoaded()) {
+            statusElement.textContent = 'Não foi possível carregar o mapa agora. Tente atualizar a página.';
         }
-    }
-
-    window.setTimeout(() => map.invalidateSize(), 0);
+    });
 }());

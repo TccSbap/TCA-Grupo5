@@ -1,3 +1,5 @@
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.mjs';
+
 document.addEventListener('DOMContentLoaded', () => {
     const cepInput = document.getElementById('cep');
     const locationInput = document.getElementById('location');
@@ -10,62 +12,63 @@ document.addEventListener('DOMContentLoaded', () => {
         const useLocationButton = document.getElementById('use-my-location');
         const clearLocationButton = document.getElementById('clear-map-location');
 
-        if (typeof L === 'undefined') {
-            status.textContent = 'O mapa não carregou. Você ainda pode registrar a denúncia sem marcar um ponto.';
+        const reportMap = new maplibregl.Map({
+            container: reportMapElement,
+            style: 'https://tiles.openfreemap.org/styles/liberty',
+            center: [-46.876, -23.510],
+            zoom: 12,
+            scrollZoom: false
+        });
+        reportMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+        reportMap.on('load', () => reportMap.resize());
+
+        let selectedMarker = null;
+        const setSelectedPoint = (point) => {
+            latitudeInput.value = point.lat.toFixed(6);
+            longitudeInput.value = point.lng.toFixed(6);
+            status.textContent = 'Região selecionada. O sistema guardará apenas uma área aproximada de cerca de 2 km.';
+            clearLocationButton.disabled = false;
+
+            if (!selectedMarker) {
+                selectedMarker = new maplibregl.Marker({ draggable: true })
+                    .setLngLat([point.lng, point.lat])
+                    .addTo(reportMap);
+                selectedMarker.on('dragend', () => setSelectedPoint(selectedMarker.getLngLat()));
+            } else {
+                selectedMarker.setLngLat([point.lng, point.lat]);
+            }
+        };
+
+        reportMap.on('click', (event) => setSelectedPoint(event.lngLat));
+        clearLocationButton.addEventListener('click', () => {
+            if (selectedMarker) selectedMarker.remove();
+            selectedMarker = null;
+            latitudeInput.value = '';
+            longitudeInput.value = '';
+            status.textContent = 'Nenhum ponto selecionado. Clique no mapa ou use sua localização.';
+            clearLocationButton.disabled = true;
+        });
+
+        useLocationButton.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                status.textContent = 'Este navegador não oferece localização. Você pode marcar o ponto manualmente no mapa.';
+                return;
+            }
+
             useLocationButton.disabled = true;
-        } else {
-            const reportMap = L.map(reportMapElement).setView([-23.510, -46.876], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
-            }).addTo(reportMap);
+            status.textContent = 'Obtendo sua localização para centralizar o mapa…';
+            navigator.geolocation.getCurrentPosition((position) => {
+                const point = { lat: position.coords.latitude, lng: position.coords.longitude };
+                reportMap.jumpTo({ center: [point.lng, point.lat], zoom: 15 });
+                setSelectedPoint(point);
+                useLocationButton.disabled = false;
+            }, () => {
+                status.textContent = 'Não foi possível obter a localização. Você pode marcar o ponto manualmente no mapa.';
+                useLocationButton.disabled = false;
+            }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+        });
 
-            let selectedMarker = null;
-            const setSelectedPoint = (point) => {
-                latitudeInput.value = point.lat.toFixed(6);
-                longitudeInput.value = point.lng.toFixed(6);
-                status.textContent = 'Região selecionada. O sistema guardará apenas uma área aproximada de cerca de 2 km.';
-                clearLocationButton.disabled = false;
-
-                if (!selectedMarker) {
-                    selectedMarker = L.marker(point, { draggable: true }).addTo(reportMap);
-                    selectedMarker.on('dragend', () => setSelectedPoint(selectedMarker.getLatLng()));
-                } else {
-                    selectedMarker.setLatLng(point);
-                }
-            };
-
-            reportMap.on('click', (event) => setSelectedPoint(event.latlng));
-            clearLocationButton.addEventListener('click', () => {
-                if (selectedMarker) reportMap.removeLayer(selectedMarker);
-                selectedMarker = null;
-                latitudeInput.value = '';
-                longitudeInput.value = '';
-                status.textContent = 'Nenhum ponto selecionado. Clique no mapa ou use sua localização.';
-                clearLocationButton.disabled = true;
-            });
-
-            useLocationButton.addEventListener('click', () => {
-                if (!navigator.geolocation) {
-                    status.textContent = 'Este navegador não oferece localização. Você pode marcar o ponto manualmente no mapa.';
-                    return;
-                }
-
-                useLocationButton.disabled = true;
-                status.textContent = 'Obtendo sua localização para centralizar o mapa…';
-                navigator.geolocation.getCurrentPosition((position) => {
-                    const point = L.latLng(position.coords.latitude, position.coords.longitude);
-                    reportMap.setView(point, 15);
-                    setSelectedPoint(point);
-                    useLocationButton.disabled = false;
-                }, () => {
-                    status.textContent = 'Não foi possível obter a localização. Você pode marcar o ponto manualmente no mapa.';
-                    useLocationButton.disabled = false;
-                }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
-            });
-
-            window.setTimeout(() => reportMap.invalidateSize(), 0);
-        }
+        window.setTimeout(() => reportMap.resize(), 0);
     }
 
     if (!cepInput || !locationInput) {

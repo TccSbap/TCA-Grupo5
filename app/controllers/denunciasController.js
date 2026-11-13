@@ -86,7 +86,7 @@ const createDenunciasController = (data) => {
                     'Nova denúncia',
                     'Registre uma denúncia sobre água, esgoto ou saneamento básico de forma rápida e segura.'
                 ),
-                extraStyles: ['/css/maps.css', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css'],
+                extraStyles: ['/css/maps.css', 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.css'],
                 error: req.query.error,
                 success: req.query.success
             });

@@ -81,11 +81,12 @@ const createApp = (data = defaultData) => {
             "object-src 'none'",
             "frame-ancestors 'self'",
             "form-action 'self'",
-            "img-src 'self' data: https:",
-            "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'",
-            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
-            `script-src 'self' https://cdnjs.cloudflare.com 'nonce-${res.locals.cspNonce}'`,
-            "connect-src 'self'"
+            "img-src 'self' data: blob: https:",
+            "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com 'unsafe-inline'",
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com data:",
+            `script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com 'nonce-${res.locals.cspNonce}'`,
+            "connect-src 'self' https://tiles.openfreemap.org",
+            "worker-src 'self' blob:"
         ];
 
         if (isProduction) {

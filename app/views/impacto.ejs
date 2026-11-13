@@ -1,4 +1,4 @@
-<%- include('./partials/header', { extraStyles: ['/css/analytics.css', '/css/maps.css', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css'] }) %>
+<%- include('./partials/header', { extraStyles: ['/css/analytics.css', '/css/maps.css', 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.css'] }) %>
 
 <section class="analytics-page">
     <section class="container">
@@ -105,11 +105,10 @@
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
 <script nonce="<%= cspNonce %>">
     window.__PUBLIC_IMPACT__ = <%- JSON.stringify({ impacto, totalDenuncias, totalOngs, mappedDenuncias, complaintMapPoints }).replace(/</g, '\\u003c') %>;
 </script>
 <script src="/js/analytics/public-impact.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
-<script src="/js/analytics/complaints-map.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>" defer></script>
+<script type="module" src="/js/analytics/complaints-map.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 
 <%- include('./partials/footer') %>
