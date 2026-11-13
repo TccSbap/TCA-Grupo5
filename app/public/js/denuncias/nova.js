@@ -14,19 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const reportMap = new maplibregl.Map({
             container: reportMapElement,
-            style: {
-                version: 8,
-                sources: {
-                    openstreetmap: {
-                        type: 'raster',
-                        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                        tileSize: 256,
-                        maxzoom: 19,
-                        attribution: '© OpenStreetMap contributors'
-                    }
-                },
-                layers: [{ id: 'openstreetmap', type: 'raster', source: 'openstreetmap' }]
-            },
+            style: 'https://tiles.openfreemap.org/styles/liberty',
             center: [-46.876, -23.510],
             zoom: 12,
             scrollZoom: true

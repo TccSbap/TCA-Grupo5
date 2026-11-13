@@ -85,8 +85,8 @@ const createApp = (data = defaultData) => {
             "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com 'unsafe-inline'",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com data:",
             `script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com 'nonce-${res.locals.cspNonce}'`,
-            "connect-src 'self' https://tile.openstreetmap.org",
-            "worker-src 'self' blob:"
+            "connect-src 'self' https://tiles.openfreemap.org https://unpkg.com",
+            "worker-src 'self' blob: https://unpkg.com"
         ];
 
         if (isProduction) {
