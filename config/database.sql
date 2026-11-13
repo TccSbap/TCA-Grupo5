@@ -67,6 +67,8 @@ CREATE TABLE denuncias (
   title VARCHAR(200) NOT NULL,
   description TEXT NOT NULL,
   location VARCHAR(255) NOT NULL,
+  latitude DECIMAL(10, 7) NULL,
+  longitude DECIMAL(10, 7) NULL,
   category ENUM('agua', 'esgoto', 'poluicao', 'geral') NOT NULL DEFAULT 'geral',
   status ENUM('pendente', 'em_andamento', 'resolvida') NOT NULL DEFAULT 'pendente',
   user_id INT UNSIGNED NOT NULL,

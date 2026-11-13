@@ -23,6 +23,7 @@ const {
     buildCsv
 } = require('../utils/analytics');
 const { loadNoticias, searchNoticias, NEWS_TOPICS, NEWS_REVIEWED_AT } = require('../utils/noticias');
+const { makeApproximateCoordinate } = require('../utils/coordinates');
 const {
     COOKIE_CONSENT_ACCEPTED,
     COOKIE_CONSENT_COOKIE_NAME,
@@ -38,6 +39,31 @@ const formatOngForDonation = (ong) => ({
     ...ong,
     focus: pickOngFocus(ong)
 });
+
+const buildComplaintMapPoints = (denuncias) => {
+    const areas = new Map();
+
+    for (const denuncia of denuncias) {
+        if (denuncia.latitude === null || denuncia.latitude === undefined
+            || denuncia.longitude === null || denuncia.longitude === undefined) {
+            continue;
+        }
+        const latitude = Number(denuncia.latitude);
+        const longitude = Number(denuncia.longitude);
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)
+            || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            continue;
+        }
+
+        const approximate = makeApproximateCoordinate(latitude, longitude);
+        const key = `${approximate.latitude},${approximate.longitude}`;
+        const area = areas.get(key) || { ...approximate, count: 0 };
+        area.count += 1;
+        areas.set(key, area);
+    }
+
+    return [...areas.values()].sort((first, second) => second.count - first.count);
+};
 
 const buildSeoPayload = (res, pathname, title, description, options = {}) => ({
     title,
@@ -426,6 +452,8 @@ const createIndexController = (data) => ({
             mensagensContato,
             doacoes
         });
+        const complaintMapPoints = buildComplaintMapPoints(denuncias);
+        const mappedDenuncias = complaintMapPoints.reduce((total, area) => total + area.count, 0);
 
         const impactPageUrl = '/impacto';
         const impactDescription = 'Acompanhe indicadores de denuncias, doacoes e participacao comunitaria.';
@@ -446,6 +474,8 @@ const createIndexController = (data) => ({
             extraStyles: ['/css/analytics.css'],
             impacto,
             totalDenuncias: denuncias.length,
+            complaintMapPoints,
+            mappedDenuncias,
             totalOngs: ongs.length
         });
     },

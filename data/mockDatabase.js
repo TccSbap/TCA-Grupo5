@@ -5,6 +5,7 @@ const createNoticiasSeed = require('./tables/noticias');
 const createDoacoesSeed = require('./tables/doacoes');
 const createMensagensContatoSeed = require('./tables/mensagensContato');
 const createDenunciasSeed = require('./tables/denuncias');
+const { normalizeApproximateCoordinates } = require('../app/utils/coordinates');
 
 const defaultPasswordHash = bcrypt.hashSync('123456', 10);
 
@@ -105,9 +106,13 @@ const getDenuncias = () => denuncias;
 const getDenunciaById = (id) => denuncias.find((denuncia) => denuncia.id === parseInt(id, 10));
 
 const createDenuncia = (denunciaData) => {
+    const coordinates = normalizeApproximateCoordinates(denunciaData.latitude, denunciaData.longitude);
+    if (coordinates.error) throw new Error(coordinates.error);
+
     const newDenuncia = {
         id: nextId(denuncias),
         ...denunciaData,
+        ...coordinates,
         status: 'pendente',
         responses: [],
         createdAt: denunciaData.createdAt || new Date().toISOString()

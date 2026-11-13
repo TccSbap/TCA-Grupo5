@@ -4,6 +4,7 @@ const {
     toIsoString,
     toSqlDateTime
 } = require('./helpers');
+const { normalizeApproximateCoordinates } = require('../utils/coordinates');
 
 module.exports = ({ pool, canUseDatabase }) => {
     const ensureDatabase = async () => {
@@ -16,7 +17,7 @@ module.exports = ({ pool, canUseDatabase }) => {
         await ensureDatabase();
 
         const [denunciaRows] = await pool.execute(
-            'SELECT id, title, description, location, category, status, user_id, user_name, created_at FROM denuncias ORDER BY id'
+            'SELECT id, title, description, location, latitude, longitude, category, status, user_id, user_name, created_at FROM denuncias ORDER BY id'
         );
         const [responseRows] = await pool.execute(
             'SELECT id, denuncia_id, ong_id, ong_name, response_text, created_at FROM denuncia_responses ORDER BY id'
@@ -51,25 +52,29 @@ module.exports = ({ pool, canUseDatabase }) => {
 
             const hasExplicitId = denuncia.id !== null && denuncia.id !== undefined;
             const query = hasExplicitId
-                ? `INSERT INTO denuncias (id, title, description, location, category, status, user_id, user_name, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ? `INSERT INTO denuncias (id, title, description, location, latitude, longitude, category, status, user_id, user_name, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                    ON DUPLICATE KEY UPDATE
                       title = VALUES(title),
                       description = VALUES(description),
                       location = VALUES(location),
+                      latitude = VALUES(latitude),
+                      longitude = VALUES(longitude),
                       category = VALUES(category),
                       status = VALUES(status),
                       user_id = VALUES(user_id),
                       user_name = VALUES(user_name),
                       created_at = VALUES(created_at)`
-                : `INSERT INTO denuncias (title, description, location, category, status, user_id, user_name, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+                : `INSERT INTO denuncias (title, description, location, latitude, longitude, category, status, user_id, user_name, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const values = hasExplicitId
                 ? [
                     denuncia.id,
                     denuncia.title,
                     denuncia.description,
                     denuncia.location,
+                    denuncia.latitude ?? null,
+                    denuncia.longitude ?? null,
                     denuncia.category || 'geral',
                     denuncia.status || 'pendente',
                     denuncia.userId || denuncia.user_id || null,
@@ -80,6 +85,8 @@ module.exports = ({ pool, canUseDatabase }) => {
                     denuncia.title,
                     denuncia.description,
                     denuncia.location,
+                    denuncia.latitude ?? null,
+                    denuncia.longitude ?? null,
                     denuncia.category || 'geral',
                     denuncia.status || 'pendente',
                     denuncia.userId || denuncia.user_id || null,
@@ -111,11 +118,17 @@ module.exports = ({ pool, canUseDatabase }) => {
         return denuncias.find((denuncia) => denuncia.id === parseInt(id, 10)) || null;
     };
 
-    const createDenuncia = async (denunciaData) => persistDenuncia({
-        ...denunciaData,
-        status: denunciaData.status || 'pendente',
-        responses: []
-    });
+    const createDenuncia = async (denunciaData) => {
+        const coordinates = normalizeApproximateCoordinates(denunciaData.latitude, denunciaData.longitude);
+        if (coordinates.error) throw new Error(coordinates.error);
+
+        return persistDenuncia({
+            ...denunciaData,
+            ...coordinates,
+            status: denunciaData.status || 'pendente',
+            responses: []
+        });
+    };
 
     return {
         createDenuncia,

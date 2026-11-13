@@ -7,6 +7,7 @@ const {
     buildPageStructuredData,
     getSiteUrl
 } = require('../utils/seo');
+const { normalizeApproximateCoordinates } = require('../utils/coordinates');
 
 const createDenunciasController = (data) => {
     const buildSeoPayload = (res, pathname, title, description, options = {}) => ({
@@ -85,6 +86,7 @@ const createDenunciasController = (data) => {
                     'Nova denúncia',
                     'Registre uma denúncia sobre água, esgoto ou saneamento básico de forma rápida e segura.'
                 ),
+                extraStyles: ['/css/maps.css', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css'],
                 error: req.query.error,
                 success: req.query.success
             });
@@ -97,6 +99,7 @@ const createDenunciasController = (data) => {
             const aliases = { lixo: 'poluicao', drenagem: 'geral', outros: 'geral' };
             const rawCategory = req.body.category || 'geral';
             const category = typeof rawCategory === 'string' && Object.hasOwn(aliases, rawCategory) ? aliases[rawCategory] : rawCategory;
+            const coordinates = normalizeApproximateCoordinates(req.body.latitude, req.body.longitude);
 
             try {
                 if (!title || !description || !location) {
@@ -122,11 +125,17 @@ const createDenunciasController = (data) => {
                     return res.redirect('/denuncias/nova?error=' + encodeURIComponent('Selecione uma categoria válida.'));
                 }
 
+                if (coordinates.error) {
+                    return res.redirect('/denuncias/nova?error=' + encodeURIComponent(coordinates.error));
+                }
+
                 const user = req.session.user;
                 await data.createDenuncia({
                     title,
                     description,
                     location,
+                    latitude: coordinates.latitude,
+                    longitude: coordinates.longitude,
                     category,
                     userId: user.id,
                     userName: user.name || user.ongName || 'Usuário'

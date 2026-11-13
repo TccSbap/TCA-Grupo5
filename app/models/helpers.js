@@ -68,6 +68,8 @@ const normalizeDenunciaRow = (row) => ({
     title: row.title,
     description: row.description,
     location: row.location,
+    latitude: row.latitude === null || row.latitude === undefined ? null : Number(row.latitude),
+    longitude: row.longitude === null || row.longitude === undefined ? null : Number(row.longitude),
     category: row.category,
     status: row.status,
     userId: row.user_id,

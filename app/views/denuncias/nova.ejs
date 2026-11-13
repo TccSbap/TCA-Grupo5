@@ -54,6 +54,18 @@
                     <small>Seja o mais específico possível para facilitar a localização</small>
                 </nav>
                 
+                <section class="form-group report-location-picker" aria-labelledby="report-location-title">
+                    <h2 id="report-location-title">Marque a região aproximada no mapa</h2>
+                    <p>Opcional. O ponto será arredondado para uma área de cerca de 2 km e agrupado com outras denúncias.</p>
+                    <div id="denuncia-location-map" class="interactive-map" role="application" aria-label="Mapa para selecionar a região aproximada da denúncia"></div>
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    <p id="location-map-status" class="map-status" role="status" aria-live="polite">Nenhum ponto selecionado. Clique no mapa ou use sua localização.</p>
+                    <div class="map-actions">
+                        <button class="btn btn-outline" type="button" id="use-my-location">Usar minha localização</button>
+                        <button class="btn btn-outline" type="button" id="clear-map-location" disabled>Remover ponto</button>
+                    </div>
+                </section>
                 <nav class="form-group">
                     <label for="description">Descrição Detalhada *</label>
                     <textarea id="description" name="description" rows="6" required 
@@ -70,7 +82,8 @@
                 </footer>
             </form>
 
-<script src="/js/denuncias/nova.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
+<script src="/js/denuncias/nova.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>" defer></script>
 
             <aside class="form-info">
                 <h3>Informações Importantes</h3>
