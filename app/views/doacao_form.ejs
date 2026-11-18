@@ -47,8 +47,9 @@
 
             <nav class="form-group">
                 <label for="cepDoador">CEP</label>
-                <input type="text" id="cepDoador" name="cepDoador" inputmode="numeric" maxlength="9" placeholder="00000-000" required aria-describedby="cepDoador-error">
+                <input type="text" id="cepDoador" name="cepDoador" inputmode="numeric" maxlength="9" placeholder="00000-000" required aria-describedby="cepDoador-error cepDoador-status">
                 <nav class="error-message" id="cepDoador-error" aria-live="polite"></nav>
+                <small class="cep-lookup-status" id="cepDoador-status" aria-live="polite" role="status"></small>
             </nav>
 
             <nav class="form-group">

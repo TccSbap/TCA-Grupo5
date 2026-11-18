@@ -140,6 +140,21 @@
     margin-top: var(--spacing-2);
 }
 
+.cep-lookup-status {
+    display: block;
+    margin-top: var(--spacing-2);
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+}
+
+.cep-lookup-status.is-success {
+    color: var(--success);
+}
+
+.cep-lookup-status.is-error {
+    color: var(--error);
+}
+
 .btn-primary {
     display: block;
     width: 100%;
