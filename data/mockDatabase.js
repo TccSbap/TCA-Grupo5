@@ -150,6 +150,29 @@ const deleteDenuncia = (id) => {
     return true;
 };
 
+const updateDenunciaStatus = (id, status) => {
+    const denuncia = getDenunciaById(id);
+    if (!denuncia) return false;
+    denuncia.status = status;
+    return true;
+};
+
+const createAdminDenunciaResponse = (denunciaId, responseText) => {
+    const denuncia = getDenunciaById(denunciaId);
+    if (!denuncia) return false;
+
+    const existingResponses = denuncias.flatMap((item) => item.responses || []);
+    const response = {
+        id: nextId(existingResponses),
+        text: responseText,
+        ongName: 'Administração',
+        ongId: null,
+        createdAt: new Date().toISOString()
+    };
+    denuncia.responses = [...(denuncia.responses || []), response];
+    return true;
+};
+
 const createOng = (ongData) => {
     const newOng = {
         id: nextId(ongs),
@@ -275,7 +298,9 @@ module.exports = {
     getDenunciaById,
     getDenuncias,
     deleteDenuncia,
+    createAdminDenunciaResponse,
     updateDenuncia,
+    updateDenunciaStatus,
     getDoacoes,
     getMensagensContato,
     getNoticias,

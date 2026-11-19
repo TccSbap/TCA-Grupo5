@@ -160,6 +160,29 @@ module.exports = ({ pool, canUseDatabase }) => {
         return rows.length > 0;
     };
 
+    const updateDenunciaStatus = async (id, status) => {
+        await ensureDatabase();
+        const [result] = await pool.execute(
+            'UPDATE denuncias SET status = ? WHERE id = ?',
+            [status, Number(id)]
+        );
+        if (result.affectedRows > 0) return true;
+
+        const [rows] = await pool.execute('SELECT id FROM denuncias WHERE id = ? LIMIT 1', [Number(id)]);
+        return rows.length > 0;
+    };
+
+    const createAdminDenunciaResponse = async (denunciaId, responseText) => {
+        await ensureDatabase();
+        const [result] = await pool.execute(
+            `INSERT INTO denuncia_responses (denuncia_id, ong_id, ong_name, response_text, created_at)
+             SELECT id, NULL, ?, ?, CURRENT_TIMESTAMP(3)
+             FROM denuncias WHERE id = ?`,
+            ['Administração', responseText, Number(denunciaId)]
+        );
+        return result.affectedRows > 0;
+    };
+
     const deleteDenuncia = async (id) => {
         await ensureDatabase();
         const [result] = await pool.execute('DELETE FROM denuncias WHERE id = ?', [Number(id)]);
@@ -169,8 +192,10 @@ module.exports = ({ pool, canUseDatabase }) => {
     return {
         createDenuncia,
         deleteDenuncia,
+        createAdminDenunciaResponse,
         getDenunciaById,
         getDenuncias,
-        updateDenuncia
+        updateDenuncia,
+        updateDenunciaStatus
     };
 };

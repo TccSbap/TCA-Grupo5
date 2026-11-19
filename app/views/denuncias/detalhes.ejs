@@ -12,6 +12,18 @@
             <div class="info-item"><label>Denunciante:</label><span><%= denuncia.userName %></span></div>
             <div class="info-item"><label>Data:</label><span><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></span></div>
         </div><section class="description"><h3>Descri&ccedil;&atilde;o</h3><p><%= denuncia.description %></p></section>
+        <% if (denuncia.responses && denuncia.responses.length) { %>
+        <section class="denuncia-responses" aria-labelledby="denuncia-responses-title">
+            <h2 id="denuncia-responses-title">Respostas e atualiza&ccedil;&otilde;es</h2>
+            <% denuncia.responses.forEach(response => { %>
+            <article class="denuncia-response">
+                <strong><%= response.ongName || 'Administração' %></strong>
+                <time datetime="<%= new Date(response.createdAt).toISOString() %>"><%= new Date(response.createdAt).toLocaleString('pt-BR') %></time>
+                <p><%= response.text %></p>
+            </article>
+            <% }) %>
+        </section>
+        <% } %>
     </section></article><aside class="sidebar"><section class="actions-card"><h3>A&ccedil;&otilde;es</h3><a href="/denuncias" class="btn btn-outline btn-full">Voltar para den&uacute;ncias</a></section>
     <section class="info-card"><h3>Sobre o encaminhamento</h3><p>As den&uacute;ncias devem ser encaminhadas aos &oacute;rg&atilde;os p&uacute;blicos competentes. As ONGs podem oferecer orienta&ccedil;&atilde;o e apoio &agrave;s comunidades.</p></section></aside></section>
 </section></section>

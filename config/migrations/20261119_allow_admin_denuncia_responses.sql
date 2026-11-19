@@ -1,0 +1,2 @@
+ALTER TABLE denuncia_responses
+  MODIFY COLUMN ong_id INT UNSIGNED NULL;

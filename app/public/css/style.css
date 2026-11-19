@@ -2461,7 +2461,7 @@ form[aria-busy="true"] input[type="submit"] {
 }
 
 .category-esgoto {
-    background-color: var(--red-500);
+    background-color: #16803c;
 }
 
 .category-agua {
@@ -2469,11 +2469,13 @@ form[aria-busy="true"] input[type="submit"] {
 }
 
 .category-poluicao {
-    background-color: var(--green-500);
+    background-color: #e5e7eb;
+    color: #263445;
 }
 
 .category-geral {
-    background-color: var(--gray-500);
+    background-color: #facc15;
+    color: #332701;
 }
 
 .description h3 {
@@ -3204,6 +3206,99 @@ form[aria-busy="true"] input[type="submit"] {
 
 .admin-table tbody tr:hover {
     background-color: var(--gray-50);
+}
+
+.admin-denuncias-table th:nth-child(4),
+.admin-denuncias-table td:nth-child(4) {
+    width: 220px;
+    white-space: normal;
+}
+
+.admin-status-form {
+    display: grid;
+    justify-items: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-3);
+}
+
+.admin-action-label {
+    display: grid;
+    gap: var(--spacing-1);
+    width: 100%;
+    text-align: left;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+}
+
+.admin-status-form select {
+    width: 100%;
+    min-width: 130px;
+    padding: var(--spacing-2);
+}
+
+.admin-reply-details {
+    position: relative;
+    flex: 1 1 100%;
+}
+
+.admin-reply-details summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.admin-reply-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.admin-reply-form {
+    display: grid;
+    gap: var(--spacing-2);
+    width: min(280px, 70vw);
+    padding: var(--spacing-3);
+    background: #fff;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.admin-reply-form label {
+    display: grid;
+    gap: var(--spacing-1);
+    text-align: left;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.admin-reply-form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.admin-reply-details[open] .admin-reply-form {
+    position: static;
+}
+
+.denuncia-responses {
+    margin-top: var(--spacing-6);
+    padding: var(--spacing-5);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    background: var(--gray-50);
+}
+
+.denuncia-response {
+    padding: var(--spacing-4) 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.denuncia-response:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.denuncia-response p {
+    margin: var(--spacing-2) 0 0;
+    white-space: pre-wrap;
 }
 
 .admin-ongs-grid {

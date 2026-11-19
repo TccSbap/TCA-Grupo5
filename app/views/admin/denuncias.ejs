@@ -37,7 +37,7 @@
         <% } %>
         
         <section class="admin-table-container">
-            <table class="admin-table">
+            <table class="admin-table admin-denuncias-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -51,18 +51,38 @@
                 </thead>
                 <tbody>
                     <% denuncias.forEach(denuncia => { %>
+                    <% const categoryRaw = String(denuncia.category || 'geral').trim(); %>
+                    <% const categoryNormalized = categoryRaw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''); %>
+                    <% const categoryKeyByValue = { agua: 'agua', agua_potavel: 'agua', esgoto: 'esgoto', poluicao: 'poluicao', poluicao_lixo_e_residuos: 'poluicao', lixo: 'poluicao', geral: 'geral', drenagem: 'geral', outros: 'geral', sem_categoria: 'geral' }; %>
+                    <% const categoryLabels = { agua: 'Água', esgoto: 'Esgoto', poluicao: 'Poluição', geral: 'Geral' }; %>
+                    <% const categoryKey = categoryKeyByValue[categoryNormalized] || 'geral'; %>
+                    <% const categoryLabel = categoryKeyByValue[categoryNormalized] ? categoryLabels[categoryKey] : categoryRaw; %>
+                    <% const statusKey = String(denuncia.status || 'pendente').trim().toLowerCase().replace(/\s+/g, '_'); %>
+                    <% const statusLabels = { pendente: 'Pendente', em_andamento: 'Em andamento', resolvida: 'Resolvida' }; %>
                     <tr>
                         <td data-label="ID"><%= denuncia.id %></td>
                         <td data-label="Título"><%= denuncia.title %></td>
                         <td data-label="Categoria">
-                            <span class="category-badge category-<%= denuncia.category || 'geral' %>">
-                                <%= (denuncia.category || 'geral').charAt(0).toUpperCase() + (denuncia.category || 'geral').slice(1) %>
+                            <span class="category-badge category-<%= categoryKey %>">
+                                <%= categoryLabel || 'Geral' %>
                             </span>
                         </td>
                         <td data-label="Status">
-                            <span class="status status-<%= denuncia.status %>">
-                                <%= denuncia.status.replace('_', ' ').charAt(0).toUpperCase() + denuncia.status.replace('_', ' ').slice(1) %>
+                            <span class="status status-<%= statusKey %>">
+                                <%= statusLabels[statusKey] || statusKey.replace('_', ' ').replace(/^\w/, character => character.toUpperCase()) %>
                             </span>
+                            <form action="/admin/denuncias/<%= denuncia.id %>/status" method="POST" class="admin-status-form">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <label class="admin-action-label">
+                                    <span>Alterar status</span>
+                                    <select name="status" aria-label="Novo status da denúncia">
+                                        <option value="pendente" <%= statusKey === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                                        <option value="em_andamento" <%= statusKey === 'em_andamento' ? 'selected' : '' %>>Em andamento</option>
+                                        <option value="resolvida" <%= statusKey === 'resolvida' ? 'selected' : '' %>>Resolvida</option>
+                                    </select>
+                                </label>
+                                <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
+                            </form>
                         </td>
                         <td data-label="Localização"><%= denuncia.location %></td>
                         <td data-label="Data"><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></td>
@@ -70,6 +90,17 @@
                             <div class="admin-record-actions">
                                 <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
                                 <a href="/admin/denuncias/<%= denuncia.id %>/editar" class="btn btn-sm btn-primary">Editar</a>
+                                <details class="admin-reply-details">
+                                    <summary class="btn btn-sm btn-outline">Responder</summary>
+                                    <form action="/admin/denuncias/<%= denuncia.id %>/responder" method="POST" class="admin-reply-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <label>
+                                            <span>Resposta pública</span>
+                                            <textarea name="responseText" rows="3" maxlength="10000" required></textarea>
+                                        </label>
+                                        <button type="submit" class="btn btn-sm btn-primary">Publicar resposta</button>
+                                    </form>
+                                </details>
                                 <form action="/admin/denuncias/<%= denuncia.id %>/excluir" method="POST" onsubmit="return confirm('Excluir definitivamente esta denúncia e as respostas associadas?');">
                                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                     <button type="submit" class="btn btn-sm admin-danger-button">Excluir</button>

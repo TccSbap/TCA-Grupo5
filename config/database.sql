@@ -87,7 +87,7 @@ CREATE TABLE denuncias (
 CREATE TABLE denuncia_responses (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   denuncia_id INT UNSIGNED NOT NULL,
-  ong_id INT UNSIGNED NOT NULL,
+  ong_id INT UNSIGNED NULL,
   ong_name VARCHAR(150) NOT NULL,
   response_text TEXT NOT NULL,
   created_at DATETIME(3) NOT NULL,

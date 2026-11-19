@@ -16,6 +16,8 @@ const createAdminRouter = (data = defaultData) => {
     router.get('/relatorio.csv', requireAdmin, controller.report);
     router.get('/dashboard_admin', requireAdmin, (req, res) => res.redirect('/admin'));
     router.get('/denuncias', requireAdmin, controller.denuncias);
+    router.post('/denuncias/:id/status', requireAdmin, controller.updateDenunciaStatus);
+    router.post('/denuncias/:id/responder', requireAdmin, controller.createDenunciaResponse);
     router.get('/denuncias/:id/editar', requireAdmin, controller.denunciaEditPage);
     router.post('/denuncias/:id/editar', requireAdmin, controller.updateDenuncia);
     router.post('/denuncias/:id/excluir', requireAdmin, controller.deleteDenuncia);
