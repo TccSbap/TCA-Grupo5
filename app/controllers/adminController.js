@@ -216,41 +216,63 @@ const createAdminController = (data) => {
             });
         },
 
+        async denunciaManagementPage(req, res) {
+            const id = parseAdminId(req.params.id);
+            const denuncia = id ? await data.getDenunciaById(id) : null;
+            if (!denuncia) return res.status(404).render('404', { title: 'Denúncia não encontrada' });
+
+            return res.render('admin/denuncia-management', {
+                title: `Gerenciar denúncia #${denuncia.id}`,
+                user: req.session.user,
+                denuncia,
+                success: req.query.success,
+                error: req.query.error
+            });
+        },
+
         async updateDenunciaStatus(req, res) {
             const id = parseAdminId(req.params.id);
             const status = textValue(req.body.status);
-            if (!id || !['pendente', 'em_andamento', 'resolvida'].includes(status)) {
-                return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Selecione um status válido.'));
+            if (!id) {
+                return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Identificador de denúncia inválido.'));
+            }
+            const managementPath = `/admin/denuncias/${id}`;
+            if (!['pendente', 'em_andamento', 'resolvida'].includes(status)) {
+                return res.redirect(managementPath + '?error=' + encodeURIComponent('Selecione um status válido.'));
             }
 
             try {
                 const updated = await data.updateDenunciaStatus(id, status);
                 if (!updated) {
-                    return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Denúncia não encontrada.'));
+                    return res.redirect(managementPath + '?error=' + encodeURIComponent('Denúncia não encontrada.'));
                 }
-                return res.redirect('/admin/denuncias?success=' + encodeURIComponent('Status da denúncia atualizado.'));
+                return res.redirect(managementPath + '?success=' + encodeURIComponent('Status da denúncia atualizado.'));
             } catch (error) {
                 console.error('Falha administrativa ao atualizar status da denúncia:', error.code || error.message);
-                return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Não foi possível atualizar o status. Tente novamente.'));
+                return res.redirect(managementPath + '?error=' + encodeURIComponent('Não foi possível atualizar o status. Tente novamente.'));
             }
         },
 
         async createDenunciaResponse(req, res) {
             const id = parseAdminId(req.params.id);
             const responseText = textValue(req.body.responseText);
-            if (!id || !responseText || responseText.length > 10000) {
-                return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Escreva uma resposta de até 10.000 caracteres.'));
+            if (!id) {
+                return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Identificador de denúncia inválido.'));
+            }
+            const managementPath = `/admin/denuncias/${id}`;
+            if (!responseText || responseText.length > 10000) {
+                return res.redirect(managementPath + '?error=' + encodeURIComponent('Escreva uma resposta de até 10.000 caracteres.'));
             }
 
             try {
                 const created = await data.createAdminDenunciaResponse(id, responseText);
                 if (!created) {
-                    return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Denúncia não encontrada.'));
+                    return res.redirect(managementPath + '?error=' + encodeURIComponent('Denúncia não encontrada.'));
                 }
-                return res.redirect('/admin/denuncias?success=' + encodeURIComponent('Resposta publicada na denúncia.'));
+                return res.redirect(managementPath + '?success=' + encodeURIComponent('Resposta publicada na denúncia.'));
             } catch (error) {
                 console.error('Falha administrativa ao responder denúncia:', error.code || error.message);
-                return res.redirect('/admin/denuncias?error=' + encodeURIComponent('Não foi possível publicar a resposta. Tente novamente.'));
+                return res.redirect(managementPath + '?error=' + encodeURIComponent('Não foi possível publicar a resposta. Tente novamente.'));
             }
         },
 

@@ -71,18 +71,6 @@
                             <span class="status status-<%= statusKey %>">
                                 <%= statusLabels[statusKey] || statusKey.replace('_', ' ').replace(/^\w/, character => character.toUpperCase()) %>
                             </span>
-                            <form action="/admin/denuncias/<%= denuncia.id %>/status" method="POST" class="admin-status-form">
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                <label class="admin-action-label">
-                                    <span>Alterar status</span>
-                                    <select name="status" aria-label="Novo status da denúncia">
-                                        <option value="pendente" <%= statusKey === 'pendente' ? 'selected' : '' %>>Pendente</option>
-                                        <option value="em_andamento" <%= statusKey === 'em_andamento' ? 'selected' : '' %>>Em andamento</option>
-                                        <option value="resolvida" <%= statusKey === 'resolvida' ? 'selected' : '' %>>Resolvida</option>
-                                    </select>
-                                </label>
-                                <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
-                            </form>
                         </td>
                         <td data-label="Localização"><%= denuncia.location %></td>
                         <td data-label="Data"><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></td>
@@ -90,17 +78,7 @@
                             <div class="admin-record-actions">
                                 <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
                                 <a href="/admin/denuncias/<%= denuncia.id %>/editar" class="btn btn-sm btn-primary">Editar</a>
-                                <details class="admin-reply-details">
-                                    <summary class="btn btn-sm btn-outline">Responder</summary>
-                                    <form action="/admin/denuncias/<%= denuncia.id %>/responder" method="POST" class="admin-reply-form">
-                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <label>
-                                            <span>Resposta pública</span>
-                                            <textarea name="responseText" rows="3" maxlength="10000" required></textarea>
-                                        </label>
-                                        <button type="submit" class="btn btn-sm btn-primary">Publicar resposta</button>
-                                    </form>
-                                </details>
+                                <a href="/admin/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Responder</a>
                                 <form action="/admin/denuncias/<%= denuncia.id %>/excluir" method="POST" onsubmit="return confirm('Excluir definitivamente esta denúncia e as respostas associadas?');">
                                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                     <button type="submit" class="btn btn-sm admin-danger-button">Excluir</button>

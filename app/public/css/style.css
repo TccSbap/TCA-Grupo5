@@ -3214,68 +3214,101 @@ form[aria-busy="true"] input[type="submit"] {
     white-space: normal;
 }
 
-.admin-status-form {
-    display: grid;
-    justify-items: center;
-    gap: var(--spacing-2);
-    margin-top: var(--spacing-3);
+.admin-denuncia-summary,
+.admin-management-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-6);
 }
 
-.admin-action-label {
+.admin-denuncia-summary {
+    margin-bottom: var(--spacing-6);
+}
+
+.admin-denuncia-summary-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.admin-denuncia-summary-header h2 {
+    margin: 0;
+}
+
+.admin-denuncia-meta {
     display: grid;
-    gap: var(--spacing-1);
-    width: 100%;
-    text-align: left;
-    font-size: var(--font-size-xs);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-2) var(--spacing-6);
+    margin-top: var(--spacing-4);
+}
+
+.admin-denuncia-meta p {
+    margin: 0;
+    color: var(--gray-700);
+}
+
+.admin-denuncia-description {
+    margin-top: var(--spacing-5);
+}
+
+.admin-denuncia-description h3 {
+    margin-bottom: var(--spacing-2);
+}
+
+.admin-denuncia-description p {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.admin-denuncia-management-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-5);
+}
+
+.admin-management-card h2 {
+    margin-top: 0;
+}
+
+.admin-management-card > p {
+    color: var(--gray-600);
+}
+
+.admin-management-card form {
+    display: grid;
+    gap: var(--spacing-3);
+}
+
+.admin-management-label {
     font-weight: 600;
+    color: var(--gray-800);
 }
 
-.admin-status-form select {
+.admin-management-card select,
+.admin-management-card textarea {
     width: 100%;
-    min-width: 130px;
-    padding: var(--spacing-2);
-}
-
-.admin-reply-details {
-    position: relative;
-    flex: 1 1 100%;
-}
-
-.admin-reply-details summary {
-    cursor: pointer;
-    list-style: none;
-}
-
-.admin-reply-details summary::-webkit-details-marker {
-    display: none;
-}
-
-.admin-reply-form {
-    display: grid;
-    gap: var(--spacing-2);
-    width: min(280px, 70vw);
+    min-height: 44px;
     padding: var(--spacing-3);
-    background: #fff;
+    color: var(--gray-800);
+    background: var(--white);
     border: 1px solid var(--gray-300);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--border-radius);
+    font: inherit;
 }
 
-.admin-reply-form label {
-    display: grid;
-    gap: var(--spacing-1);
-    text-align: left;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-}
-
-.admin-reply-form textarea {
-    min-height: 80px;
+.admin-management-card textarea {
+    min-height: 150px;
     resize: vertical;
 }
 
-.admin-reply-details[open] .admin-reply-form {
-    position: static;
+.admin-management-card form .btn {
+    justify-self: start;
 }
 
 .denuncia-responses {
@@ -3542,6 +3575,16 @@ form[aria-busy="true"] input[type="submit"] {
 
     .admin-edit-field--wide {
         grid-column: auto;
+    }
+
+    .admin-denuncia-management-grid,
+    .admin-denuncia-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-denuncia-summary,
+    .admin-management-card {
+        padding: var(--spacing-4);
     }
 
     .ong-card-footer {

@@ -1,0 +1,113 @@
+<%- include('../partials/header') %>
+
+<section class="admin-container">
+    <aside class="admin-sidebar">
+        <nav class="admin-nav">
+            <header class="admin-nav-header">
+                <h2>Administrador</h2>
+                <p><%= user.name %></p>
+            </header>
+            <ul class="admin-nav-links">
+                <li><a href="/admin">Visão Geral</a></li>
+                <li><a href="/admin/denuncias" class="active">Denúncias</a></li>
+                <li><a href="/admin/ongs">ONGs</a></li>
+                <li><a href="/auth/alterar-senha">Alterar senha</a></li>
+                <li>
+                    <form action="/auth/logout" method="POST" class="logout-form">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="logout-button">Sair</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <% const statusKey = String(denuncia.status || 'pendente').trim().toLowerCase().replace(/\s+/g, '_'); %>
+        <% const statusLabels = { pendente: 'Pendente', em_andamento: 'Em andamento', resolvida: 'Resolvida' }; %>
+        <% const categoryRaw = String(denuncia.category || 'geral').trim(); %>
+        <% const categoryNormalized = categoryRaw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''); %>
+        <% const categoryKeyByValue = { agua: 'agua', agua_potavel: 'agua', esgoto: 'esgoto', poluicao: 'poluicao', poluicao_lixo_e_residuos: 'poluicao', lixo: 'poluicao', geral: 'geral', drenagem: 'geral', outros: 'geral', sem_categoria: 'geral' }; %>
+        <% const categoryLabels = { agua: 'Água', esgoto: 'Esgoto', poluicao: 'Poluição', geral: 'Geral' }; %>
+        <% const categoryKey = categoryKeyByValue[categoryNormalized] || 'geral'; %>
+        <% const categoryLabel = categoryKeyByValue[categoryNormalized] ? categoryLabels[categoryKey] : categoryRaw; %>
+
+        <header class="admin-header">
+            <p><a href="/admin/denuncias">← Voltar à lista de denúncias</a></p>
+            <h1>Denúncia #<%= denuncia.id %></h1>
+            <p>Revise a denúncia, atualize o andamento e publique uma resposta.</p>
+        </header>
+
+        <% if (success) { %>
+        <div class="alert alert-success" role="status"><%= success %></div>
+        <% } %>
+        <% if (error) { %>
+        <div class="alert alert-error" role="alert"><%= error %></div>
+        <% } %>
+
+        <article class="admin-denuncia-summary">
+            <header class="admin-denuncia-summary-header">
+                <h2><%= denuncia.title %></h2>
+                <span class="category-badge category-<%= categoryKey %>"><%= categoryLabel || 'Geral' %></span>
+            </header>
+            <div class="admin-denuncia-meta">
+                <p><strong>Status atual:</strong> <span class="status status-<%= statusKey %>"><%= statusLabels[statusKey] || statusKey %></span></p>
+                <p><strong>Localização:</strong> <%= denuncia.location %></p>
+                <p><strong>Registrada por:</strong> <%= denuncia.userName %></p>
+                <p><strong>Data:</strong> <%= new Date(denuncia.createdAt).toLocaleString('pt-BR') %></p>
+            </div>
+            <section class="admin-denuncia-description">
+                <h3>Descrição</h3>
+                <p><%= denuncia.description %></p>
+            </section>
+        </article>
+
+        <div class="admin-denuncia-management-grid">
+            <section class="admin-management-card">
+                <h2>Atualizar status</h2>
+                <p>O novo status ficará visível no acompanhamento da denúncia.</p>
+                <form action="/admin/denuncias/<%= denuncia.id %>/status" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <label class="admin-management-label" for="denuncia-status">Status</label>
+                    <select id="denuncia-status" name="status" required>
+                        <option value="pendente" <%= statusKey === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                        <option value="em_andamento" <%= statusKey === 'em_andamento' ? 'selected' : '' %>>Em andamento</option>
+                        <option value="resolvida" <%= statusKey === 'resolvida' ? 'selected' : '' %>>Resolvida</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Salvar status</button>
+                </form>
+            </section>
+
+            <section class="admin-management-card">
+                <h2>Responder à denúncia</h2>
+                <p>A resposta será publicada na página pública desta denúncia.</p>
+                <form action="/admin/denuncias/<%= denuncia.id %>/responder" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <label class="admin-management-label" for="denuncia-response">Resposta</label>
+                    <textarea id="denuncia-response" name="responseText" rows="6" maxlength="10000" required></textarea>
+                    <button type="submit" class="btn btn-primary">Publicar resposta</button>
+                </form>
+            </section>
+        </div>
+
+        <% if (denuncia.responses && denuncia.responses.length) { %>
+        <section class="admin-related-records">
+            <h2>Respostas publicadas</h2>
+            <% denuncia.responses.forEach(response => { %>
+            <article class="admin-related-record">
+                <p><strong><%= response.ongName || 'Administração' %></strong> · <%= new Date(response.createdAt).toLocaleString('pt-BR') %></p>
+                <p><%= response.text %></p>
+            </article>
+            <% }) %>
+        </section>
+        <% } %>
+
+        <div class="admin-form-actions">
+            <a href="/admin/denuncias/<%= denuncia.id %>/editar" class="btn btn-primary">Editar dados da denúncia</a>
+            <a href="/denuncias/<%= denuncia.id %>" class="btn btn-outline">Ver página pública</a>
+            <a href="/admin/denuncias" class="btn btn-outline">Voltar à lista</a>
+        </div>
+    </main>
+</section>
+
+<%- include('../partials/footer') %>
