@@ -620,6 +620,11 @@ form[aria-busy="true"] input[type="submit"] {
     transition: all 0.2s;
 }
 
+.denuncia-card {
+    display: flex;
+    flex-direction: column;
+}
+
 .denuncia-card:hover, .ong-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
@@ -651,6 +656,13 @@ form[aria-busy="true"] input[type="submit"] {
     flex-direction: column;
     gap: var(--spacing-2);
     margin-bottom: var(--spacing-4);
+}
+
+.denuncia-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: auto;
+    padding-top: var(--spacing-2);
 }
 
 .meta-item {
