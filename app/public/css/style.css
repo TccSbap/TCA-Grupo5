@@ -3604,3 +3604,179 @@ form[aria-busy="true"] input[type="submit"] {
     }
 }
 
+/* Mantém o painel administrativo dentro da largura disponível em tablets e celulares. */
+@media (max-width: 1024px) {
+    .admin-container {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--spacing-4);
+        width: 100%;
+        max-width: 100%;
+        padding: clamp(0.75rem, 2.5vw, 1.5rem);
+    }
+
+    .admin-sidebar,
+    .admin-content {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .admin-sidebar {
+        position: static;
+    }
+
+    .admin-nav {
+        padding: clamp(0.75rem, 2.5vw, 1.25rem);
+    }
+
+    .admin-nav-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+        gap: var(--spacing-2);
+    }
+
+    .admin-nav-links li {
+        min-width: 0;
+        margin: 0;
+    }
+
+    .admin-nav-links a,
+    .admin-nav-links .logout-button {
+        width: 100%;
+        height: 100%;
+        padding: var(--spacing-3);
+        overflow-wrap: anywhere;
+    }
+
+    .admin-nav-links .logout-form {
+        height: 100%;
+    }
+
+    .admin-content {
+        padding: clamp(1rem, 3vw, 2rem);
+    }
+
+    .admin-header h1 {
+        font-size: clamp(1.6rem, 4vw, var(--font-size-3xl));
+        overflow-wrap: anywhere;
+    }
+
+    .admin-header p {
+        overflow-wrap: anywhere;
+    }
+
+    /* Em telas estreitas, cada denúncia vira um cartão com rótulos; nenhum campo
+       depende de rolagem horizontal para ficar acessível. */
+    .admin-table-container {
+        width: 100%;
+        min-width: 0;
+        overflow: visible;
+    }
+
+    .admin-denuncias-table,
+    .admin-denuncias-table tbody {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .admin-denuncias-table thead {
+        display: none;
+    }
+
+    .admin-denuncias-table tbody tr {
+        display: block;
+        width: 100%;
+        margin: 0 0 var(--spacing-4);
+        padding: var(--spacing-2) var(--spacing-4);
+        overflow: hidden;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--border-radius-lg);
+        background: var(--white);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .admin-denuncias-table tbody tr:hover {
+        background: var(--white);
+    }
+
+    .admin-denuncias-table th:nth-child(4),
+    .admin-denuncias-table td:nth-child(4) {
+        width: auto;
+        text-align: left;
+    }
+
+    .admin-denuncias-table tbody td {
+        display: grid;
+        grid-template-columns: minmax(5.75rem, 30%) minmax(0, 1fr);
+        align-items: start;
+        gap: var(--spacing-3);
+        width: 100%;
+        padding: var(--spacing-3) 0;
+        overflow-wrap: anywhere;
+        white-space: normal;
+        text-align: left;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .admin-denuncias-table tbody td::before {
+        content: attr(data-label);
+        color: var(--gray-600);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+    }
+
+    .admin-denuncias-table tbody td:last-child {
+        display: block;
+        padding-bottom: var(--spacing-2);
+        border-bottom: 0;
+    }
+
+    .admin-denuncias-table tbody td:last-child::before {
+        display: block;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .admin-record-actions {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    .admin-record-actions > a,
+    .admin-record-actions > form {
+        flex: 1 1 8rem;
+        min-width: 0;
+    }
+
+    .admin-record-actions > a,
+    .admin-record-actions > form .btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-ongs-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--spacing-4);
+    }
+
+    .ong-admin-card {
+        min-width: 0;
+        padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .ong-card-footer > .btn,
+    .ong-card-footer > form {
+        flex: 1 1 9rem;
+        min-width: 0;
+    }
+
+    .ong-card-footer > form .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
