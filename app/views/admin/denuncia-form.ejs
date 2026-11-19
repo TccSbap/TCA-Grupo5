@@ -79,7 +79,7 @@
                     <span>Longitude aproximada</span>
                     <input type="number" name="longitude" min="-180" max="180" step="any" value="<%= formData.longitude ?? '' %>">
                 </label>
-                <p class="admin-form-hint admin-edit-field--wide">As coordenadas continuam sendo arredondadas para uma área aproximada, conforme a regra de privacidade do sistema. Deixe os dois campos vazios para remover o ponto do mapa.</p>
+                <p class="admin-form-hint admin-edit-field--wide">O ponto no mapa é opcional. Preencha latitude e longitude para mantê-lo; se qualquer campo ficar vazio, a denúncia será salva sem ponto. As coordenadas são arredondadas para uma área aproximada por privacidade.</p>
 
                 <label class="admin-edit-field">
                     <span>Usuário associado</span>

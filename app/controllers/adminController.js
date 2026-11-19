@@ -238,7 +238,15 @@ const createAdminController = (data) => {
             const userId = parseAdminId(req.body.userId);
             const userName = textValue(req.body.userName);
             const createdAt = parseDateTimeInput(req.body.createdAt);
-            const coordinates = normalizeApproximateCoordinates(req.body.latitude, req.body.longitude);
+            const latitudeInput = req.body.latitude;
+            const longitudeInput = req.body.longitude;
+            const hasLatitude = latitudeInput !== undefined && latitudeInput !== null && String(latitudeInput).trim() !== '';
+            const hasLongitude = longitudeInput !== undefined && longitudeInput !== null && String(longitudeInput).trim() !== '';
+            // A localização no mapa é opcional. Só tentamos validar quando o par
+            // está completo; coordenadas antigas/incompletas não devem bloquear a edição.
+            const coordinates = hasLatitude && hasLongitude
+                ? normalizeApproximateCoordinates(latitudeInput, longitudeInput)
+                : { latitude: null, longitude: null };
 
             let error = null;
             if (!title || title.length > 200) error = 'O título é obrigatório e deve ter até 200 caracteres.';
