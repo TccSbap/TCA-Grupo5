@@ -26,14 +26,22 @@
     <main class="admin-content">
         <nav class="admin-header">
             <h1>Gerenciar ONGs</h1>
-            <p>Visualize informações sobre as ONGs parceiras</p>
+            <p>Consulte e altere todos os dados administrativos das organizações parceiras.</p>
         </nav>
+
+        <% if (success) { %>
+        <div class="alert alert-success" role="status"><%= success %></div>
+        <% } %>
+        <% if (error) { %>
+        <div class="alert alert-error" role="alert"><%= error %></div>
+        <% } %>
         
         <section class="admin-ongs-grid">
             <% ongs.forEach(ong => { %>
             <article class="ong-admin-card">
                 <nav class="ong-card-header">
                     <h3><%= ong.name %></h3>
+                    <span class="admin-record-status <%= ong.isActive === false ? 'is-inactive' : 'is-active' %>"><%= ong.isActive === false ? 'Desativada' : 'Ativa' %></span>
                 </nav>
                 
                 <section class="ong-card-content">
@@ -68,7 +76,21 @@
                 </section>
                 
                 <footer class="ong-card-footer">
-                    <a href="/ongs/<%= ong.id %>" class="btn btn-primary">Ver Detalhes</a>
+                    <% if (ong.isActive !== false) { %>
+                    <a href="/ongs/<%= ong.id %>" class="btn btn-outline">Ver Detalhes</a>
+                    <% } %>
+                    <a href="/admin/ongs/<%= ong.id %>/editar" class="btn btn-primary">Editar</a>
+                    <% if (ong.isActive === false) { %>
+                    <form action="/admin/ongs/<%= ong.id %>/reativar" method="POST" onsubmit="return confirm('Reativar esta ONG e torná-la pública novamente?');">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="btn btn-outline">Reativar</button>
+                    </form>
+                    <% } else { %>
+                    <form action="/admin/ongs/<%= ong.id %>/excluir" method="POST" onsubmit="return confirm('Desativar esta ONG? Ela deixará de aparecer publicamente e poderá ser reativada depois.');">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="btn admin-danger-button">Excluir</button>
+                    </form>
+                    <% } %>
                 </footer>
             </article>
             <% }) %>

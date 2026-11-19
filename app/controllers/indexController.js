@@ -36,6 +36,24 @@ const { loadPublicOngById, loadPublicOngs, toPublicOngSummary } = require('../ut
 
 const pickOngFocus = (ong) => ong.focus || ong.description || 'Projeto socioambiental';
 
+const summarizeCheckoutError = (error) => {
+    const summary = { name: String(error?.name || 'Error').slice(0, 80) };
+
+    if (Number.isFinite(Number(error?.status))) summary.status = Number(error.status);
+    if (error?.error) summary.providerError = String(error.error).slice(0, 160);
+    else if (error?.code) summary.code = String(error.code).slice(0, 160);
+    else if (error?.message) summary.message = String(error.message).slice(0, 200);
+
+    if (Array.isArray(error?.causes)) {
+        summary.causes = error.causes.slice(0, 5).map((cause) => ({
+            code: cause?.code === undefined ? undefined : String(cause.code).slice(0, 80),
+            description: cause?.description === undefined ? undefined : String(cause.description).slice(0, 200)
+        }));
+    }
+
+    return summary;
+};
+
 const formatOngForDonation = (ong) => ({
     ...toPublicOngSummary(ong),
     focus: pickOngFocus(ong)
@@ -258,8 +276,10 @@ const createIndexController = (data) => ({
         });
 
         let createdOrder = null;
+        let checkoutStage = 'create_order';
         try {
             createdOrder = await createProjectDonationOrder({ donation });
+            checkoutStage = 'save_order_reference';
             const orderStored = await data.setDoacaoMercadoPagoOrder({
                 donationId: donation.id,
                 orderId: createdOrder.orderId,
@@ -269,7 +289,12 @@ const createIndexController = (data) => ({
             if (!orderStored) throw new Error('PROJECT_DONATION_ORDER_LINK_FAILED');
             return res.redirect(createdOrder.checkoutUrl);
         } catch (checkoutError) {
-            console.error('Não foi possível preparar o checkout da doação ao projeto.', checkoutError.code || checkoutError.name || 'Erro');
+            console.error('Falha ao preparar checkout da doação ao projeto.', JSON.stringify({
+                donationId: donation.id,
+                stage: checkoutStage,
+                orderCreated: Boolean(createdOrder),
+                error: summarizeCheckoutError(checkoutError)
+            }));
             if (typeof data.updateProjectDoacaoMercadoPagoOrderFailure === 'function') {
                 await data.updateProjectDoacaoMercadoPagoOrderFailure(donation.id).catch(() => {});
             }
@@ -347,8 +372,10 @@ const createIndexController = (data) => ({
         });
 
         let createdOrder = null;
+        let checkoutStage = 'create_order';
         try {
             createdOrder = await createOngDonationOrder({ data, ong, donation });
+            checkoutStage = 'save_order_reference';
             const orderStored = await data.setDoacaoMercadoPagoOrder({
                 donationId: donation.id,
                 orderId: createdOrder.orderId,
@@ -357,7 +384,13 @@ const createIndexController = (data) => ({
             if (!orderStored) throw new Error('DONATION_ORDER_LINK_FAILED');
             return res.redirect(createdOrder.checkoutUrl);
         } catch (checkoutError) {
-            console.error('Não foi possível preparar o checkout da doação.', checkoutError.code || checkoutError.name || 'Erro');
+            console.error('Falha ao preparar checkout da doação para ONG.', JSON.stringify({
+                donationId: donation.id,
+                ongId: ong.id,
+                stage: checkoutStage,
+                orderCreated: Boolean(createdOrder),
+                error: summarizeCheckoutError(checkoutError)
+            }));
             if (typeof data.updateDoacaoMercadoPagoOrderFailure === 'function') {
                 await data.updateDoacaoMercadoPagoOrderFailure(donation.id).catch(() => {});
             }

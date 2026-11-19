@@ -71,12 +71,13 @@ const donation = {
     bairroDoador: 'Centro', cidadeDoador: 'São Paulo', estadoDoador: 'SP', valorDoacao: '50', metodoPagamento: 'pix', confirmacao: 'on'
 };
 
-test('registro de apoio fica pendente e nao aumenta o total de pagamentos recebidos', async () => {
+test('doacao sem credenciais de pagamento nao e criada nem contabilizada', async () => {
     const total = sumDonationAmounts(data.getDoacoes());
+    const count = data.getDoacoes().length;
     const response = await request(app).post('/doar').send(donation);
-    expect(response.status).toBe(302);
-    expect(decodeURIComponent(response.headers.location)).toContain('Nenhum pagamento foi processado');
-    expect(data.getDoacoes().at(-1)).toMatchObject({ status: 'pendente', amount: 50 });
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('O checkout Mercado Pago ainda está sendo configurado');
+    expect(data.getDoacoes()).toHaveLength(count);
     expect(sumDonationAmounts(data.getDoacoes())).toBe(total);
     const form = await request(app).get('/doacoes/1/doar');
     expect(form.text).not.toContain('name="numeroCartao"');

@@ -1,0 +1,126 @@
+<%- include('../partials/header') %>
+
+<section class="admin-container">
+    <aside class="admin-sidebar">
+        <nav class="admin-nav">
+            <header class="admin-nav-header">
+                <h2>Administrador</h2>
+                <p><%= user.name %></p>
+            </header>
+            <ul class="admin-nav-links">
+                <li><a href="/admin">Visão Geral</a></li>
+                <li><a href="/admin/denuncias" class="active">Denúncias</a></li>
+                <li><a href="/admin/ongs">ONGs</a></li>
+                <li><a href="/auth/alterar-senha">Alterar senha</a></li>
+                <li>
+                    <form action="/auth/logout" method="POST" class="logout-form">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="logout-button">Sair</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <header class="admin-header">
+            <h1>Editar denúncia #<%= denuncia.id %></h1>
+            <p>O administrador pode revisar e alterar todos os campos registrados.</p>
+        </header>
+
+        <% if (error) { %>
+        <div class="alert alert-error" role="alert"><%= error %></div>
+        <% } %>
+
+        <form class="admin-record-form" action="/admin/denuncias/<%= denuncia.id %>/editar" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="admin-edit-grid">
+                <label class="admin-edit-field">
+                    <span>Título</span>
+                    <input type="text" name="title" maxlength="200" required value="<%= formData.title || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Categoria</span>
+                    <select name="category" required>
+                        <option value="agua" <%= formData.category === 'agua' ? 'selected' : '' %>>Água potável</option>
+                        <option value="esgoto" <%= formData.category === 'esgoto' ? 'selected' : '' %>>Esgoto</option>
+                        <option value="poluicao" <%= formData.category === 'poluicao' ? 'selected' : '' %>>Poluição</option>
+                        <option value="geral" <%= formData.category === 'geral' ? 'selected' : '' %>>Geral</option>
+                    </select>
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Status</span>
+                    <select name="status" required>
+                        <option value="pendente" <%= formData.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                        <option value="em_andamento" <%= formData.status === 'em_andamento' ? 'selected' : '' %>>Em andamento</option>
+                        <option value="resolvida" <%= formData.status === 'resolvida' ? 'selected' : '' %>>Resolvida</option>
+                    </select>
+                </label>
+
+                <label class="admin-edit-field admin-edit-field--wide">
+                    <span>Localização informada</span>
+                    <input type="text" name="location" maxlength="255" required value="<%= formData.location || '' %>">
+                </label>
+
+                <label class="admin-edit-field admin-edit-field--wide">
+                    <span>Descrição</span>
+                    <textarea name="description" rows="6" maxlength="10000" required><%= formData.description || '' %></textarea>
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Latitude aproximada</span>
+                    <input type="number" name="latitude" min="-90" max="90" step="any" value="<%= formData.latitude ?? '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Longitude aproximada</span>
+                    <input type="number" name="longitude" min="-180" max="180" step="any" value="<%= formData.longitude ?? '' %>">
+                </label>
+                <p class="admin-form-hint admin-edit-field--wide">As coordenadas continuam sendo arredondadas para uma área aproximada, conforme a regra de privacidade do sistema. Deixe os dois campos vazios para remover o ponto do mapa.</p>
+
+                <label class="admin-edit-field">
+                    <span>Usuário associado</span>
+                    <select name="userId" required>
+                        <option value="">Selecione um usuário</option>
+                        <% users.forEach(candidate => { %>
+                        <option value="<%= candidate.id %>" <%= String(formData.userId) === String(candidate.id) ? 'selected' : '' %>><%= candidate.name %> — <%= candidate.email %> (#<%= candidate.id %>)</option>
+                        <% }) %>
+                    </select>
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Nome do autor exibido</span>
+                    <input type="text" name="userName" maxlength="150" required value="<%= formData.userName || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Data de registro (UTC)</span>
+                    <input type="datetime-local" name="createdAt" required value="<%= createdAtInput %>">
+                </label>
+            </div>
+
+            <% if (denuncia.responses && denuncia.responses.length) { %>
+            <section class="admin-related-records">
+                <h2>Respostas registradas</h2>
+                <p class="admin-form-hint">As respostas relacionadas são exibidas para consulta e permanecem vinculadas a esta denúncia.</p>
+                <% denuncia.responses.forEach(response => { %>
+                <article class="admin-related-record">
+                    <p><strong><%= response.ongName %></strong> · <%= new Date(response.createdAt).toLocaleString('pt-BR') %></p>
+                    <p><%= response.text %></p>
+                </article>
+                <% }) %>
+            </section>
+            <% } %>
+
+            <div class="admin-form-actions">
+                <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                <a href="/admin/denuncias" class="btn btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </main>
+</section>
+
+<%- include('../partials/footer') %>

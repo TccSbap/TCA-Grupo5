@@ -45,7 +45,7 @@ module.exports = ({ pool, canUseDatabase }) => {
     const getPublicOngs = async () => {
         await ensureDatabase();
         const [rows] = await pool.execute(
-            'SELECT id, name, description, contact_email, phone, address, created_at FROM ongs ORDER BY id'
+            'SELECT id, name, description, contact_email, phone, address, created_at FROM ongs WHERE is_active = 1 ORDER BY id'
         );
 
         return rows.map(normalizePublicOngRow);
@@ -54,7 +54,7 @@ module.exports = ({ pool, canUseDatabase }) => {
     const getPublicOngById = async (id) => {
         await ensureDatabase();
         const [rows] = await pool.execute(
-            'SELECT id, name, contact_email, phone, address, created_at FROM ongs WHERE id = ? LIMIT 1',
+            'SELECT id, name, contact_email, phone, address, created_at FROM ongs WHERE id = ? AND is_active = 1 LIMIT 1',
             [parseInt(id, 10)]
         );
 
@@ -74,7 +74,7 @@ module.exports = ({ pool, canUseDatabase }) => {
     const getOngByUserId = async (userId) => {
         await ensureDatabase();
         const [rows] = await pool.execute(
-            'SELECT * FROM ongs WHERE user_id = ? LIMIT 1',
+            'SELECT * FROM ongs WHERE user_id = ? AND is_active = 1 LIMIT 1',
             [parseInt(userId, 10)]
         );
 
@@ -151,11 +151,81 @@ module.exports = ({ pool, canUseDatabase }) => {
             address,
             userId,
             focus,
-            createdAt
+            createdAt,
+            isActive: true
         };
     };
 
     const createOngAndPersist = async (ongData) => createOng(ongData);
+
+    const updateOng = async (id, ongData) => {
+        await ensureDatabase();
+        const name = String(ongData.name || '').trim();
+        const description = String(ongData.description || '').trim();
+        const contact = String(ongData.contact || '').trim();
+        const cnpj = String(ongData.cnpj || '').trim() || null;
+        const rg = String(ongData.rg || '').trim() || null;
+        const phone = String(ongData.phone || '').trim() || null;
+        const address = String(ongData.address || '').trim() || null;
+        const connection = await pool.getConnection();
+
+        try {
+            await connection.beginTransaction();
+            const [existingRows] = await connection.execute(
+                'SELECT id FROM ongs WHERE id = ? LIMIT 1 FOR UPDATE',
+                [Number(id)]
+            );
+            if (existingRows.length === 0) {
+                await connection.rollback();
+                return false;
+            }
+
+            const nextUserId = Number(ongData.userId);
+            await connection.execute(
+                `UPDATE ongs
+                 SET name = ?, description = ?, contact_email = ?, cnpj = ?, rg = ?,
+                     phone = ?, address = ?, user_id = ?, created_at = ?, is_active = ?
+                 WHERE id = ?`,
+                [
+                    name,
+                    description,
+                    contact,
+                    cnpj,
+                    rg,
+                    phone,
+                    address,
+                    nextUserId,
+                    toSqlDateTime(ongData.createdAt),
+                    ongData.isActive ? 1 : 0,
+                    Number(id)
+                ]
+            );
+
+            await connection.execute(
+                'UPDATE users SET ong_name = ? WHERE id = ? AND type = \'ong\'',
+                [name, nextUserId]
+            );
+            await connection.commit();
+            return true;
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
+    };
+
+    const setOngActive = async (id, isActive) => {
+        await ensureDatabase();
+        const [result] = await pool.execute(
+            'UPDATE ongs SET is_active = ? WHERE id = ?',
+            [isActive ? 1 : 0, Number(id)]
+        );
+        if (result.affectedRows > 0) return true;
+
+        const [rows] = await pool.execute('SELECT id FROM ongs WHERE id = ? LIMIT 1', [Number(id)]);
+        return rows.length > 0;
+    };
 
     return {
         createOng,
@@ -164,6 +234,8 @@ module.exports = ({ pool, canUseDatabase }) => {
         getOngByUserId,
         getOngs,
         getPublicOngById,
-        getPublicOngs
+        getPublicOngs,
+        setOngActive,
+        updateOng
     };
 };

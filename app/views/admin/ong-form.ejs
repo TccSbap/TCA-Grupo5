@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<section class="admin-container">
+    <aside class="admin-sidebar">
+        <nav class="admin-nav">
+            <header class="admin-nav-header">
+                <h2>Administrador</h2>
+                <p><%= user.name %></p>
+            </header>
+            <ul class="admin-nav-links">
+                <li><a href="/admin">Visão Geral</a></li>
+                <li><a href="/admin/denuncias">Denúncias</a></li>
+                <li><a href="/admin/ongs" class="active">ONGs</a></li>
+                <li><a href="/auth/alterar-senha">Alterar senha</a></li>
+                <li>
+                    <form action="/auth/logout" method="POST" class="logout-form">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="logout-button">Sair</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <header class="admin-header">
+            <h1>Editar ONG #<%= ong.id %></h1>
+            <p>Dados cadastrais e informações administrativas da organização.</p>
+        </header>
+
+        <% if (error) { %>
+        <div class="alert alert-error" role="alert"><%= error %></div>
+        <% } %>
+
+        <form class="admin-record-form" action="/admin/ongs/<%= ong.id %>/editar" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="admin-edit-grid">
+                <label class="admin-edit-field">
+                    <span>Nome da ONG</span>
+                    <input type="text" name="name" maxlength="150" required value="<%= formData.name || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>E-mail de contato</span>
+                    <input type="email" name="contact" maxlength="255" required value="<%= formData.contact || '' %>">
+                </label>
+
+                <label class="admin-edit-field admin-edit-field--wide">
+                    <span>Descrição / atuação</span>
+                    <textarea name="description" rows="5" maxlength="10000" required><%= formData.description || '' %></textarea>
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>CNPJ (administrativo)</span>
+                    <input type="text" name="cnpj" maxlength="18" value="<%= formData.cnpj || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>RG do responsável (administrativo)</span>
+                    <input type="text" name="rg" maxlength="20" value="<%= formData.rg || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Telefone</span>
+                    <input type="tel" name="phone" maxlength="30" value="<%= formData.phone || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Endereço</span>
+                    <input type="text" name="address" maxlength="255" value="<%= formData.address || '' %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Conta de usuário vinculada</span>
+                    <select name="userId" required>
+                        <option value="">Selecione uma conta ONG</option>
+                        <% users.filter(candidate => candidate.type === 'ong').forEach(candidate => { %>
+                        <option value="<%= candidate.id %>" <%= String(formData.userId) === String(candidate.id) ? 'selected' : '' %>><%= candidate.name %> — <%= candidate.email %> (#<%= candidate.id %>)</option>
+                        <% }) %>
+                    </select>
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Data de parceria (UTC)</span>
+                    <input type="datetime-local" name="createdAt" required value="<%= createdAtInput %>">
+                </label>
+
+                <label class="admin-edit-field">
+                    <span>Disponibilidade pública</span>
+                    <select name="isActive" required>
+                        <option value="1" <%= String(formData.isActive) === 'true' || String(formData.isActive) === '1' ? 'selected' : '' %>>Ativa e visível</option>
+                        <option value="0" <%= String(formData.isActive) === 'false' || String(formData.isActive) === '0' ? 'selected' : '' %>>Desativada e oculta</option>
+                    </select>
+                </label>
+            </div>
+
+            <p class="admin-form-hint">CNPJ e RG ficam restritos à área administrativa; a página pública da ONG mantém apenas os dados de contato e parceria autorizados.</p>
+
+            <div class="admin-form-actions">
+                <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                <a href="/admin/ongs" class="btn btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </main>
+</section>
+
+<%- include('../partials/footer') %>

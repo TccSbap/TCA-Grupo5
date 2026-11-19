@@ -94,6 +94,30 @@ describe('models/denuncias.model', () => {
         expect(connection.execute.mock.calls.some((call) => String(call[0]).includes('INSERT INTO denuncia_responses'))).toBe(false);
     });
 
+    test('updates denúncia fields with approximate coordinates and deletes by id', async () => {
+        const { model, pool } = buildModel();
+        pool.execute.mockResolvedValueOnce([{ affectedRows: 1 }, []])
+            .mockResolvedValueOnce([{ affectedRows: 1 }, []]);
+
+        await expect(model.updateDenuncia(4, {
+            title: 'Updated report',
+            description: 'Updated description',
+            location: 'Updated location',
+            latitude: -23.55,
+            longitude: -46.631,
+            category: 'agua',
+            status: 'resolvida',
+            userId: 11,
+            userName: 'Reporter',
+            createdAt: '2024-01-02T03:04:05.000Z'
+        })).resolves.toBe(true);
+        await expect(model.deleteDenuncia(4)).resolves.toBe(true);
+
+        expect(pool.execute.mock.calls[0][0]).toContain('UPDATE denuncias');
+        expect(pool.execute.mock.calls[0][1][4]).not.toBe(-46.631);
+        expect(pool.execute.mock.calls[1][0]).toContain('DELETE FROM denuncias');
+    });
+
 
     test('rejects when the database is unavailable', async () => {
         const { model } = buildModel(false);

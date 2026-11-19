@@ -2,7 +2,8 @@ const createOngsModel = require('../../../app/models/ongs.model');
 
 const buildModel = (canUseDatabaseValue = true) => {
     const pool = {
-        execute: jest.fn()
+        execute: jest.fn(),
+        getConnection: jest.fn()
     };
     const canUseDatabase = jest.fn().mockResolvedValue(canUseDatabaseValue);
     const model = createOngsModel({ pool, canUseDatabase });
@@ -111,6 +112,41 @@ describe('models/ongs.model', () => {
             rg: '456',
             focus: 'New Description'
         });
+    });
+
+    test('updates all ONG fields and synchronizes the linked account name transactionally', async () => {
+        const connection = {
+            beginTransaction: jest.fn().mockResolvedValue(undefined),
+            execute: jest.fn()
+                .mockResolvedValueOnce([[{ id: 7 }], []])
+                .mockResolvedValueOnce([{ affectedRows: 1 }, []])
+                .mockResolvedValueOnce([{ affectedRows: 1 }, []]),
+            commit: jest.fn().mockResolvedValue(undefined),
+            rollback: jest.fn().mockResolvedValue(undefined),
+            release: jest.fn()
+        };
+        const { model, pool } = buildModel();
+        pool.getConnection.mockResolvedValue(connection);
+
+        await expect(model.updateOng(7, {
+            name: 'Updated Org',
+            description: 'Updated description',
+            contact: 'updated@example.com',
+            cnpj: '123',
+            rg: '456',
+            phone: '11999999999',
+            address: 'Updated address',
+            userId: 70,
+            createdAt: '2024-01-02T03:04:05.000Z',
+            isActive: true
+        })).resolves.toBe(true);
+
+        expect(connection.beginTransaction).toHaveBeenCalled();
+        expect(connection.execute).toHaveBeenCalledTimes(3);
+        expect(connection.execute.mock.calls[1][0]).toContain('UPDATE ongs');
+        expect(connection.execute.mock.calls[2][0]).toContain('UPDATE users SET ong_name');
+        expect(connection.commit).toHaveBeenCalled();
+        expect(connection.release).toHaveBeenCalled();
     });
 
     test('falls back to the legacy schema when cnpj and rg columns are unavailable', async () => {

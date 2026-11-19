@@ -7,7 +7,7 @@ const { loadPublicOngById, loadPublicOngs, toPublicOngProfile } = require('../ut
 const createOngsController = (data) => {
     const findUserOng = async (userId) => {
         if (typeof data.getOngByUserId === 'function') return data.getOngByUserId(userId);
-        return (await data.getOngs()).find((ong) => ong.userId === userId) || null;
+        return (await data.getOngs()).find((ong) => ong.userId === userId && ong.isActive !== false) || null;
     };
     const buildSeoPayload = (res, pathname, title, description, extra = []) => ({
         title, seoCanonical: buildAbsoluteUrl(pathname, getSiteUrl()), seoDescription: description,

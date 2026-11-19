@@ -130,9 +130,47 @@ module.exports = ({ pool, canUseDatabase }) => {
         });
     };
 
+    const updateDenuncia = async (id, denunciaData) => {
+        await ensureDatabase();
+        const coordinates = normalizeApproximateCoordinates(denunciaData.latitude, denunciaData.longitude);
+        if (coordinates.error) throw new Error(coordinates.error);
+
+        const [result] = await pool.execute(
+            `UPDATE denuncias
+             SET title = ?, description = ?, location = ?, latitude = ?, longitude = ?,
+                 category = ?, status = ?, user_id = ?, user_name = ?, created_at = ?
+             WHERE id = ?`,
+            [
+                denunciaData.title,
+                denunciaData.description,
+                denunciaData.location,
+                coordinates.latitude,
+                coordinates.longitude,
+                denunciaData.category,
+                denunciaData.status,
+                Number(denunciaData.userId),
+                denunciaData.userName,
+                toSqlDateTime(denunciaData.createdAt),
+                Number(id)
+            ]
+        );
+        if (result.affectedRows > 0) return true;
+
+        const [rows] = await pool.execute('SELECT id FROM denuncias WHERE id = ? LIMIT 1', [Number(id)]);
+        return rows.length > 0;
+    };
+
+    const deleteDenuncia = async (id) => {
+        await ensureDatabase();
+        const [result] = await pool.execute('DELETE FROM denuncias WHERE id = ?', [Number(id)]);
+        return result.affectedRows > 0;
+    };
+
     return {
         createDenuncia,
+        deleteDenuncia,
         getDenunciaById,
-        getDenuncias
+        getDenuncias,
+        updateDenuncia
     };
 };

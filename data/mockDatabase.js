@@ -32,6 +32,7 @@ const initializeData = () => {
     ongs = createOngsSeed().map((ong) => ({
         cnpj: null,
         rg: null,
+        isActive: true,
         ...ong
     }));
     noticias = createNoticiasSeed();
@@ -126,6 +127,29 @@ const saveDenuncias = (newDenuncias) => {
     denuncias = newDenuncias;
 };
 
+const updateDenuncia = (id, updates) => {
+    const index = denuncias.findIndex((denuncia) => denuncia.id === parseInt(id, 10));
+    if (index === -1) return false;
+
+    const coordinates = normalizeApproximateCoordinates(updates.latitude, updates.longitude);
+    if (coordinates.error) throw new Error(coordinates.error);
+    denuncias[index] = {
+        ...denuncias[index],
+        ...updates,
+        ...coordinates,
+        id: denuncias[index].id,
+        responses: denuncias[index].responses || []
+    };
+    return true;
+};
+
+const deleteDenuncia = (id) => {
+    const index = denuncias.findIndex((denuncia) => denuncia.id === parseInt(id, 10));
+    if (index === -1) return false;
+    denuncias.splice(index, 1);
+    return true;
+};
+
 const createOng = (ongData) => {
     const newOng = {
         id: nextId(ongs),
@@ -134,6 +158,7 @@ const createOng = (ongData) => {
         cnpj: ongData.cnpj || null,
         rg: ongData.rg || null,
         userId: ongData.userId || ongData.user_id || null,
+        isActive: ongData.isActive === undefined ? true : Boolean(ongData.isActive),
         focus: ongData.focus || ongData.description || ongData.name,
         createdAt: ongData.createdAt || new Date().toISOString()
     };
@@ -158,7 +183,8 @@ const getOngs = (ongId = null) => {
     return ongs.filter((ong) => ong.id === normalizedOngId);
 };
 const getOngById = (id) => ongs.find((ong) => ong.id === parseInt(id, 10));
-const getOngByUserId = (userId) => ongs.find((ong) => ong.userId === parseInt(userId, 10));
+const getOngByUserId = (userId) => ongs.find((ong) => ong.userId === parseInt(userId, 10) && ong.isActive !== false);
+const isOngActive = (ong) => ong.isActive === undefined ? true : Boolean(ong.isActive);
 const toPublicOng = (ong) => ({
     id: ong.id,
     name: ong.name,
@@ -169,13 +195,35 @@ const toPublicOng = (ong) => ({
     address: ong.address || null,
     createdAt: ong.createdAt || ong.created_at || null
 });
-const getPublicOngs = () => ongs.map(toPublicOng);
+const getPublicOngs = () => ongs.filter(isOngActive).map(toPublicOng);
 const getPublicOngById = (id) => {
     const ong = getOngById(id);
-    return ong ? toPublicOng(ong) : null;
+    return ong && isOngActive(ong) ? toPublicOng(ong) : null;
 };
 const saveOngs = (newOngs) => {
     ongs = newOngs;
+};
+
+const updateOng = (id, updates) => {
+    const index = ongs.findIndex((ong) => ong.id === parseInt(id, 10));
+    if (index === -1) return false;
+    const nextUser = getUserById(updates.userId);
+    if (nextUser) nextUser.ongName = updates.name;
+    ongs[index] = {
+        ...ongs[index],
+        ...updates,
+        id: ongs[index].id,
+        focus: updates.description || updates.name,
+        isActive: Boolean(updates.isActive)
+    };
+    return true;
+};
+
+const setOngActive = (id, isActive) => {
+    const ong = getOngById(id);
+    if (!ong) return false;
+    ong.isActive = Boolean(isActive);
+    return true;
 };
 
 const getNoticias = () => noticias;
@@ -226,6 +274,8 @@ module.exports = {
     createUserAndPersist,
     getDenunciaById,
     getDenuncias,
+    deleteDenuncia,
+    updateDenuncia,
     getDoacoes,
     getMensagensContato,
     getNoticias,
@@ -235,6 +285,8 @@ module.exports = {
     getOngs,
     getPublicOngById,
     getPublicOngs,
+    setOngActive,
+    updateOng,
     getUserByEmail,
     getUserById,
     getUsers,

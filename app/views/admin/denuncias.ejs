@@ -26,8 +26,15 @@
     <main class="admin-content">
         <header class="admin-header">
             <h1>Gerenciar Denúncias</h1>
-            <p>Visualize e responda as denúncias registradas</p>
+            <p>Consulte, edite todos os campos ou exclua denúncias registradas.</p>
         </header>
+
+        <% if (success) { %>
+        <div class="alert alert-success" role="status"><%= success %></div>
+        <% } %>
+        <% if (error) { %>
+        <div class="alert alert-error" role="alert"><%= error %></div>
+        <% } %>
         
         <section class="admin-table-container">
             <table class="admin-table">
@@ -60,7 +67,14 @@
                         <td data-label="Localização"><%= denuncia.location %></td>
                         <td data-label="Data"><%= new Date(denuncia.createdAt).toLocaleDateString('pt-BR') %></td>
                         <td data-label="Ações">
-                            <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+                            <div class="admin-record-actions">
+                                <a href="/denuncias/<%= denuncia.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+                                <a href="/admin/denuncias/<%= denuncia.id %>/editar" class="btn btn-sm btn-primary">Editar</a>
+                                <form action="/admin/denuncias/<%= denuncia.id %>/excluir" method="POST" onsubmit="return confirm('Excluir definitivamente esta denúncia e as respostas associadas?');">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn btn-sm admin-danger-button">Excluir</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <% }) %>

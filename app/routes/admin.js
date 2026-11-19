@@ -16,7 +16,14 @@ const createAdminRouter = (data = defaultData) => {
     router.get('/relatorio.csv', requireAdmin, controller.report);
     router.get('/dashboard_admin', requireAdmin, (req, res) => res.redirect('/admin'));
     router.get('/denuncias', requireAdmin, controller.denuncias);
+    router.get('/denuncias/:id/editar', requireAdmin, controller.denunciaEditPage);
+    router.post('/denuncias/:id/editar', requireAdmin, controller.updateDenuncia);
+    router.post('/denuncias/:id/excluir', requireAdmin, controller.deleteDenuncia);
     router.get('/ongs', requireAdmin, controller.ongs);
+    router.get('/ongs/:id/editar', requireAdmin, controller.ongEditPage);
+    router.post('/ongs/:id/editar', requireAdmin, controller.updateOng);
+    router.post('/ongs/:id/excluir', requireAdmin, controller.deactivateOng);
+    router.post('/ongs/:id/reativar', requireAdmin, controller.reactivateOng);
 
     return router;
 };

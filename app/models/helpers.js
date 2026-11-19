@@ -59,6 +59,7 @@ const normalizeOngRow = (row) => ({
     phone: row.phone,
     address: row.address,
     userId: row.user_id,
+    isActive: row.is_active === undefined ? true : Boolean(row.is_active),
     focus: row.focus || row.description,
     createdAt: toIsoString(row.created_at)
 });

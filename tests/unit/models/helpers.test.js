@@ -75,6 +75,7 @@ describe('models/helpers', () => {
             phone: '11999999999',
             address: 'Main Street',
             userId: 10,
+            isActive: true,
             focus: 'Description',
             createdAt: iso
         });
@@ -84,6 +85,8 @@ describe('models/helpers', () => {
             title: 'Leak',
             description: 'Long description',
             location: 'Center',
+            latitude: null,
+            longitude: null,
             category: 'water',
             status: 'pendente',
             user_id: 11,
@@ -94,6 +97,8 @@ describe('models/helpers', () => {
             title: 'Leak',
             description: 'Long description',
             location: 'Center',
+            latitude: null,
+            longitude: null,
             category: 'water',
             status: 'pendente',
             userId: 11,
@@ -146,6 +151,7 @@ describe('models/helpers', () => {
         })).toEqual({
             id: 6,
             ongId: 7,
+            recipientType: 'ong',
             userId: 8,
             donorName: 'Donor',
             donorEmail: 'donor@example.com',
@@ -161,6 +167,9 @@ describe('models/helpers', () => {
             message: 'Hello',
             paymentMethod: 'pix',
             status: 'confirmada',
+            mercadoPagoOrderId: null,
+            mercadoPagoPaymentId: null,
+            mercadoPagoStatus: null,
             createdAt: iso
         });
 
