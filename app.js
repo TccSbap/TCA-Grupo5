@@ -86,7 +86,7 @@ const createApp = (data = defaultData) => {
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net data:",
             `script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com https://vlibras.gov.br 'nonce-${res.locals.cspNonce}'`,
             "frame-src 'self' https://vlibras.gov.br",
-            "connect-src 'self' https://tiles.openfreemap.org https://unpkg.com",
+            "connect-src 'self' https://tiles.openfreemap.org https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net",
             "worker-src 'self' blob: https://unpkg.com"
         ];
 
@@ -145,7 +145,7 @@ const createApp = (data = defaultData) => {
         res.locals.cookieConsent = cookieConsent;
         res.locals.showCookieBanner = !cookieConsent;
         res.locals.watchReload = watchReloadEnabled;
-        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '9';
+        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '10';
 
         if (seo.robots.startsWith('noindex')) {
             res.set('X-Robots-Tag', seo.robots);
