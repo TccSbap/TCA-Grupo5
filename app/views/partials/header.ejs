@@ -58,6 +58,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/accessibility-widget.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
     <meta property="og:title" content="<%= seoOgTitleValue %>">
     <meta property="og:description" content="<%= seoOgDescriptionValue %>">
     <meta property="og:image" content="<%= seoOgImageValue %>">
@@ -84,13 +85,18 @@
             return currentRoute === route || currentRoute.startsWith(route + '/');
         };
     %>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <section class="container">
                 <nav class="nav-brand">
                     <a href="/" class="logo" aria-label="Ir para a página inicial">
-                        <img src="/images/logo.png" alt="ODS 6 Logo" class="logo-img">
+                        <picture>
+                            <source srcset="/images/logo.webp" type="image/webp">
+                            <img src="/images/logo.png" alt="Logo Água Consciente" class="logo-img">
+                        </picture>
                         <span>Água Consciente</span>
                     </a>
                 </nav>
@@ -151,4 +157,4 @@
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" id="main-content" tabindex="-1">

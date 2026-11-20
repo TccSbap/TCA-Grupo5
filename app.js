@@ -144,7 +144,7 @@ const createApp = (data = defaultData) => {
         res.locals.cookieConsent = cookieConsent;
         res.locals.showCookieBanner = !cookieConsent;
         res.locals.watchReload = watchReloadEnabled;
-        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '1';
+        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '8';
 
         if (seo.robots.startsWith('noindex')) {
             res.set('X-Robots-Tag', seo.robots);

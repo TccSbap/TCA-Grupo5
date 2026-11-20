@@ -115,6 +115,79 @@
     </aside>
     <% } %>
 
+    <aside class="accessibility-widget" data-accessibility-widget>
+        <button
+            class="accessibility-widget__trigger"
+            type="button"
+            aria-label="Abrir opções de acessibilidade"
+            aria-expanded="false"
+            aria-controls="accessibility-panel"
+            data-accessibility-toggle
+        >
+            <i class="fas fa-universal-access" aria-hidden="true"></i>
+        </button>
+
+        <section
+            class="accessibility-panel"
+            id="accessibility-panel"
+            role="region"
+            aria-labelledby="accessibility-panel-title"
+            hidden
+        >
+            <header class="accessibility-panel__header">
+                <div>
+                    <h2 id="accessibility-panel-title" tabindex="-1">Acessibilidade</h2>
+                    <p>Personalize a leitura desta página.</p>
+                </div>
+                <button class="accessibility-panel__close" type="button" aria-label="Fechar opções de acessibilidade" data-accessibility-close>
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <div class="accessibility-panel__content">
+                <div class="accessibility-panel__group">
+                    <label for="accessibility-theme">Tema e contraste</label>
+                    <select id="accessibility-theme" data-accessibility-theme>
+                        <option value="system">Automático do dispositivo</option>
+                        <option value="light">Claro</option>
+                        <option value="dark">Escuro</option>
+                        <option value="contrast">Alto contraste</option>
+                    </select>
+                </div>
+
+                <fieldset class="accessibility-panel__group">
+                    <legend>Tamanho do texto</legend>
+                    <div class="accessibility-panel__scale-controls">
+                        <button type="button" class="accessibility-panel__step" aria-label="Diminuir texto" data-accessibility-scale="-10">A−</button>
+                        <output class="accessibility-panel__scale-value" aria-live="polite" data-accessibility-scale-value>100%</output>
+                        <button type="button" class="accessibility-panel__step" aria-label="Aumentar texto" data-accessibility-scale="10">A+</button>
+                    </div>
+                </fieldset>
+
+                <fieldset class="accessibility-panel__options">
+                    <legend class="accessibility-panel__options-title">Mais opções</legend>
+                    <button type="button" class="accessibility-panel__option" aria-pressed="false" data-accessibility-setting="bold">
+                        <i class="fas fa-bold" aria-hidden="true"></i><span>Texto em negrito</span>
+                    </button>
+                    <button type="button" class="accessibility-panel__option" aria-pressed="false" data-accessibility-setting="highlightLinks">
+                        <i class="fas fa-link" aria-hidden="true"></i><span>Destacar links</span>
+                    </button>
+                    <button type="button" class="accessibility-panel__option" aria-pressed="false" data-accessibility-setting="spacedText">
+                        <i class="fas fa-text-width" aria-hidden="true"></i><span>Mais espaçamento no texto</span>
+                    </button>
+                    <button type="button" class="accessibility-panel__option" aria-pressed="false" data-accessibility-setting="reducedMotion">
+                        <i class="fas fa-stop" aria-hidden="true"></i><span>Reduzir animações</span>
+                    </button>
+                </fieldset>
+
+                <button type="button" class="accessibility-panel__reset" data-accessibility-reset>
+                    Restaurar padrão
+                </button>
+                <p class="accessibility-panel__note">As preferências ficam salvas neste dispositivo. Você também pode usar o zoom do navegador.</p>
+            </div>
+        </section>
+    </aside>
+
     <% if (typeof watchReload !== 'undefined' && watchReload) { %>
     <script src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
     <% } %>

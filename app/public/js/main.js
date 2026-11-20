@@ -82,6 +82,174 @@ const initPasswordToggles = () => {
     });
 };
 
+const initAccessibilityWidget = () => {
+    const widget = document.querySelector('[data-accessibility-widget]');
+
+    if (!widget) {
+        return;
+    }
+
+    const trigger = widget.querySelector('[data-accessibility-toggle]');
+    const panel = widget.querySelector('.accessibility-panel');
+    const closeButton = widget.querySelector('[data-accessibility-close]');
+    const panelTitle = widget.querySelector('#accessibility-panel-title');
+    const themeSelect = widget.querySelector('[data-accessibility-theme]');
+    const scaleOutput = widget.querySelector('[data-accessibility-scale-value]');
+    const storageKey = 'agua-consciente:accessibility-preferences:v1';
+    const defaults = {
+        theme: 'system',
+        textScale: 100,
+        bold: false,
+        highlightLinks: false,
+        spacedText: false,
+        reducedMotion: false
+    };
+    const supportedThemes = ['system', 'light', 'dark', 'contrast'];
+    let settings = { ...defaults };
+
+    try {
+        const storedSettings = JSON.parse(window.localStorage.getItem(storageKey) || 'null');
+
+        if (storedSettings && typeof storedSettings === 'object') {
+            settings = {
+                ...settings,
+                ...storedSettings,
+                theme: supportedThemes.includes(storedSettings.theme) ? storedSettings.theme : defaults.theme,
+                textScale: Number.isFinite(Number(storedSettings.textScale))
+                    ? Math.min(150, Math.max(80, Number(storedSettings.textScale)))
+                    : defaults.textScale
+            };
+
+            ['bold', 'highlightLinks', 'spacedText', 'reducedMotion'].forEach((key) => {
+                settings[key] = storedSettings[key] === true;
+            });
+        }
+    } catch (error) {
+        // O widget continua funcionando mesmo se o navegador bloquear o armazenamento local.
+    }
+
+    const resolveTheme = () => {
+        if (settings.theme !== 'system') {
+            return settings.theme;
+        }
+
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+    };
+
+    const syncControls = () => {
+        if (themeSelect) {
+            themeSelect.value = settings.theme;
+        }
+
+        if (scaleOutput) {
+            scaleOutput.value = `${settings.textScale}%`;
+            scaleOutput.textContent = `${settings.textScale}%`;
+        }
+
+        widget.querySelectorAll('[data-accessibility-setting]').forEach((button) => {
+            const key = button.dataset.accessibilitySetting;
+            button.setAttribute('aria-pressed', String(settings[key] === true));
+        });
+    };
+
+    const applySettings = () => {
+        const root = document.documentElement;
+        root.dataset.accessibilityTheme = settings.theme;
+        root.dataset.accessibilityEffectiveTheme = resolveTheme();
+        root.style.setProperty('--accessibility-text-scale', `${settings.textScale}%`);
+        root.dataset.accessibilityBold = String(settings.bold);
+        root.dataset.accessibilityHighlightLinks = String(settings.highlightLinks);
+        root.dataset.accessibilitySpacedText = String(settings.spacedText);
+        root.dataset.accessibilityReducedMotion = String(settings.reducedMotion);
+        syncControls();
+    };
+
+    const saveSettings = () => {
+        applySettings();
+
+        try {
+            window.localStorage.setItem(storageKey, JSON.stringify(settings));
+        } catch (error) {
+            // Preferências são aplicadas à página mesmo quando não podem ser persistidas.
+        }
+    };
+
+    const setPanelOpen = (isOpen, restoreFocus = false) => {
+        panel.hidden = !isOpen;
+        trigger.setAttribute('aria-expanded', String(isOpen));
+        trigger.setAttribute('aria-label', isOpen ? 'Fechar opções de acessibilidade' : 'Abrir opções de acessibilidade');
+
+        if (isOpen && panelTitle) {
+            panelTitle.focus();
+        } else if (restoreFocus) {
+            trigger.focus();
+        }
+    };
+
+    trigger.addEventListener('click', () => {
+        setPanelOpen(trigger.getAttribute('aria-expanded') !== 'true');
+    });
+
+    closeButton.addEventListener('click', () => setPanelOpen(false, true));
+
+    document.addEventListener('click', (event) => {
+        if (trigger.getAttribute('aria-expanded') === 'true' && !widget.contains(event.target)) {
+            setPanelOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
+            setPanelOpen(false, true);
+        }
+    });
+
+    themeSelect.addEventListener('change', () => {
+        settings.theme = supportedThemes.includes(themeSelect.value) ? themeSelect.value : defaults.theme;
+        saveSettings();
+    });
+
+    widget.querySelectorAll('[data-accessibility-scale]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const change = Number(button.dataset.accessibilityScale) || 0;
+            settings.textScale = Math.min(150, Math.max(80, settings.textScale + change));
+            saveSettings();
+        });
+    });
+
+    widget.querySelectorAll('[data-accessibility-setting]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const key = button.dataset.accessibilitySetting;
+            settings[key] = !settings[key];
+            saveSettings();
+        });
+    });
+
+    widget.querySelector('[data-accessibility-reset]').addEventListener('click', () => {
+        settings = { ...defaults };
+        saveSettings();
+    });
+
+    if (window.matchMedia) {
+        const colorPreference = window.matchMedia('(prefers-color-scheme: dark)');
+        const updateSystemTheme = () => {
+            if (settings.theme === 'system') {
+                applySettings();
+            }
+        };
+
+        if (typeof colorPreference.addEventListener === 'function') {
+            colorPreference.addEventListener('change', updateSystemTheme);
+        } else if (typeof colorPreference.addListener === 'function') {
+            colorPreference.addListener(updateSystemTheme);
+        }
+    }
+
+    applySettings();
+};
+
 window.addEventListener('pageshow', function(event) {
     if (!event.persisted) {
         return;
@@ -170,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     initPasswordToggles();
+    initAccessibilityWidget();
     
     // Smooth scroll para links internos
     const internalLinks = document.querySelectorAll('a[href^="#"]');
@@ -180,8 +349,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetElement = document.getElementById(targetId);
             
             if (targetElement) {
+                if (targetElement.id === 'main-content') {
+                    targetElement.focus({ preventScroll: true });
+                }
+
                 targetElement.scrollIntoView({
-                    behavior: 'smooth',
+                    behavior: document.documentElement.dataset.accessibilityReducedMotion === 'true' ? 'auto' : 'smooth',
                     block: 'start'
                 });
             }

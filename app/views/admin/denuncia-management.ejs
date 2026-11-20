@@ -33,7 +33,7 @@
         <% const categoryLabel = categoryKeyByValue[categoryNormalized] ? categoryLabels[categoryKey] : categoryRaw; %>
 
         <header class="admin-header">
-            <p><a href="/admin/denuncias">← Voltar à lista de denúncias</a></p>
+            <a class="admin-back-link" href="/admin/denuncias" aria-label="Voltar à lista de denúncias" title="Voltar à lista de denúncias"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
             <h1>Denúncia #<%= denuncia.id %></h1>
             <p>Revise a denúncia, atualize o andamento e publique uma resposta.</p>
         </header>

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'ods6-pwa-v2';
+const CACHE_NAME = 'ods6-pwa-v4';
 const APP_SHELL = [
   '/offline.html',
   '/manifest.webmanifest',
   '/css/style.css',
+  '/css/accessibility-widget.css',
   '/css/bottom-navigation.css',
   '/css/noticias.css',
   '/js/main.js',
