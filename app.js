@@ -23,6 +23,8 @@ const { createDenunciasRouter } = require('./app/routes/denuncias.js');
 const { createOngsRouter } = require('./app/routes/ongs');
 const { createAdminRouter } = require('./app/routes/admin');
 const { createMercadoPagoRouter } = require('./app/routes/mercadoPago');
+const { createAssistantRouter } = require('./app/routes/assistant');
+const { isAssistantAvailable } = require('./app/services/siteAssistant');
 const { getDashboardLabelForUser, getDashboardPathForUser } = require('./app/middleware/auth');
 const { csrfProtection } = require('./app/middleware/csrf');
 const { createSessionStore } = require('./app/middleware/sessionStore');
@@ -145,7 +147,8 @@ const createApp = (data = defaultData) => {
         res.locals.cookieConsent = cookieConsent;
         res.locals.showCookieBanner = !cookieConsent;
         res.locals.watchReload = watchReloadEnabled;
-        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '10';
+        res.locals.assetVersion = watchReloadEnabled ? readWatchVersion() : '11';
+        res.locals.aiAssistantEnabled = isAssistantAvailable();
 
         if (seo.robots.startsWith('noindex')) {
             res.set('X-Robots-Tag', seo.robots);
@@ -155,6 +158,7 @@ const createApp = (data = defaultData) => {
     });
 
     app.use(csrfProtection);
+    app.use('/api/assistant', createAssistantRouter());
 
     app.get('/robots.txt', (req, res) => {
         res.type('text/plain').send(buildRobotsTxt(siteUrl));

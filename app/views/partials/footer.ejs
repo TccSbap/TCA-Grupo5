@@ -188,6 +188,53 @@
         </section>
     </aside>
 
+    <aside class="ai-assistant-widget" data-ai-assistant data-enabled="<%= typeof aiAssistantEnabled !== 'undefined' && aiAssistantEnabled === true ? 'true' : 'false' %>">
+        <button
+            class="ai-assistant-widget__trigger"
+            type="button"
+            aria-label="Abrir assistente de inteligência artificial"
+            aria-expanded="false"
+            aria-controls="ai-assistant-panel"
+            data-ai-assistant-toggle
+        >
+            <i class="fas fa-comment-dots" aria-hidden="true"></i><span>IA</span>
+        </button>
+
+        <section
+            class="ai-assistant-panel"
+            id="ai-assistant-panel"
+            role="dialog"
+            aria-modal="false"
+            aria-labelledby="ai-assistant-title"
+            hidden
+        >
+            <header class="ai-assistant-panel__header">
+                <h2 id="ai-assistant-title" tabindex="-1">Ajuda com IA</h2>
+                <button class="ai-assistant-panel__close" type="button" aria-label="Fechar assistente" data-ai-assistant-close>
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+            <p class="ai-assistant-panel__notice">
+                Pergunte apenas sobre como usar o site. Não envie nome, endereço, e-mail, telefone, documentos, senhas, dados de pagamento ou detalhes de uma denúncia. <a href="/privacidade#assistente-ia">Saiba como os dados são tratados</a>.
+            </p>
+
+            <% if (typeof aiAssistantEnabled !== 'undefined' && aiAssistantEnabled === true) { %>
+                <div class="ai-assistant-messages" data-ai-assistant-messages aria-live="polite" aria-relevant="additions text">
+                    <p class="ai-assistant-message">Olá! Posso orientar sobre as páginas e os recursos públicos da Água Consciente.</p>
+                </div>
+                <form class="ai-assistant-form" data-ai-assistant-form>
+                    <textarea name="message" rows="2" maxlength="500" required aria-label="Sua pergunta" placeholder="Ex.: Como registro uma denúncia?"></textarea>
+                    <button type="submit">Enviar</button>
+                </form>
+                <input type="hidden" data-ai-assistant-csrf value="<%= csrfToken %>">
+            <% } else { %>
+                <p class="ai-assistant-panel__disabled">
+                    O chat está desativado. Ele só será habilitado depois que as condições de uso forem confirmadas e a integração estiver configurada. Nenhuma pergunta será enviada. Você já pode consultar as <a href="/contato">formas de contato</a> e as páginas de ajuda do site.
+                </p>
+            <% } %>
+        </section>
+    </aside>
+
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script nonce="<%= cspNonce %>">
         if (window.VLibras && typeof window.VLibras.Widget === 'function') {

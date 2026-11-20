@@ -59,6 +59,42 @@
                 <p><a href="https://www.vlibras.gov.br/privacy.html" target="_blank" rel="noopener noreferrer">Leia o aviso de privacidade do VLibras</a>.</p>
             </article>
 
+            <article class="privacy-card" id="assistente-ia">
+                <h2>Assistente de IA do site</h2>
+                <% if (typeof aiAssistantEnabled !== 'undefined' && aiAssistantEnabled === true) { %>
+                <p>
+                    Quando você enviar uma pergunta, o servidor a recebe temporariamente para selecionar um assunto de FAQ e bloquear padrões
+                    comuns de dados pessoais. O texto digitado não é enviado à Cloudflare: somente uma pergunta padrão e os trechos públicos
+                    correspondentes são encaminhados ao Workers AI. O chat não consulta contas, denúncias individuais nem o banco de dados do site,
+                    e o servidor não guarda histórico de conversa. Os filtros não reconhecem todo tipo de informação; não envie nomes, endereços,
+                    documentos ou outros dados pessoais. O endereço IP é usado temporariamente pelo servidor para limitar o uso abusivo do chat.
+                </p>
+                <% } else { %>
+                <p>
+                    O chat de IA está desativado até que as condições de uso sejam confirmadas e a integração seja configurada. Se for habilitado,
+                    o servidor receberá a pergunta temporariamente para selecionar um assunto de FAQ e bloquear padrões comuns de dados pessoais.
+                    O texto digitado não será enviado à Cloudflare: somente uma pergunta padrão e os trechos públicos correspondentes serão enviados.
+                    O chat não consultará contas, denúncias individuais nem o banco de dados do site, e o servidor não guardará histórico de conversa.
+                    Os filtros não reconhecem todo tipo de informação; não envie nomes, endereços, documentos ou outros dados pessoais. O endereço IP
+                    será usado temporariamente pelo servidor para limitar o uso abusivo do chat.
+                </p>
+                <% } %>
+                <p>
+                    A Cloudflare declara retenção zero para inferência padrão sem recursos com estado e que não usa o
+                    conteúdo para treinar modelos, com exceções limitadas descritas em sua documentação. A licença e
+                    condições do modelo escolhido também precisam ser avaliadas antes de ativar o chat.
+                </p>
+                <p>
+                    A Cloudflare também pode manter metadados operacionais, como identificador do modelo, horário,
+                    volume, latência e status da solicitação; a documentação informa que esses metadados não incluem
+                    o conteúdo da pergunta.
+                </p>
+                <p>
+                    <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noopener noreferrer">Uso de dados do Workers AI</a>
+                    · <a href="https://developers.cloudflare.com/workers-ai/models/gemma-4-26b-a4b-it/" target="_blank" rel="noopener noreferrer">Modelo atualmente configurado e licença</a>
+                </p>
+            </article>
+
             <article class="privacy-card">
                 <h2>Seus direitos</h2>
                 <ul class="privacy-list">

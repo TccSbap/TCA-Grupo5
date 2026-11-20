@@ -250,6 +250,152 @@ const initAccessibilityWidget = () => {
     applySettings();
 };
 
+const initAiAssistantWidget = () => {
+    const widget = document.querySelector('[data-ai-assistant]');
+    if (!widget) return;
+
+    const trigger = widget.querySelector('[data-ai-assistant-toggle]');
+    const panel = widget.querySelector('.ai-assistant-panel');
+    const closeButton = widget.querySelector('[data-ai-assistant-close]');
+    const title = widget.querySelector('#ai-assistant-title');
+    const enabled = widget.dataset.enabled === 'true';
+    const form = widget.querySelector('[data-ai-assistant-form]');
+    const messages = widget.querySelector('[data-ai-assistant-messages]');
+    const csrfInput = widget.querySelector('[data-ai-assistant-csrf]');
+
+    const setOpen = (isOpen, restoreFocus = false) => {
+        panel.hidden = !isOpen;
+        trigger.setAttribute('aria-expanded', String(isOpen));
+        trigger.setAttribute('aria-label', isOpen ? 'Fechar assistente de inteligência artificial' : 'Abrir assistente de inteligência artificial');
+
+        if (isOpen && enabled) {
+            widget.querySelector('textarea')?.focus();
+        } else if (isOpen) {
+            title?.focus();
+        } else if (restoreFocus) {
+            trigger.focus();
+        }
+    };
+
+    const addMessage = (text, type = 'assistant') => {
+        const message = document.createElement('p');
+        message.className = `ai-assistant-message${type === 'user' ? ' ai-assistant-message--user' : ''}${type === 'error' ? ' ai-assistant-message--error' : ''}`;
+        message.textContent = text;
+        messages.appendChild(message);
+        messages.scrollTop = messages.scrollHeight;
+        return message;
+    };
+
+    trigger.addEventListener('click', () => setOpen(trigger.getAttribute('aria-expanded') !== 'true'));
+    closeButton?.addEventListener('click', () => setOpen(false, true));
+
+    document.addEventListener('click', (event) => {
+        if (trigger.getAttribute('aria-expanded') === 'true' && !widget.contains(event.target)) {
+            setOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
+            setOpen(false, true);
+        }
+    });
+
+    if (!enabled || !form || !messages || !csrfInput) return;
+
+    const hasLikelyPersonalData = (text) => {
+        const digits = text.replace(/\D/g, '');
+        const normalized = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        return /\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/i.test(text)
+            || digits.length === 11
+            || digits.length === 14
+            || /(?:\+?55\s*)?(?:\(?\d{2}\)?\s*)?(?:9?\d{4})[-.\s]?\d{4}\b/.test(text)
+            || /\b(meu nome e|me chamo|meu cpf|meu cnpj|meu telefone|meu endereco|minha senha|numero do cartao)\b/.test(normalized)
+            || /\b(minha|minhas|meu|meus)\s+(denuncia|denuncias|doacao|doacoes|cadastro|pagamento)\b/.test(normalized)
+            || /\b(acompanhar|consultar|ver|status)\s+(?:(?:a|o|da|do|de|meu|minha)\s+)?denuncia\b/.test(normalized)
+            || /\bdenuncia\s*(?:#|n(?:umero)?\.?\s*)\d+\b/.test(normalized)
+            || /\b(rua|avenida|av\.?|travessa|alameda|estrada|rodovia)\s+[\p{L}\d .'-]{2,50},?\s+(?:n(?:umero)?\.?\s*)?\d{1,6}\b/iu.test(text);
+    };
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const textarea = form.querySelector('textarea[name="message"]');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const question = textarea.value.trim();
+
+        if (!question || question.length > 500) {
+            textarea.setCustomValidity('Escreva uma pergunta de até 500 caracteres.');
+            textarea.reportValidity();
+            textarea.setCustomValidity('');
+            return;
+        }
+
+        if (hasLikelyPersonalData(question)) {
+            addMessage('Não envie informações pessoais. Remova nome, endereço, e-mail, telefone, documento ou dado de pagamento e tente com uma pergunta geral sobre o site.', 'error');
+            textarea.focus();
+            return;
+        }
+
+        addMessage(question, 'user');
+        textarea.value = '';
+        textarea.disabled = true;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando…';
+        const pendingMessage = addMessage('Consultando as informações públicas do site…');
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 25000);
+
+        try {
+            const response = await fetch('/api/assistant/chat', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfInput.value
+                },
+                body: JSON.stringify({ message: question }),
+                signal: controller.signal
+            });
+            const payload = await response.json();
+            if (typeof payload.csrfToken === 'string') csrfInput.value = payload.csrfToken;
+            pendingMessage.remove();
+
+            if (!response.ok) {
+                addMessage(payload.error || 'Não consegui responder agora. Tente novamente.', 'error');
+                return;
+            }
+
+            addMessage(payload.answer || 'Não encontrei uma resposta para essa pergunta.');
+            if (Array.isArray(payload.links) && payload.links.length) {
+                const linksContainer = document.createElement('div');
+                linksContainer.className = 'ai-assistant-message-links';
+                payload.links.forEach((link) => {
+                    if (!link || typeof link.label !== 'string' || typeof link.href !== 'string') return;
+                    const target = new URL(link.href, window.location.origin);
+                    if (target.origin !== window.location.origin) return;
+                    const anchor = document.createElement('a');
+                    anchor.href = `${target.pathname}${target.search}${target.hash}`;
+                    anchor.textContent = link.label;
+                    linksContainer.appendChild(anchor);
+                });
+                if (linksContainer.childElementCount) messages.appendChild(linksContainer);
+            }
+            messages.scrollTop = messages.scrollHeight;
+        } catch (error) {
+            pendingMessage.remove();
+            addMessage(error.name === 'AbortError'
+                ? 'A resposta demorou demais. Tente novamente.'
+                : 'Não consegui conectar ao assistente agora. Tente novamente ou consulte a página de contato.', 'error');
+        } finally {
+            window.clearTimeout(timeoutId);
+            textarea.disabled = false;
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar';
+            textarea.focus();
+        }
+    });
+};
+
 window.addEventListener('pageshow', function(event) {
     if (!event.persisted) {
         return;
@@ -339,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initPasswordToggles();
     initAccessibilityWidget();
+    initAiAssistantWidget();
     
     // Smooth scroll para links internos
     const internalLinks = document.querySelectorAll('a[href^="#"]');
