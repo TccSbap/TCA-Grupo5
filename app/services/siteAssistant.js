@@ -130,13 +130,13 @@ const isIndividualRecordQuestion = (value) => {
 
 const isAssistantAvailable = () => process.env.AI_ASSISTANT_ENABLED === 'true'
     && process.env.AI_ASSISTANT_TERMS_CONFIRMED === 'true'
-    && Boolean(process.env.CLOUDFLARE_ACCOUNT_ID)
-    && Boolean(process.env.CLOUDFLARE_API_TOKEN);
+    && Boolean(process.env.CLOUDFLARE_ACCOUNT_ID?.trim())
+    && Boolean(process.env.CLOUDFLARE_API_TOKEN?.trim());
 
 const answerFromWorkersAi = async (relevantFaqs) => {
-    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-    const token = process.env.CLOUDFLARE_API_TOKEN;
-    const model = process.env.CLOUDFLARE_AI_MODEL || '@cf/google/gemma-4-26b-a4b-it';
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID.trim();
+    const token = process.env.CLOUDFLARE_API_TOKEN.trim();
+    const model = process.env.CLOUDFLARE_AI_MODEL?.trim() || '@cf/google/gemma-4-26b-a4b-it';
     const endpoint = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/ai/v1/chat/completions`;
     const faqContext = relevantFaqs.map(({ question: faqQuestion, answer }) => `Pergunta frequente: ${faqQuestion}\nInformação aprovada: ${answer}`).join('\n\n');
     const canonicalQuestion = relevantFaqs[0].question;
@@ -159,7 +159,7 @@ const answerFromWorkersAi = async (relevantFaqs) => {
                     },
                     { role: 'user', content: canonicalQuestion }
                 ],
-                max_tokens: 180,
+                max_completion_tokens: 180,
                 temperature: 0.2,
                 stream: false
             }),
@@ -167,17 +167,35 @@ const answerFromWorkersAi = async (relevantFaqs) => {
         });
 
         if (!response.ok) {
-            console.warn(`Assistente Cloudflare retornou status HTTP ${response.status}.`);
-            throw new Error('workers_ai_request_failed');
+            let errorPayload = null;
+            try {
+                errorPayload = await response.json();
+            } catch {
+                // A resposta de erro pode não conter JSON.
+            }
+
+            const error = new Error('workers_ai_request_failed');
+            error.status = response.status;
+            const providerErrors = Array.isArray(errorPayload?.errors)
+                ? errorPayload.errors
+                : errorPayload?.error ? [errorPayload.error] : [];
+            error.providerErrors = providerErrors.slice(0, 3).map(({ code, message: errorMessage }) => ({
+                code: typeof code === 'number' && Number.isFinite(code) ? code : undefined,
+                message: typeof errorMessage === 'string' ? errorMessage.slice(0, 180) : undefined
+            }));
+            throw error;
         }
 
         const payload = await response.json();
         const answer = payload?.choices?.[0]?.message?.content;
-        if (typeof answer !== 'string' || !answer.trim()) {
+        const normalizedAnswer = Array.isArray(answer)
+            ? answer.map((part) => typeof part?.text === 'string' ? part.text : '').join(' ')
+            : answer;
+        if (typeof normalizedAnswer !== 'string' || !normalizedAnswer.trim()) {
             throw new Error('workers_ai_empty_response');
         }
 
-        return answer.trim().slice(0, 1000);
+        return normalizedAnswer.trim().slice(0, 1000);
     } finally {
         clearTimeout(timeout);
     }

@@ -366,6 +366,9 @@ const initAiAssistantWidget = () => {
             }
 
             addMessage(payload.answer || 'Não encontrei uma resposta para essa pergunta.');
+            if (payload.fallback === true) {
+                addMessage('Resposta baseada nas perguntas frequentes do site. A geração por IA está temporariamente indisponível.');
+            }
             if (Array.isArray(payload.links) && payload.links.length) {
                 const linksContainer = document.createElement('div');
                 linksContainer.className = 'ai-assistant-message-links';

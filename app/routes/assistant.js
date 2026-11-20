@@ -63,20 +63,28 @@ const createAssistantRouter = () => {
             });
         }
 
+        const links = [...new Map(relevantFaqs.flatMap((faq) => faq.links).map((link) => [link.href, link])).values()];
+
         try {
             const answer = await answerFromWorkersAi(relevantFaqs);
-            const links = [...new Map(relevantFaqs.flatMap((faq) => faq.links).map((link) => [link.href, link])).values()];
             return res.json({ answer, links, csrfToken: res.locals.csrfToken });
         } catch (error) {
             const isTimeout = error?.name === 'AbortError';
             if (isTimeout) {
                 console.warn('Assistente Cloudflare excedeu o tempo limite.');
-            } else if (error?.message !== 'workers_ai_request_failed') {
-                console.warn('Não foi possível concluir uma resposta do assistente Cloudflare.');
+            } else if (error?.status) {
+                console.warn('Workers AI recusou a solicitação:', JSON.stringify({
+                    status: error.status,
+                    errors: error.providerErrors || []
+                }));
+            } else {
+                console.warn('Falha ao processar resposta do Workers AI:', error?.message || error?.name || 'erro desconhecido');
             }
 
-            return res.status(502).json({
-                error: 'Não consegui responder agora. Tente novamente ou consulte as perguntas frequentes do site.',
+            return res.json({
+                answer: relevantFaqs[0].answer,
+                links,
+                fallback: true,
                 csrfToken: res.locals.csrfToken
             });
         }
