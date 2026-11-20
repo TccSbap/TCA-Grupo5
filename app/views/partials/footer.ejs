@@ -188,6 +188,18 @@
         </section>
     </aside>
 
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js" defer></script>
+    <script nonce="<%= cspNonce %>">
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.VLibras && typeof window.VLibras.Widget === 'function') {
+                new window.VLibras.Widget({
+                    rootPath: 'https://vlibras.gov.br/app',
+                    position: 'L'
+                });
+            }
+        }, { once: true });
+    </script>
+
     <% if (typeof watchReload !== 'undefined' && watchReload) { %>
     <script src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
     <% } %>
