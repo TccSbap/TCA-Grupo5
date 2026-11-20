@@ -77,6 +77,8 @@ const createAssistantRouter = () => {
                     status: error.status,
                     errors: error.providerErrors || []
                 }));
+            } else if (error?.responseShape) {
+                console.warn('Workers AI retornou uma estrutura sem texto reconhecível:', JSON.stringify(error.responseShape));
             } else {
                 console.warn('Falha ao processar resposta do Workers AI:', error?.message || error?.name || 'erro desconhecido');
             }

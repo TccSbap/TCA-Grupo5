@@ -187,12 +187,27 @@ const answerFromWorkersAi = async (relevantFaqs) => {
         }
 
         const payload = await response.json();
-        const answer = payload?.choices?.[0]?.message?.content;
-        const normalizedAnswer = Array.isArray(answer)
-            ? answer.map((part) => typeof part?.text === 'string' ? part.text : '').join(' ')
-            : answer;
+        const choice = payload?.choices?.[0];
+        const answer = choice?.message?.content
+            ?? payload?.result?.response
+            ?? payload?.response;
+        const normalizedAnswer = typeof answer === 'string'
+            ? answer
+            : Array.isArray(answer)
+                ? answer.map((part) => typeof part?.text === 'string' ? part.text : '').join(' ')
+                : '';
         if (typeof normalizedAnswer !== 'string' || !normalizedAnswer.trim()) {
-            throw new Error('workers_ai_empty_response');
+            const error = new Error('workers_ai_empty_response');
+            error.responseShape = {
+                topLevelKeys: Object.keys(payload || {}).slice(0, 12),
+                resultKeys: payload?.result && typeof payload.result === 'object' ? Object.keys(payload.result).slice(0, 12) : [],
+                choicesCount: Array.isArray(payload?.choices) ? payload.choices.length : null,
+                firstChoiceKeys: choice && typeof choice === 'object' ? Object.keys(choice).slice(0, 12) : [],
+                messageKeys: choice?.message && typeof choice.message === 'object' ? Object.keys(choice.message).slice(0, 12) : [],
+                contentType: typeof choice?.message?.content,
+                finishReason: typeof choice?.finish_reason === 'string' ? choice.finish_reason : undefined
+            };
+            throw error;
         }
 
         return normalizedAnswer.trim().slice(0, 1000);
