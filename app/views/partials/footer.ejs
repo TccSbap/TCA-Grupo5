@@ -188,26 +188,16 @@
         </section>
     </aside>
 
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script nonce="<%= cspNonce %>">
-        (function loadVLibrasWidget() {
-            const script = document.createElement('script');
-            script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
-            script.async = true;
-            script.addEventListener('load', function () {
-                if (window.VLibras && typeof window.VLibras.Widget === 'function') {
-                    new window.VLibras.Widget({
-                        rootPath: 'https://vlibras.gov.br/app',
-                        position: 'L'
-                    });
-                } else {
-                    console.error('O script do VLibras carregou, mas a API do widget não foi encontrada.');
-                }
-            }, { once: true });
-            script.addEventListener('error', function () {
-                console.error('Não foi possível carregar o widget do VLibras.');
-            }, { once: true });
-            document.head.appendChild(script);
-        })();
+        if (window.VLibras && typeof window.VLibras.Widget === 'function') {
+            new window.VLibras.Widget({
+                rootPath: 'https://vlibras.gov.br/app',
+                position: 'L'
+            });
+        } else {
+            console.error('O script do VLibras não carregou a API do widget. Verifique a rede e a Content Security Policy.');
+        }
     </script>
 
     <% if (typeof watchReload !== 'undefined' && watchReload) { %>

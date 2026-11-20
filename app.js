@@ -84,7 +84,7 @@ const createApp = (data = defaultData) => {
             "img-src 'self' data: blob: https:",
             "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com 'unsafe-inline'",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net data:",
-            `script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com https://vlibras.gov.br 'nonce-${res.locals.cspNonce}'`,
+            `script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net 'nonce-${res.locals.cspNonce}'`,
             "frame-src 'self' https://vlibras.gov.br",
             "connect-src 'self' https://tiles.openfreemap.org https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net",
             "worker-src 'self' blob: https://unpkg.com"
