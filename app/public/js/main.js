@@ -286,6 +286,60 @@ const initAiAssistantWidget = () => {
         return message;
     };
 
+    const addAssistantAnswer = (text, links = []) => {
+        const message = document.createElement('p');
+        message.className = 'ai-assistant-message';
+
+        const safeLinks = links
+            .filter((link) => link && typeof link.label === 'string' && typeof link.href === 'string')
+            .map((link) => {
+                try {
+                    const target = new URL(link.href, window.location.origin);
+                    if (target.origin !== window.location.origin) return null;
+                    return {
+                        label: link.label,
+                        href: `${target.pathname}${target.search}${target.hash}`
+                    };
+                } catch (error) {
+                    return null;
+                }
+            })
+            .filter(Boolean)
+            .sort((left, right) => right.href.length - left.href.length);
+
+        const answer = String(text || '');
+        let cursor = 0;
+        while (cursor < answer.length) {
+            let nextMatch = null;
+            safeLinks.forEach((link) => {
+                const index = answer.indexOf(link.href, cursor);
+                if (index >= 0 && (!nextMatch || index < nextMatch.index)) {
+                    nextMatch = { ...link, index };
+                }
+            });
+
+            if (!nextMatch) {
+                message.appendChild(document.createTextNode(answer.slice(cursor)));
+                break;
+            }
+
+            if (nextMatch.index > cursor) {
+                message.appendChild(document.createTextNode(answer.slice(cursor, nextMatch.index)));
+            }
+
+            const anchor = document.createElement('a');
+            anchor.href = nextMatch.href;
+            anchor.textContent = answer.slice(nextMatch.index, nextMatch.index + nextMatch.href.length);
+            anchor.setAttribute('aria-label', `Abrir página: ${nextMatch.label}`);
+            message.appendChild(anchor);
+            cursor = nextMatch.index + nextMatch.href.length;
+        }
+
+        messages.appendChild(message);
+        messages.scrollTop = messages.scrollHeight;
+        return message;
+    };
+
     trigger.addEventListener('click', () => setOpen(trigger.getAttribute('aria-expanded') !== 'true'));
     closeButton?.addEventListener('click', () => setOpen(false, true));
 
@@ -365,7 +419,7 @@ const initAiAssistantWidget = () => {
                 return;
             }
 
-            addMessage(payload.answer || 'Não encontrei uma resposta para essa pergunta.');
+            addAssistantAnswer(payload.answer || 'Não encontrei uma resposta para essa pergunta.', payload.links);
             if (payload.fallback === true) {
                 addMessage('Resposta baseada nas perguntas frequentes do site. A geração por IA está temporariamente indisponível.');
             }
