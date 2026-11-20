@@ -159,7 +159,8 @@ const answerFromWorkersAi = async (relevantFaqs) => {
                     },
                     { role: 'user', content: canonicalQuestion }
                 ],
-                max_completion_tokens: 180,
+                max_completion_tokens: 256,
+                chat_template_kwargs: { enable_thinking: false },
                 temperature: 0.2,
                 stream: false
             }),
