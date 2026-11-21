@@ -1,10 +1,16 @@
 import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.mjs';
 
-document.addEventListener('DOMContentLoaded', () => {
+let activeReportMap = null;
+
+const initializeReportForm = () => {
     const cepInput = document.getElementById('cep');
     const locationInput = document.getElementById('location');
 
     const reportMapElement = document.getElementById('denuncia-location-map');
+    if (!cepInput && !reportMapElement) return;
+    if (cepInput?.dataset.turboInitialized === 'true') return;
+    if (cepInput) cepInput.dataset.turboInitialized = 'true';
+
     if (reportMapElement) {
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
@@ -19,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             zoom: 12,
             scrollZoom: true
         });
+        activeReportMap = reportMap;
         reportMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
         reportMap.on('load', () => reportMap.resize());
         reportMap.on('error', (event) => {
@@ -145,4 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
             this.dispatchEvent(new Event('blur'));
         }
     });
+};
+
+document.addEventListener('turbo:load', initializeReportForm);
+document.addEventListener('turbo:before-render', () => {
+    activeReportMap?.remove();
+    activeReportMap = null;
 });
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeReportForm, { once: true });
+} else {
+    initializeReportForm();
+}

@@ -1,5 +1,8 @@
-document.addEventListener("DOMContentLoaded", function() {
+(() => {
+const initializeCadastroForm = () => {
     const cadastroForm = document.getElementById("cadastroForm");
+    if (!cadastroForm || cadastroForm.dataset.turboInitialized === 'true') return;
+    cadastroForm.dataset.turboInitialized = 'true';
     const userType = document.getElementById("userType");
     const ongFields = document.getElementById("ongFields");
     const ongFieldIds = ["ongName", "ongDescription", "ongContact", "ongCnpj", "ongRg", "ongPhone", "ongAddress"];
@@ -211,4 +214,15 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     toggleOngFields();
-});
+};
+
+if (!window.__aguaCadastroFormTurboListener) {
+    window.__aguaCadastroFormTurboListener = true;
+    document.addEventListener('turbo:load', initializeCadastroForm);
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCadastroForm, { once: true });
+} else {
+    initializeCadastroForm();
+}
+})();

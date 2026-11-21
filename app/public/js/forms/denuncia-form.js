@@ -1,6 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+(() => {
+const initializeDenunciaForm = () => {
     const form = document.querySelector('.denuncia-form');
     if (!form) return;
+    if (form.dataset.turboInitialized === 'true') return;
+    form.dataset.turboInitialized = 'true';
 
     const rules = {
         title: {
@@ -69,4 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
             invalidFields[0].focus();
         }
     });
-});
+};
+
+if (!window.__aguaDenunciaFormTurboListener) {
+    window.__aguaDenunciaFormTurboListener = true;
+    document.addEventListener('turbo:load', initializeDenunciaForm);
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDenunciaForm, { once: true });
+} else {
+    initializeDenunciaForm();
+}
+})();

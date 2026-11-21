@@ -1,5 +1,12 @@
 (function () {
-    const payload = window.__PUBLIC_IMPACT__;
+    const payloadElement = document.getElementById('public-impact-data');
+    let payload = null;
+    try {
+        payload = payloadElement ? JSON.parse(payloadElement.textContent) : null;
+    } catch (error) {
+        console.error('Não foi possível ler os dados de impacto da página.');
+    }
+    window.__PUBLIC_IMPACT__ = payload;
 
     if (!payload || typeof Chart === 'undefined') {
         return;

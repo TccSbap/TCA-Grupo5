@@ -15,7 +15,7 @@
             </section>
         <% } %>
 
-        <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate data-submit-lock-mode="manual">
+        <form action="/doar" method="POST" class="styled-form" id="doacaoForm" novalidate data-submit-lock-mode="manual" data-turbo="false">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="recipientType" value="<%= projectDonation ? 'projeto' : 'ong' %>">
             <% if (!projectDonation) { %><input type="hidden" name="ongId" value="<%= ong.id %>"><% } %>

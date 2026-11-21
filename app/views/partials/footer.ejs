@@ -235,22 +235,69 @@
         </section>
     </aside>
 
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script nonce="<%= cspNonce %>">
-        if (window.VLibras && typeof window.VLibras.Widget === 'function') {
-            new window.VLibras.Widget({
-                rootPath: 'https://vlibras.gov.br/app',
-                position: 'L'
-            });
-        } else {
-            console.error('O script do VLibras não carregou a API do widget. Verifique a rede e a Content Security Policy.');
-        }
-    </script>
+    <div id="vlibras-persistent-widget" data-turbo-permanent>
+        <div vw class="enabled">
+            <div vw-access-button class="active"></div>
+            <div vw-plugin-wrapper>
+                <div class="vw-plugin-top-wrapper"></div>
+            </div>
+        </div>
+        <script data-turbo-eval="false" src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+        <script data-turbo-eval="false" nonce="<%= cspNonce %>">
+            if (!window.__aguaConscienteVlibrasInitialized && window.VLibras && typeof window.VLibras.Widget === 'function') {
+                window.__aguaConscienteVlibrasInitialized = true;
+                new window.VLibras.Widget({
+                    rootPath: 'https://vlibras.gov.br/app',
+                    position: 'R'
+                });
+
+                const positionVlibrasAccessButton = () => {
+                    const accessButton = window.VLibrasWidget && window.VLibrasWidget.initBtn;
+                    if (!accessButton) return false;
+
+                    accessButton.style.setProperty('position', 'fixed', 'important');
+                    accessButton.style.setProperty(
+                        'right',
+                        window.matchMedia('(max-width: 420px)').matches
+                            ? 'max(0.5rem, env(safe-area-inset-right, 0px))'
+                            : 'max(0.75rem, env(safe-area-inset-right, 0px))',
+                        'important'
+                    );
+                    accessButton.style.setProperty('left', 'auto', 'important');
+                    accessButton.style.setProperty('bottom', 'auto', 'important');
+                    accessButton.style.setProperty('z-index', '1180', 'important');
+                    accessButton.style.setProperty(
+                        'top',
+                        window.matchMedia('(max-width: 1024px)').matches
+                            ? 'min(calc((100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px)) / 2 + 3rem), calc(100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px) - 3.75rem))'
+                            : 'calc(50% + 3rem)',
+                        'important'
+                    );
+                    return true;
+                };
+
+                let positionAttempts = 0;
+                const placeVlibrasAccessButton = () => {
+                    if (positionVlibrasAccessButton() || positionAttempts >= 60) return;
+                    positionAttempts += 1;
+                    window.setTimeout(placeVlibrasAccessButton, 100);
+                };
+                placeVlibrasAccessButton();
+                window.addEventListener('load', () => {
+                    positionAttempts = 0;
+                    placeVlibrasAccessButton();
+                }, { once: true });
+                window.addEventListener('resize', positionVlibrasAccessButton);
+            } else if (!window.__aguaConscienteVlibrasInitialized) {
+                console.error('O script do VLibras não carregou a API do widget. Verifique a rede e a Content Security Policy.');
+            }
+        </script>
+    </div>
 
     <% if (typeof watchReload !== 'undefined' && watchReload) { %>
-    <script src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+    <script id="watch-reload-script" data-turbo-permanent data-turbo-eval="false" src="/js/watch-reload.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
     <% } %>
 
-    <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
+    <script id="agua-main-script" data-turbo-permanent data-turbo-eval="false" src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 </body>
 </html>

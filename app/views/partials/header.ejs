@@ -38,9 +38,10 @@
         const structuredData = Array.isArray(seoStructuredData) ? seoStructuredData : [];
     %>
     <title><%= fullTitle %></title>
-    <meta name="description" content="<%= seoDescriptionValue %>">
-    <meta name="robots" content="<%= seoRobotsValue %>">
-    <link rel="canonical" href="<%= seoCanonicalValue %>">
+    <meta name="description" content="<%= seoDescriptionValue %>" data-turbo-track="dynamic">
+    <meta name="robots" content="<%= seoRobotsValue %>" data-turbo-track="dynamic">
+    <link rel="canonical" href="<%= seoCanonicalValue %>" data-turbo-track="dynamic">
+    <meta name="turbo-cache-control" content="no-cache">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
     <link rel="stylesheet" href="/css/bottom-navigation.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
     <%
@@ -52,27 +53,30 @@
                     : []);
     %>
     <% extraStylesheets.forEach((href) => { %>
-    <link rel="stylesheet" href="<%= href %>">
+    <link rel="stylesheet" href="<%= href %>" data-turbo-track="dynamic">
     <% }) %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://vlibras.gov.br" crossorigin>
+    <script type="module" data-turbo-track="reload" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.23/dist/turbo.es2017-esm.min.js"></script>
     <link rel="stylesheet" href="/css/accessibility-widget.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
     <link rel="stylesheet" href="/css/ai-assistant.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
-    <meta property="og:title" content="<%= seoOgTitleValue %>">
-    <meta property="og:description" content="<%= seoOgDescriptionValue %>">
-    <meta property="og:image" content="<%= seoOgImageValue %>">
-    <meta property="og:url" content="<%= seoCanonicalValue %>">
-    <meta property="og:type" content="<%= seoOgTypeValue %>">
-    <meta property="og:locale" content="pt_BR">
-    <meta property="og:site_name" content="<%= seoSiteName %>">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= seoOgTitleValue %>">
-    <meta name="twitter:description" content="<%= seoOgDescriptionValue %>">
-    <meta name="twitter:image" content="<%= seoOgImageValue %>">
+    <meta property="og:title" content="<%= seoOgTitleValue %>" data-turbo-track="dynamic">
+    <meta property="og:description" content="<%= seoOgDescriptionValue %>" data-turbo-track="dynamic">
+    <meta property="og:image" content="<%= seoOgImageValue %>" data-turbo-track="dynamic">
+    <meta property="og:url" content="<%= seoCanonicalValue %>" data-turbo-track="dynamic">
+    <meta property="og:type" content="<%= seoOgTypeValue %>" data-turbo-track="dynamic">
+    <meta property="og:locale" content="pt_BR" data-turbo-track="dynamic">
+    <meta property="og:site_name" content="<%= seoSiteName %>" data-turbo-track="dynamic">
+    <meta name="twitter:card" content="summary_large_image" data-turbo-track="dynamic">
+    <meta name="twitter:title" content="<%= seoOgTitleValue %>" data-turbo-track="dynamic">
+    <meta name="twitter:description" content="<%= seoOgDescriptionValue %>" data-turbo-track="dynamic">
+    <meta name="twitter:image" content="<%= seoOgImageValue %>" data-turbo-track="dynamic">
     <% structuredData.forEach((schema) => { %>
-    <script type="application/ld+json" nonce="<%= cspNonce %>"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+    <script type="application/ld+json" nonce="<%= cspNonce %>" data-turbo-track="dynamic"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
     <% }) %>
 </head>
 <body class="<%= typeof showCookieBanner !== 'undefined' && showCookieBanner ? 'has-cookie-banner' : '' %>">

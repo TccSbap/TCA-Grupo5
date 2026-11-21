@@ -50,6 +50,46 @@ window.submitOnce = window.submitOnce || (() => {
     return { lock, unlock, isLocked };
 })();
 
+const initBottomNavigation = () => {
+    if (window.__aguaBottomNavigationInitialized) return;
+    window.__aguaBottomNavigationInitialized = true;
+
+    document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const toggle = target?.closest('[data-bottom-navigation-toggle]');
+        const menu = document.getElementById('bottom-navigation-menu');
+        const currentToggle = document.querySelector('[data-bottom-navigation-toggle]');
+
+        if (toggle && menu) {
+            const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', String(!isOpen));
+            menu.hidden = isOpen;
+            toggle.parentElement?.classList.toggle('is-open', !isOpen);
+            return;
+        }
+
+        if (menu && !menu.hidden && (!target || !menu.contains(target))) {
+            menu.hidden = true;
+            currentToggle?.setAttribute('aria-expanded', 'false');
+            currentToggle?.parentElement?.classList.remove('is-open');
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const menu = document.getElementById('bottom-navigation-menu');
+        if (!menu || menu.hidden) return;
+
+        menu.hidden = true;
+        const toggle = document.querySelector('[data-bottom-navigation-toggle]');
+        toggle?.setAttribute('aria-expanded', 'false');
+        toggle?.parentElement?.classList.remove('is-open');
+        toggle?.focus();
+    });
+};
+
+initBottomNavigation();
+
 const updatePasswordToggleState = (button, input) => {
     const isVisible = input.type === 'text';
     const icon = button.querySelector('i');
@@ -88,6 +128,8 @@ const initAccessibilityWidget = () => {
     if (!widget) {
         return;
     }
+    if (widget.dataset.turboInitialized === 'true') return;
+    widget.dataset.turboInitialized = 'true';
 
     const trigger = widget.querySelector('[data-accessibility-toggle]');
     const panel = widget.querySelector('.accessibility-panel');
@@ -194,18 +236,6 @@ const initAccessibilityWidget = () => {
 
     closeButton.addEventListener('click', () => setPanelOpen(false, true));
 
-    document.addEventListener('click', (event) => {
-        if (trigger.getAttribute('aria-expanded') === 'true' && !widget.contains(event.target)) {
-            setPanelOpen(false);
-        }
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
-            setPanelOpen(false, true);
-        }
-    });
-
     themeSelect.addEventListener('change', () => {
         settings.theme = supportedThemes.includes(themeSelect.value) ? themeSelect.value : defaults.theme;
         saveSettings();
@@ -253,6 +283,8 @@ const initAccessibilityWidget = () => {
 const initAiAssistantWidget = () => {
     const widget = document.querySelector('[data-ai-assistant]');
     if (!widget) return;
+    if (widget.dataset.turboInitialized === 'true') return;
+    widget.dataset.turboInitialized = 'true';
 
     const trigger = widget.querySelector('[data-ai-assistant-toggle]');
     const panel = widget.querySelector('.ai-assistant-panel');
@@ -342,18 +374,6 @@ const initAiAssistantWidget = () => {
 
     trigger.addEventListener('click', () => setOpen(trigger.getAttribute('aria-expanded') !== 'true'));
     closeButton?.addEventListener('click', () => setOpen(false, true));
-
-    document.addEventListener('click', (event) => {
-        if (trigger.getAttribute('aria-expanded') === 'true' && !widget.contains(event.target)) {
-            setOpen(false);
-        }
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
-            setOpen(false, true);
-        }
-    });
 
     if (!enabled || !form || !messages || !csrfInput) return;
 
@@ -453,6 +473,102 @@ const initAiAssistantWidget = () => {
     });
 };
 
+const initFloatingWidgetDismissal = () => {
+    if (window.__aguaFloatingWidgetDismissalInitialized) return;
+    window.__aguaFloatingWidgetDismissalInitialized = true;
+
+    const closeOpenWidgets = (restoreFocus = false) => {
+        let focusTarget = null;
+        const accessibilityWidget = document.querySelector('[data-accessibility-widget]');
+        const accessibilityTrigger = accessibilityWidget?.querySelector('[data-accessibility-toggle]');
+        const accessibilityPanel = accessibilityWidget?.querySelector('.accessibility-panel');
+        if (accessibilityTrigger?.getAttribute('aria-expanded') === 'true') {
+            accessibilityPanel.hidden = true;
+            accessibilityTrigger.setAttribute('aria-expanded', 'false');
+            accessibilityTrigger.setAttribute('aria-label', 'Abrir opções de acessibilidade');
+            focusTarget = accessibilityTrigger;
+        }
+
+        const aiWidget = document.querySelector('[data-ai-assistant]');
+        const aiTrigger = aiWidget?.querySelector('[data-ai-assistant-toggle]');
+        const aiPanel = aiWidget?.querySelector('.ai-assistant-panel');
+        if (aiTrigger?.getAttribute('aria-expanded') === 'true') {
+            aiPanel.hidden = true;
+            aiTrigger.setAttribute('aria-expanded', 'false');
+            aiTrigger.setAttribute('aria-label', 'Abrir assistente de inteligência artificial');
+            focusTarget = aiTrigger;
+        }
+
+        if (restoreFocus) focusTarget?.focus();
+    };
+
+    document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const accessibilityWidget = document.querySelector('[data-accessibility-widget]');
+        const aiWidget = document.querySelector('[data-ai-assistant]');
+        const accessibilityOpen = accessibilityWidget?.querySelector('[data-accessibility-toggle]')?.getAttribute('aria-expanded') === 'true';
+        const aiOpen = aiWidget?.querySelector('[data-ai-assistant-toggle]')?.getAttribute('aria-expanded') === 'true';
+
+        if ((accessibilityOpen && !accessibilityWidget.contains(target)) || (aiOpen && !aiWidget.contains(target))) {
+            closeOpenWidgets();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeOpenWidgets(true);
+    });
+};
+
+initFloatingWidgetDismissal();
+
+const initMobileNavigation = () => {
+    if (window.__aguaMobileNavigationInitialized) return;
+    window.__aguaMobileNavigationInitialized = true;
+
+    const updateMenuState = (menu, toggle, isOpen) => {
+        menu.classList.toggle('active', isOpen);
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'Fechar menu principal' : 'Abrir menu principal');
+    };
+
+    document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const menu = document.querySelector('.nav-menu');
+        const toggle = document.querySelector('.mobile-menu-toggle');
+        if (!menu || !toggle) return;
+
+        if (target?.closest('.mobile-menu-toggle')) {
+            updateMenuState(menu, toggle, !menu.classList.contains('active'));
+            return;
+        }
+
+        if (target?.closest('.nav-menu a')) {
+            updateMenuState(menu, toggle, false);
+            return;
+        }
+
+        if (menu.classList.contains('active') && !menu.contains(target) && !toggle.contains(target)) {
+            updateMenuState(menu, toggle, false);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const menu = document.querySelector('.nav-menu');
+        const toggle = document.querySelector('.mobile-menu-toggle');
+        if (menu && toggle) updateMenuState(menu, toggle, false);
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth <= 768) return;
+        const menu = document.querySelector('.nav-menu');
+        const toggle = document.querySelector('.mobile-menu-toggle');
+        if (menu && toggle) updateMenuState(menu, toggle, false);
+    });
+};
+
+initMobileNavigation();
+
 window.addEventListener('pageshow', function(event) {
     if (!event.persisted) {
         return;
@@ -463,82 +579,9 @@ window.addEventListener('pageshow', function(event) {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Menu mobile toggle
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (mobileMenuToggle && navMenu) {
-        const updateMenuState = (isOpen) => {
-            navMenu.classList.toggle('active', isOpen);
-            mobileMenuToggle.setAttribute('aria-expanded', String(isOpen));
-            mobileMenuToggle.setAttribute(
-                'aria-label',
-                isOpen ? 'Fechar menu principal' : 'Abrir menu principal'
-            );
-        };
-
-        mobileMenuToggle.addEventListener('click', function() {
-            updateMenuState(!navMenu.classList.contains('active'));
-        });
-
-        navMenu.querySelectorAll('a').forEach((link) => {
-            link.addEventListener('click', () => {
-                updateMenuState(false);
-            });
-        });
-
-        document.addEventListener('click', function(event) {
-            const isClickInsideMenu = navMenu.contains(event.target) || mobileMenuToggle.contains(event.target);
-
-            if (navMenu.classList.contains('active') && !isClickInsideMenu) {
-                updateMenuState(false);
-            }
-        });
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                updateMenuState(false);
-            }
-        });
-
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                updateMenuState(false);
-            }
-        });
-    }
-
-    const bottomNavigationToggle = document.querySelector('[data-bottom-navigation-toggle]');
-    const bottomNavigationMenu = document.getElementById('bottom-navigation-menu');
-
-    if (bottomNavigationToggle && bottomNavigationMenu) {
-        const setBottomNavigationMenuOpen = (isOpen, returnFocus = false) => {
-            bottomNavigationToggle.setAttribute('aria-expanded', String(isOpen));
-            bottomNavigationMenu.hidden = !isOpen;
-
-            if (returnFocus) {
-                bottomNavigationToggle.focus();
-            }
-        };
-
-        bottomNavigationToggle.addEventListener('click', () => {
-            const isOpen = bottomNavigationToggle.getAttribute('aria-expanded') === 'true';
-            setBottomNavigationMenuOpen(!isOpen);
-        });
-
-        document.addEventListener('click', (event) => {
-            if (!bottomNavigationMenu.contains(event.target) && !bottomNavigationToggle.contains(event.target)) {
-                setBottomNavigationMenuOpen(false);
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && bottomNavigationToggle.getAttribute('aria-expanded') === 'true') {
-                setBottomNavigationMenuOpen(false, true);
-            }
-        });
-    }
+const initializeMainPage = () => {
+    if (document.body.dataset.turboMainInitialized === 'true') return;
+    document.body.dataset.turboMainInitialized = 'true';
 
     initPasswordToggles();
     initAccessibilityWidget();
@@ -742,7 +785,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     images.forEach(img => imageObserver.observe(img));
-});
+};
+
+document.addEventListener('turbo:load', initializeMainPage);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMainPage, { once: true });
+} else {
+    initializeMainPage();
+}
 
 // Função para mostrar notificações
 function showNotification(message, type = 'info') {

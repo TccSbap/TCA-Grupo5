@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+(() => {
+const initializeDonationForm = () => {
     const valorDoacaoInput = document.getElementById('valorDoacao');
     const donationAmountOptions = document.querySelector('.donation-amount-options');
     const doacaoForm = document.getElementById('doacaoForm');
@@ -8,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!doacaoForm) {
         return;
     }
+    if (doacaoForm.dataset.turboInitialized === 'true') return;
+    doacaoForm.dataset.turboInitialized = 'true';
 
     const donationFieldIds = [
         'nomeCompleto', 'emailDoador', 'telefoneDoador', 'documentoDoador',
@@ -133,4 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
             doacaoForm.querySelector('[aria-invalid="true"]')?.focus();
         }
     });
-});
+};
+
+if (!window.__aguaDonationFormTurboListener) {
+    window.__aguaDonationFormTurboListener = true;
+    document.addEventListener('turbo:load', initializeDonationForm);
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDonationForm, { once: true });
+} else {
+    initializeDonationForm();
+}
+})();

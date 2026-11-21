@@ -1,8 +1,11 @@
 import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.mjs';
 
-(function () {
+let activePublicComplaintsMap = null;
+
+const initializePublicComplaintsMap = () => {
     const mapElement = document.getElementById('public-complaints-map');
-    if (!mapElement) return;
+    if (!mapElement || mapElement.dataset.turboInitialized === 'true') return;
+    mapElement.dataset.turboInitialized = 'true';
 
     const statusElement = document.getElementById('complaint-map-summary');
     const emptyElement = document.getElementById('complaint-map-empty');
@@ -28,6 +31,7 @@ import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-
         zoom: 5.5,
         scrollZoom: true
     });
+    activePublicComplaintsMap = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
     map.on('load', () => {
@@ -81,4 +85,16 @@ import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-
             statusElement.textContent = 'O mapa encontrou um erro ao carregar dados de fundo. Atualize a página ou tente novamente mais tarde.';
         }
     });
-}());
+};
+
+document.addEventListener('turbo:load', initializePublicComplaintsMap);
+document.addEventListener('turbo:before-render', () => {
+    activePublicComplaintsMap?.remove();
+    activePublicComplaintsMap = null;
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePublicComplaintsMap, { once: true });
+} else {
+    initializePublicComplaintsMap();
+}

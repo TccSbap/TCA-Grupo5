@@ -28,7 +28,7 @@
             <h1>Painel Administrativo</h1>
             <p>Bem-vindo, <%= user.name %>. Visão global da plataforma, com foco em moderação, volume e operação.</p>
             <nav class="analytics-controls">
-                <a href="<%= reportCsvPath || '/admin/relatorio.csv' %>" class="btn btn-outline">
+                <a href="<%= reportCsvPath || '/admin/relatorio.csv' %>" class="btn btn-outline" data-turbo="false">
                     <i class="fas fa-file-csv"></i>
                     Exportar CSV
                 </a>
@@ -221,9 +221,7 @@
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script nonce="<%= cspNonce %>">
-    window.__ADMIN_ANALYTICS__ = <%- JSON.stringify(analytics).replace(/</g, '\\u003c') %>;
-</script>
+<script type="application/json" id="admin-analytics-data"><%- JSON.stringify(analytics).replace(/</g, '\\u003c') %></script>
 <script src="/js/analytics/admin-dashboard.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>"></script>
 
 <%- include('../partials/footer') %>

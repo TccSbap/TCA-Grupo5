@@ -1,5 +1,12 @@
 (function () {
-    const data = window.__ADMIN_ANALYTICS__;
+    const dataElement = document.getElementById('admin-analytics-data');
+    let data = null;
+    try {
+        data = dataElement ? JSON.parse(dataElement.textContent) : null;
+    } catch (error) {
+        console.error('Não foi possível ler os dados de análise do painel.');
+    }
+    window.__ADMIN_ANALYTICS__ = data;
 
     if (!data || typeof Chart === 'undefined') {
         return;

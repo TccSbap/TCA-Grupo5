@@ -206,6 +206,7 @@ function initInputMasks() {
     };
 
     document.querySelectorAll('[data-mask]').forEach((input) => {
+        if (input.dataset.maskInitialized === 'true') return;
         const formatter = maskFormatters[input.dataset.mask];
 
         if (!formatter) {
@@ -214,13 +215,22 @@ function initInputMasks() {
 
         const handleInput = () => applyMask(input, formatter);
 
+        input.dataset.maskInitialized = 'true';
         input.addEventListener('input', handleInput);
         input.addEventListener('blur', handleInput);
         handleInput();
     });
 }
 
-document.addEventListener('DOMContentLoaded', initInputMasks);
+if (!window.__aguaInputMasksTurboListener) {
+    window.__aguaInputMasksTurboListener = true;
+    document.addEventListener('turbo:load', initInputMasks);
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInputMasks, { once: true });
+} else {
+    initInputMasks();
+}
 
 function validateCadastroForm() {
     let isValid = true;

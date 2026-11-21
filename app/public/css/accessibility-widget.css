@@ -23,11 +23,25 @@
 /* Widget nativo de acessibilidade */
 .accessibility-widget {
     position: fixed;
-    z-index: 1150;
-    top: 50%;
+    z-index: 1250;
+    top: calc(50% + 9.5rem);
     right: max(0.75rem, env(safe-area-inset-right, 0px));
     transform: translateY(-50%);
     font-family: var(--font-family);
+}
+
+#vlibras-persistent-widget {
+    display: contents;
+}
+
+#vlibras-persistent-widget [vw],
+#vlibras-persistent-widget [vw-access-button],
+#vlibras-persistent-widget [vw-plugin-wrapper] {
+    z-index: 1180 !important;
+}
+
+#vlibras-persistent-widget [vw-access-button] .pop-up {
+    display: none !important;
 }
 
 .accessibility-widget__trigger {
@@ -589,8 +603,18 @@ html[data-accessibility-reduced-motion="true"] * {
 
 @media (max-width: 1024px) {
     .accessibility-widget {
-        top: calc((100vh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px)) / 2);
-        top: calc((100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px)) / 2);
+        top: min(
+            calc((100vh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px)) / 2 + 9.5rem),
+            calc(100vh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px) - 3rem)
+        );
+        top: min(
+            calc((100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px)) / 2 + 9.5rem),
+            calc(100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px) - 3rem)
+        );
+    }
+
+    .accessibility-panel:not([hidden]) {
+        top: calc(50% - 9.5rem);
     }
 
     .accessibility-panel:not([hidden]) {
