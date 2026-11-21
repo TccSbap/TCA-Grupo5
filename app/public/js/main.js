@@ -65,6 +65,7 @@ const initBottomNavigation = () => {
             toggle.setAttribute('aria-expanded', String(!isOpen));
             menu.hidden = isOpen;
             toggle.parentElement?.classList.toggle('is-open', !isOpen);
+            event.stopPropagation();
             return;
         }
 
@@ -73,7 +74,7 @@ const initBottomNavigation = () => {
             currentToggle?.setAttribute('aria-expanded', 'false');
             currentToggle?.parentElement?.classList.remove('is-open');
         }
-    });
+    }, true);
 
     document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return;

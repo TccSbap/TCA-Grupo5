@@ -246,6 +246,44 @@
         <script data-turbo-eval="false" nonce="<%= cspNonce %>">
             if (!window.__aguaConscienteVlibrasInitialized && window.VLibras && typeof window.VLibras.Widget === 'function') {
                 window.__aguaConscienteVlibrasInitialized = true;
+
+                const preserveVlibrasSession = () => {
+                    const persistentRoot = document.getElementById('vlibras-persistent-widget');
+                    if (!persistentRoot) return;
+
+                    ['vlibras-access-wrapper', 'vlibras-app-root'].forEach(id => {
+                        const widgetElement = document.getElementById(id);
+                        if (widgetElement && widgetElement !== persistentRoot && !persistentRoot.contains(widgetElement)) {
+                            persistentRoot.appendChild(widgetElement);
+                        }
+                    });
+
+                    const appRoot = document.getElementById('vlibras-app-root');
+                    appRoot?.style.setProperty('z-index', '1399', 'important');
+                };
+
+                const closeVlibrasPanel = () => {
+                    const appRoot = document.getElementById('vlibras-app-root');
+                    if (appRoot) appRoot.dataset.active = 'false';
+                };
+
+                preserveVlibrasSession();
+                if (!window.__aguaConscienteVlibrasPersistenceObserver && document.body) {
+                    const persistenceObserver = new MutationObserver(preserveVlibrasSession);
+                    persistenceObserver.observe(document.body, { childList: true });
+                    window.__aguaConscienteVlibrasPersistenceObserver = persistenceObserver;
+                }
+
+                if (!window.__aguaConscienteVlibrasNavigationListeners) {
+                    window.__aguaConscienteVlibrasNavigationListeners = true;
+                    document.addEventListener('turbo:before-visit', closeVlibrasPanel);
+                    document.addEventListener('turbo:before-render', closeVlibrasPanel);
+                    document.addEventListener('click', event => {
+                        const target = event.target instanceof Element ? event.target : null;
+                        if (target?.closest('[data-bottom-navigation-toggle]')) closeVlibrasPanel();
+                    }, true);
+                }
+
                 new window.VLibras.Widget({
                     rootPath: 'https://vlibras.gov.br/app',
                     position: 'R'

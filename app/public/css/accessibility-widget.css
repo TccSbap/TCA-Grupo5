@@ -44,6 +44,19 @@
     display: none !important;
 }
 
+/* Mantém os controles do VLibras abaixo da bottom nav e sem cobrir a página. */
+#vlibras-access-wrapper {
+    z-index: 1180 !important;
+}
+
+#vlibras-app-root {
+    z-index: 1399 !important;
+}
+
+#vlibras-app-root[data-active="false"] {
+    display: none !important;
+}
+
 .accessibility-widget__trigger {
     display: grid;
     width: 48px;
