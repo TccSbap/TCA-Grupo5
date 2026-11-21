@@ -98,14 +98,14 @@
         </div>
 
         <div class="cookie-banner-actions">
-            <form action="/cookies/consent" method="POST" class="cookie-banner-form">
+            <form action="/cookies/consent" method="POST" class="cookie-banner-form" data-turbo="false">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <input type="hidden" name="consent" value="rejected">
                 <input type="hidden" name="returnTo" value="<%= currentPath || '/' %>">
                 <button type="submit" class="btn btn-outline">Recusar não essenciais</button>
             </form>
 
-            <form action="/cookies/consent" method="POST" class="cookie-banner-form">
+            <form action="/cookies/consent" method="POST" class="cookie-banner-form" data-turbo="false">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <input type="hidden" name="consent" value="accepted">
                 <input type="hidden" name="returnTo" value="<%= currentPath || '/' %>">

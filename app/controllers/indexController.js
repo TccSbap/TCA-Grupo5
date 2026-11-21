@@ -554,12 +554,27 @@ const createIndexController = (data) => ({
     async setCookieConsent(req, res) {
         const consent = req.body.consent;
         const returnTo = normalizeReturnTo(req.body.returnTo);
+        const wantsJson = String(req.get('accept') || '').includes('application/json');
 
         if (consent !== COOKIE_CONSENT_ACCEPTED && consent !== COOKIE_CONSENT_REJECTED) {
+            if (wantsJson) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Escolha de cookies inv\u00e1lida.',
+                    csrfToken: res.locals.csrfToken
+                });
+            }
             return res.redirect(returnTo);
         }
 
         res.cookie(COOKIE_CONSENT_COOKIE_NAME, consent, getCookieConsentOptions(req));
+        if (wantsJson) {
+            return res.json({
+                success: true,
+                consent,
+                csrfToken: res.locals.csrfToken
+            });
+        }
         return res.redirect(returnTo);
     },
 

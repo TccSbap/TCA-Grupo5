@@ -91,6 +91,54 @@ const initBottomNavigation = () => {
 
 initBottomNavigation();
 
+const initCookieConsent = () => {
+    if (window.__aguaCookieConsentInitialized) return;
+    window.__aguaCookieConsentInitialized = true;
+
+    document.addEventListener('submit', async (event) => {
+        const form = event.target instanceof HTMLFormElement ? event.target : null;
+        if (!form?.matches('.cookie-banner-form')) return;
+
+        event.preventDefault();
+        const banner = form.closest('.cookie-banner');
+        const buttons = Array.from(banner?.querySelectorAll('button[type="submit"]') || []);
+        buttons.forEach((button) => { button.disabled = true; });
+        banner?.setAttribute('aria-busy', 'true');
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: new URLSearchParams(new FormData(form))
+            });
+            const payload = await response.json();
+
+            if (!response.ok || payload.success !== true) {
+                throw new Error(payload.error || 'N\u00e3o foi poss\u00edvel salvar sua escolha.');
+            }
+
+            if (typeof payload.csrfToken === 'string') {
+                document.querySelectorAll('input[name="_csrf"], [data-ai-assistant-csrf]').forEach((input) => {
+                    input.value = payload.csrfToken;
+                });
+            }
+
+            banner?.remove();
+            document.body.classList.remove('has-cookie-banner');
+        } catch {
+            banner?.removeAttribute('aria-busy');
+            buttons.forEach((button) => { button.disabled = false; });
+            showNotification('N\u00e3o foi poss\u00edvel salvar sua escolha de cookies. Tente novamente.', 'error');
+        }
+    });
+};
+
+initCookieConsent();
+
 const updatePasswordToggleState = (button, input) => {
     const isVisible = input.type === 'text';
     const icon = button.querySelector('i');
