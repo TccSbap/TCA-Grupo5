@@ -253,14 +253,21 @@
 
                 const removeVlibrasPopup = (accessButton) => {
                     const legacyAccessButton = document.querySelector('#vlibras-persistent-widget [vw-access-button]');
+                    const vlibrasAccessContainer = window.VLibrasWidget && window.VLibrasWidget.access;
+                    const accessButtonRoot = accessButton && typeof accessButton.getRootNode === 'function'
+                        ? accessButton.getRootNode()
+                        : null;
+                    const vlibrasShadowRoot = accessButtonRoot && accessButtonRoot.nodeType === 11 ? accessButtonRoot : null;
                     const roots = [
                         legacyAccessButton,
                         accessButton,
-                        accessButton && accessButton.shadowRoot
+                        accessButton && accessButton.shadowRoot,
+                        vlibrasAccessContainer,
+                        vlibrasShadowRoot
                     ].filter(root => root && typeof root.querySelectorAll === 'function');
 
                     roots.forEach(root => {
-                        root.querySelectorAll('.pop-up').forEach(popup => popup.remove());
+                        root.querySelectorAll('.pop-up, #vlibras-popup').forEach(popup => popup.remove());
                     });
                 };
 
@@ -270,12 +277,30 @@
 
                     removeVlibrasPopup(accessButton);
 
-                    if (!window.__aguaConscienteVlibrasPopupObserver) {
-                        const popupObserver = new MutationObserver(() => removeVlibrasPopup(accessButton));
-                        const widgetRoot = document.getElementById('vlibras-persistent-widget');
-                        if (widgetRoot) popupObserver.observe(widgetRoot, { childList: true, subtree: true });
-                        if (accessButton.shadowRoot) popupObserver.observe(accessButton.shadowRoot, { childList: true, subtree: true });
-                        window.__aguaConscienteVlibrasPopupObserver = popupObserver;
+                    const observerState = window.__aguaConscienteVlibrasPopupObserverV2 || {
+                        observer: new MutationObserver(() => removeVlibrasPopup(accessButton)),
+                        roots: new WeakSet()
+                    };
+                    window.__aguaConscienteVlibrasPopupObserverV2 = observerState;
+
+                    const accessButtonRoot = accessButton.getRootNode && accessButton.getRootNode();
+                    const observerRoots = [
+                        document.getElementById('vlibras-persistent-widget'),
+                        accessButton.shadowRoot,
+                        accessButtonRoot && accessButtonRoot.nodeType === 11 ? accessButtonRoot : null
+                    ];
+                    observerRoots.forEach(root => {
+                        if (!root || typeof root.querySelectorAll !== 'function' || observerState.roots.has(root)) return;
+                        observerState.observer.observe(root, { childList: true, subtree: true });
+                        observerState.roots.add(root);
+                    });
+
+                    if (window.VLibrasWidget && window.VLibrasWidget.access) {
+                        const widgetShadowRoot = window.VLibrasWidget.access.getRootNode();
+                        if (widgetShadowRoot && widgetShadowRoot.nodeType === 11 && !observerState.roots.has(widgetShadowRoot)) {
+                            observerState.observer.observe(widgetShadowRoot, { childList: true, subtree: true });
+                            observerState.roots.add(widgetShadowRoot);
+                        }
                     }
 
                     accessButton.style.setProperty('position', 'fixed', 'important');
