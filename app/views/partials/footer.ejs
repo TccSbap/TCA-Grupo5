@@ -251,9 +251,32 @@
                     position: 'R'
                 });
 
+                const removeVlibrasPopup = (accessButton) => {
+                    const legacyAccessButton = document.querySelector('#vlibras-persistent-widget [vw-access-button]');
+                    const roots = [
+                        legacyAccessButton,
+                        accessButton,
+                        accessButton && accessButton.shadowRoot
+                    ].filter(root => root && typeof root.querySelectorAll === 'function');
+
+                    roots.forEach(root => {
+                        root.querySelectorAll('.pop-up').forEach(popup => popup.remove());
+                    });
+                };
+
                 const positionVlibrasAccessButton = () => {
                     const accessButton = window.VLibrasWidget && window.VLibrasWidget.initBtn;
                     if (!accessButton) return false;
+
+                    removeVlibrasPopup(accessButton);
+
+                    if (!window.__aguaConscienteVlibrasPopupObserver) {
+                        const popupObserver = new MutationObserver(() => removeVlibrasPopup(accessButton));
+                        const widgetRoot = document.getElementById('vlibras-persistent-widget');
+                        if (widgetRoot) popupObserver.observe(widgetRoot, { childList: true, subtree: true });
+                        if (accessButton.shadowRoot) popupObserver.observe(accessButton.shadowRoot, { childList: true, subtree: true });
+                        window.__aguaConscienteVlibrasPopupObserver = popupObserver;
+                    }
 
                     accessButton.style.setProperty('position', 'fixed', 'important');
                     accessButton.style.setProperty(
