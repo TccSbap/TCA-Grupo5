@@ -122,8 +122,7 @@ const createMercadoPagoRouter = (data) => {
                     client_secret: config.clientSecret,
                     code: req.query.code,
                     redirect_uri: config.redirectUri,
-                    code_verifier: transaction.codeVerifier,
-                    ...(config.testMode ? { test_token: 'true' } : {})
+                    code_verifier: transaction.codeVerifier
                 },
                 requestOptions: { timeout: 10000 }
             });

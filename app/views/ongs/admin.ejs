@@ -10,6 +10,10 @@
             <p>A estrutura da conexão ainda não está instalada no banco de dados.</p>
         <% } else if (mercadoPagoAccount) { %>
             <p>Conta Mercado Pago vinculada.</p>
+            <% if (mercadoPagoOAuthReady) { %>
+                <p>Se as credenciais foram atualizadas para o sandbox da Orders API, reconecte a conta para renovar a autoriza&ccedil;&atilde;o.</p>
+                <a class="btn btn-primary" href="/mercadopago/ongs/conectar" data-turbo="false">Reconectar conta Mercado Pago</a>
+            <% } %>
         <% } else if (!mercadoPagoOAuthReady) { %>
             <p>A conexão estará disponível após a configuração das credenciais do Mercado Pago no servidor.</p>
         <% } else { %>

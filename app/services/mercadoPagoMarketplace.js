@@ -6,8 +6,7 @@ const getMarketplaceConfiguration = () => ({
     clientSecret: process.env.MP_MARKETPLACE_CLIENT_SECRET,
     appAccessToken: process.env.MP_MARKETPLACE_APP_ACCESS_TOKEN,
     redirectUri: process.env.MP_MARKETPLACE_OAUTH_REDIRECT_URI,
-    webhookSecret: process.env.MP_MARKETPLACE_WEBHOOK_SECRET,
-    testMode: process.env.MP_MARKETPLACE_TEST_MODE !== 'false'
+    webhookSecret: process.env.MP_MARKETPLACE_WEBHOOK_SECRET
 });
 
 const isMarketplaceCheckoutConfigured = () => {
@@ -50,8 +49,7 @@ const getOngAccessToken = async (data, ongId) => {
             body: {
                 client_id: config.clientId,
                 client_secret: config.clientSecret,
-                refresh_token: refreshToken,
-                ...(config.testMode ? { test_token: 'true' } : {})
+                refresh_token: refreshToken
             },
             requestOptions: { timeout: 10000 }
         });

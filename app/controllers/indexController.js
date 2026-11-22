@@ -394,6 +394,12 @@ const createIndexController = (data) => ({
             if (typeof data.updateDoacaoMercadoPagoOrderFailure === 'function') {
                 await data.updateDoacaoMercadoPagoOrderFailure(donation.id).catch(() => {});
             }
+            const providerCode = String(checkoutError?.error || checkoutError?.code || '').toLowerCase();
+            const authenticationRejected = Number(checkoutError?.status) === 401
+                || providerCode === 'invalid_credentials';
+            if (authenticationRejected) {
+                return renderDonationError('O Mercado Pago recusou a autoriza\u00e7\u00e3o. Confira as credenciais de produ\u00e7\u00e3o da aplica\u00e7\u00e3o para o sandbox da Orders API e reconecte a conta da ONG.');
+            }
             return renderDonationError('Não foi possível iniciar o pagamento agora. Seus dados não foram cobrados; tente novamente.');
         }
     },
