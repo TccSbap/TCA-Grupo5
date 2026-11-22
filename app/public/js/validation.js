@@ -158,7 +158,7 @@ function validateCEP(cep) {
 
 function validateDonationAmount(value) {
     const amount = Number(String(value || '').replace(',', '.'));
-    return /^\d{1,8}([.,]\d{1,2})?$/.test(String(value || '').trim()) && Number.isFinite(amount) && amount >= 5 && amount <= 99999999.99;
+    return /^\d{1,8}([.,]\d{1,2})?$/.test(String(value || '').trim()) && Number.isFinite(amount) && amount >= 1 && amount <= 99999999.99;
 }
 
 function validateCardNumber(value) {
@@ -376,7 +376,7 @@ function getDoacaoFieldError(field) {
         case 'estadoDoador':
             return validateEstado(value) ? '' : 'Informe a sigla do estado com 2 letras maiúsculas (ex.: SP).';
         case 'valorDoacao':
-            return validateDonationAmount(value) ? '' : 'Informe um valor a partir de R$ 5,00, com até duas casas decimais.';
+            return validateDonationAmount(value) ? '' : 'Informe um valor a partir de R$ 1,00, com até duas casas decimais.';
         case 'confirmacao':
             return value ? '' : 'Confirme os dados para continuar.';
         default:

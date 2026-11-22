@@ -27,7 +27,7 @@ const isValidCpf = (value) => {
 
 const isValidDonationAmount = (value) => {
     const amount = Number(String(value || '').replace(',', '.'));
-    return /^\d{1,8}([.,]\d{1,2})?$/.test(String(value || '').trim()) && Number.isFinite(amount) && amount >= 5 && amount <= 99999999.99;
+    return /^\d{1,8}([.,]\d{1,2})?$/.test(String(value || '').trim()) && Number.isFinite(amount) && amount >= 1 && amount <= 99999999.99;
 };
 
 const isValidCardNumber = (value) => {
@@ -93,7 +93,7 @@ const validateDonation = (body) => {
     }
 
     if (!isValidDonationAmount(body.valorDoacao)) {
-        return 'O valor da doacao deve ser de pelo menos R$ 5,00.';
+        return 'O valor da doacao deve ser de pelo menos R$ 1,00.';
     }
 
     if (body.numeroCartao || body.validadeCartao || body.cvvCartao) {
