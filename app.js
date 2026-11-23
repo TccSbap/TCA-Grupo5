@@ -82,7 +82,7 @@ const createApp = (data = defaultData) => {
             "base-uri 'self'",
             "object-src 'none'",
             "frame-ancestors 'self'",
-            "form-action 'self'",
+            "form-action 'self' https://aguaconsciente.com.br",
             "img-src 'self' data: blob: https:",
             "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com 'unsafe-inline'",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net data:",
