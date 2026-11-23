@@ -59,6 +59,20 @@ const formatOngForDonation = (ong) => ({
     focus: pickOngFocus(ong)
 });
 
+const buildDonationFormData = (body = {}) => {
+    const fieldNames = [
+        'nomeCompleto', 'emailDoador', 'telefoneDoador', 'documentoDoador',
+        'cepDoador', 'ruaDoador', 'numeroDoador', 'bairroDoador',
+        'cidadeDoador', 'estadoDoador', 'valorDoacao', 'mensagemOpcional'
+    ];
+    const formData = Object.fromEntries(fieldNames.map((fieldName) => [
+        fieldName,
+        typeof body[fieldName] === 'string' ? body[fieldName].slice(0, 2000) : ''
+    ]));
+    formData.confirmacao = ['on', true, 'true', '1'].includes(body.confirmacao);
+    return formData;
+};
+
 const buildComplaintMapPoints = (denuncias) => {
     const areas = new Map();
 
@@ -230,6 +244,7 @@ const createIndexController = (data) => ({
     },
 
     async donateProject(req, res) {
+        const formData = buildDonationFormData(req.body);
         const renderProjectDonationError = (message) => res.render('doacao_form', {
             ...buildSeoPayload(
                 res,
@@ -239,6 +254,7 @@ const createIndexController = (data) => ({
             ),
             ong: null,
             isProjectDonation: true,
+            formData,
             projectRecipientName: 'Água Consciente',
             error: message
         });
@@ -319,6 +335,7 @@ const createIndexController = (data) => ({
                     `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
                 ),
                 ong: formatOngForDonation(ong),
+                formData: buildDonationFormData(req.body),
                 error
             });
         }
@@ -331,6 +348,7 @@ const createIndexController = (data) => ({
                 `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
             ),
             ong: formatOngForDonation(ong),
+            formData: buildDonationFormData(req.body),
             error: message
         });
 

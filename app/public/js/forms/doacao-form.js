@@ -121,6 +121,7 @@ const initializeDonationForm = () => {
 
     doacaoForm.addEventListener('submit', (event) => {
         event.preventDefault();
+        const submitButton = doacaoForm.querySelector('button[type="submit"]');
 
         if (window.submitOnce && window.submitOnce.isLocked(doacaoForm)) {
             return;
@@ -131,6 +132,7 @@ const initializeDonationForm = () => {
                 window.submitOnce.lock(doacaoForm);
             }
 
+            if (submitButton) submitButton.textContent = 'Preparando checkout...';
             doacaoForm.submit();
         } else {
             doacaoForm.querySelector('[aria-invalid="true"]')?.focus();
