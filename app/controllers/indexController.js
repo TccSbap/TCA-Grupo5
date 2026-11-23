@@ -73,6 +73,8 @@ const buildDonationFormData = (body = {}) => {
     return formData;
 };
 
+const wantsJsonResponse = (req) => /application\/json/i.test(req.get('accept') || '');
+
 const buildComplaintMapPoints = (denuncias) => {
     const areas = new Map();
 
@@ -245,19 +247,22 @@ const createIndexController = (data) => ({
 
     async donateProject(req, res) {
         const formData = buildDonationFormData(req.body);
-        const renderProjectDonationError = (message) => res.render('doacao_form', {
-            ...buildSeoPayload(
-                res,
-                '/doacoes/projeto/doar',
-                'Doar para a Água Consciente',
-                'Apoie o funcionamento e o desenvolvimento da plataforma Água Consciente.'
-            ),
-            ong: null,
-            isProjectDonation: true,
-            formData,
-            projectRecipientName: 'Água Consciente',
-            error: message
-        });
+        const renderProjectDonationError = (message) => {
+            if (wantsJsonResponse(req)) return res.status(400).json({ error: message });
+            return res.render('doacao_form', {
+                ...buildSeoPayload(
+                    res,
+                    '/doacoes/projeto/doar',
+                    'Doar para a Água Consciente',
+                    'Apoie o funcionamento e o desenvolvimento da plataforma Água Consciente.'
+                ),
+                ong: null,
+                isProjectDonation: true,
+                formData,
+                projectRecipientName: 'Água Consciente',
+                error: message
+            });
+        };
 
         const error = validateDonation(req.body);
         if (error) return renderProjectDonationError(error);
@@ -303,6 +308,7 @@ const createIndexController = (data) => ({
                 recipientType: 'projeto'
             });
             if (!orderStored) throw new Error('PROJECT_DONATION_ORDER_LINK_FAILED');
+            if (wantsJsonResponse(req)) return res.json({ checkoutUrl: createdOrder.checkoutUrl });
             return res.redirect(createdOrder.checkoutUrl);
         } catch (checkoutError) {
             console.error('Falha ao preparar checkout da doação ao projeto.', JSON.stringify({
@@ -319,14 +325,17 @@ const createIndexController = (data) => ({
     },
 
     async donate(req, res) {
+        const wantsJson = wantsJsonResponse(req);
         const ong = await findOngById(data, req.body.ongId);
 
         if (!ong) {
+            if (wantsJson) return res.status(404).json({ error: 'A ONG selecionada não está disponível para receber doações.' });
             return res.redirect('/doacoes');
         }
 
         const error = validateDonation(req.body);
         if (error) {
+            if (wantsJson) return res.status(400).json({ error });
             return res.render('doacao_form', {
                 ...buildSeoPayload(
                     res,
@@ -340,17 +349,20 @@ const createIndexController = (data) => ({
             });
         }
 
-        const renderDonationError = (message) => res.render('doacao_form', {
-            ...buildSeoPayload(
-                res,
-                `/doacoes/${ong.id}/doar`,
-                `Doar para ${ong.name}`,
-                `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
-            ),
-            ong: formatOngForDonation(ong),
-            formData: buildDonationFormData(req.body),
-            error: message
-        });
+        const renderDonationError = (message) => {
+            if (wantsJson) return res.status(400).json({ error: message });
+            return res.render('doacao_form', {
+                ...buildSeoPayload(
+                    res,
+                    `/doacoes/${ong.id}/doar`,
+                    `Doar para ${ong.name}`,
+                    `Faça uma doação para ${ong.name} e apoie projetos de água limpa e saneamento básico.`
+                ),
+                ong: formatOngForDonation(ong),
+                formData: buildDonationFormData(req.body),
+                error: message
+            });
+        };
 
         if (!isMarketplaceCheckoutConfigured()) {
             return renderDonationError('O checkout Mercado Pago ainda está sendo configurado. Tente novamente mais tarde.');
@@ -400,6 +412,7 @@ const createIndexController = (data) => ({
                 providerStatus: createdOrder.status
             });
             if (!orderStored) throw new Error('DONATION_ORDER_LINK_FAILED');
+            if (wantsJson) return res.json({ checkoutUrl: createdOrder.checkoutUrl });
             return res.redirect(createdOrder.checkoutUrl);
         } catch (checkoutError) {
             console.error('Falha ao preparar checkout da doação para ONG.', JSON.stringify({

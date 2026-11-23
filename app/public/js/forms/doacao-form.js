@@ -119,7 +119,7 @@ const initializeDonationForm = () => {
         valorDoacaoInput.dispatchEvent(new Event('input'));
     });
 
-    doacaoForm.addEventListener('submit', (event) => {
+    doacaoForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const submitButton = doacaoForm.querySelector('button[type="submit"]');
 
@@ -133,7 +133,47 @@ const initializeDonationForm = () => {
             }
 
             if (submitButton) submitButton.textContent = 'Preparando checkout...';
-            doacaoForm.submit();
+
+            try {
+                const csrfToken = doacaoForm.querySelector('[name="_csrf"]')?.value || '';
+                const formData = Object.fromEntries(new FormData(doacaoForm).entries());
+                const response = await fetch(new URL('/doar', window.location.origin), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    throw new Error(result?.error || 'Não foi possível iniciar o pagamento. Recarregue a página e tente novamente.');
+                }
+
+                const checkoutUrl = new URL(result?.checkoutUrl || '');
+                if (checkoutUrl.protocol !== 'https:') {
+                    throw new Error('O Mercado Pago retornou um endereço de checkout inválido.');
+                }
+
+                window.location.assign(checkoutUrl.href);
+            } catch (error) {
+                let checkoutError = document.getElementById('doacaoCheckoutError');
+                if (!checkoutError) {
+                    checkoutError = document.createElement('section');
+                    checkoutError.id = 'doacaoCheckoutError';
+                    checkoutError.className = 'alert alert-error';
+                    checkoutError.setAttribute('role', 'alert');
+                    doacaoForm.parentNode.insertBefore(checkoutError, doacaoForm);
+                }
+                checkoutError.textContent = error.message || 'Não foi possível iniciar o pagamento. Tente novamente.';
+                checkoutError.focus?.();
+
+                if (submitButton) submitButton.textContent = 'Continuar para pagamento no Mercado Pago';
+                if (window.submitOnce) window.submitOnce.unlock(doacaoForm);
+            }
         } else {
             doacaoForm.querySelector('[aria-invalid="true"]')?.focus();
         }
