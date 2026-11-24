@@ -1,8 +1,15 @@
+:root {
+    --floating-widgets-right: max(0.75rem, env(safe-area-inset-right, 0px));
+    --floating-widgets-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    --floating-widgets-gap: 0.5rem;
+    --ai-assistant-trigger-height: 3.25rem;
+}
+
 .ai-assistant-widget {
     position: fixed;
     z-index: 1190;
-    right: max(1rem, env(safe-area-inset-right, 0px));
-    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    right: var(--floating-widgets-right);
+    bottom: var(--floating-widgets-bottom);
     color: #172033;
     font-family: var(--font-family, Inter, sans-serif);
 }
@@ -304,9 +311,13 @@
 }
 
 @media (max-width: 1024px) {
+    :root {
+        --floating-widgets-bottom: calc(var(--bottom-navigation-content-height, 4.8rem) + var(--bottom-navigation-safe-area, 0px) + 0.75rem);
+    }
+
     .ai-assistant-widget {
-        right: max(0.75rem, env(safe-area-inset-right, 0px));
-        bottom: calc(var(--bottom-navigation-content-height, 4.8rem) + var(--bottom-navigation-safe-area, 0px) + 0.75rem);
+        right: var(--floating-widgets-right);
+        bottom: var(--floating-widgets-bottom);
     }
 
     .ai-assistant-panel:not([hidden]) {
@@ -315,8 +326,8 @@
 }
 
 @media (max-width: 420px) {
-    .ai-assistant-widget {
-        right: max(0.5rem, env(safe-area-inset-right, 0px));
+    :root {
+        --floating-widgets-right: max(0.5rem, env(safe-area-inset-right, 0px));
     }
 
     .ai-assistant-panel:not([hidden]) {

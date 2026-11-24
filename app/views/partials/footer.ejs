@@ -342,23 +342,15 @@
                     }
 
                     accessButton.style.setProperty('position', 'fixed', 'important');
-                    accessButton.style.setProperty(
-                        'right',
-                        window.matchMedia('(max-width: 420px)').matches
-                            ? 'max(0.5rem, env(safe-area-inset-right, 0px))'
-                            : 'max(0.75rem, env(safe-area-inset-right, 0px))',
-                        'important'
-                    );
+                    accessButton.style.setProperty('right', 'var(--floating-widgets-right, max(0.75rem, env(safe-area-inset-right, 0px)))', 'important');
                     accessButton.style.setProperty('left', 'auto', 'important');
-                    accessButton.style.setProperty('bottom', 'auto', 'important');
-                    accessButton.style.setProperty('z-index', '1180', 'important');
                     accessButton.style.setProperty(
-                        'top',
-                        window.matchMedia('(max-width: 1024px)').matches
-                            ? 'min(calc((100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px)) / 2 + 3rem), calc(100dvh - var(--bottom-navigation-content-height, 4.8rem) - var(--bottom-navigation-safe-area, 0px) - 3.75rem))'
-                            : 'calc(50% + 3rem)',
+                        'bottom',
+                        'calc(var(--floating-widgets-bottom, max(1rem, env(safe-area-inset-bottom, 0px))) + var(--ai-assistant-trigger-height, 3.25rem) + var(--floating-widgets-gap, 0.5rem) + 48px + var(--floating-widgets-gap, 0.5rem))',
                         'important'
                     );
+                    accessButton.style.setProperty('z-index', '1180', 'important');
+                    accessButton.style.setProperty('top', 'auto', 'important');
                     return true;
                 };
 
