@@ -1,7 +1,7 @@
 const createNoticiasCatalog = require('../../data/tables/noticias');
 
-const NEWS_REVIEWED_AT = '2026-10-31';
-const NEWS_TOPICS = { agua: 'Água potável', saneamento: 'Saneamento básico', clima: 'Clima e segurança hídrica' };
+const NEWS_REVIEWED_AT = '2026-11-24';
+const NEWS_TOPICS = { agua: 'Água e recursos hídricos', saneamento: 'Saneamento básico', clima: 'Clima e segurança hídrica' };
 
 const normalizeNews = (item) => {
     if (!item || typeof item.title !== 'string' || !item.title.trim()) return null;
